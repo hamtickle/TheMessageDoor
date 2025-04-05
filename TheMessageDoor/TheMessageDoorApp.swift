@@ -1,24 +1,26 @@
 //
-//  TheMessageDoorApp.swift
-//  TheMessageDoor
+//  AuthApp.swift
+//  Auth
 //
-//  Created by Graham Tickell on 4/5/25.
+//  Created by Graham Tickell on 3/31/25.
 //
 
-import SwiftUI
 import Firebase
+import SwiftUI
 
 @main
-struct TheMessageDoorApp: App {
-    
+struct AuthApp: App {
+
     init() {
         FirebaseApp.configure()
-        print("Configured Firebase")
+        print("Firebase configured.")
     }
-    
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationStack {
+                RootView()
+            }
         }
     }
 }
