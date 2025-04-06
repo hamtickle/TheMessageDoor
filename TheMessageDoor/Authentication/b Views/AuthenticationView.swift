@@ -41,6 +41,7 @@ struct AuthenticationView: View {
                     .cornerRadius(10)
             }
 
+
             GoogleSignInButton(
                 viewModel: GoogleSignInButtonViewModel(
                     scheme: .dark, style: .standard, state: .normal)
@@ -55,7 +56,6 @@ struct AuthenticationView: View {
                 }
             }
 
-            // Apple Sign In Button
 
             Button(
                 action: {

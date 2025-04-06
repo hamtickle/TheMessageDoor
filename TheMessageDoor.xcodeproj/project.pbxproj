@@ -11,6 +11,7 @@
 		F29D29142DA18F580005321A /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = F29D29132DA18F580005321A /* FirebaseAuth */; };
 		F29D296A2DA1931C0005321A /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = F29D29692DA1931C0005321A /* GoogleSignIn */; };
 		F29D296C2DA1931C0005321A /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F29D296B2DA1931C0005321A /* GoogleSignInSwift */; };
+		F29D29B22DA19FDA0005321A /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = F29D29B12DA19FDA0005321A /* FirebaseFirestore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,6 +76,7 @@
 				F29D29112DA18CEB0005321A /* FirebaseAnalytics in Frameworks */,
 				F29D29142DA18F580005321A /* FirebaseAuth in Frameworks */,
 				F29D296A2DA1931C0005321A /* GoogleSignIn in Frameworks */,
+				F29D29B22DA19FDA0005321A /* FirebaseFirestore in Frameworks */,
 				F29D296C2DA1931C0005321A /* GoogleSignInSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -148,6 +150,7 @@
 				F29D29132DA18F580005321A /* FirebaseAuth */,
 				F29D29692DA1931C0005321A /* GoogleSignIn */,
 				F29D296B2DA1931C0005321A /* GoogleSignInSwift */,
+				F29D29B12DA19FDA0005321A /* FirebaseFirestore */,
 			);
 			productName = TheMessageDoor;
 			productReference = F29D28E02DA189C30005321A /* TheMessageDoor.app */;
@@ -445,6 +448,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = Logo_TMD_large;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -477,6 +481,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = Logo_TMD_large;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -644,6 +649,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F29D29682DA1931C0005321A /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignInSwift;
+		};
+		F29D29B12DA19FDA0005321A /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F29D290F2DA18CEB0005321A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
