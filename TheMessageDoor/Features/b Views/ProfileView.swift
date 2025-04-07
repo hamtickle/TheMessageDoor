@@ -49,6 +49,7 @@ struct ProfileView: View {
                                     .multilineTextAlignment(.center)
                                     .frame(width: 170, height: 50, alignment: .center)
                                     .border(Color.blue)
+                                    .background(Color.white)
                                     .foregroundColor(.black)
                                     .padding(.vertical, 2)
                                 
@@ -57,25 +58,23 @@ struct ProfileView: View {
                                     .multilineTextAlignment(.center)
                                     .frame(width: 170, height: 50, alignment: .center)
                                     .border(Color.blue)
+                                    .background(Color.white)
                                     .foregroundColor(.black)
                                     .padding(.vertical, 2)
                             }
                             Text("UserID: \(user.userId)")
                                 .font(.caption)
-                                .foregroundColor(.black)
+                                .foregroundColor(.primary)
                                 .padding(.vertical, 2)
                             
                             HStack {
                                 Text("Date Created: ")
                                     .font(.caption)
-                                    .foregroundColor(.black)
+                                    .foregroundColor(.primary)
                                     .padding(.vertical, 2)
-                                Text(
-                                    user.dateCreated!,
-                                    format: Date.FormatStyle(date: .numeric)
-                                )
+                                Text("\(pVM.currentUserDateCreated.formatted(date: .numeric, time: .standard))")
                                 .font(.caption)
-                                .foregroundColor(.black)
+                                .foregroundColor(.primary)
                                 .padding(.vertical, 2)
                             }
                             
@@ -143,20 +142,24 @@ struct ProfileView: View {
                         
                         Text("Message Door Stats")
                             .font(.headline)
+                            .foregroundColor(.primary)
                         HStack{
                             Text("Messages Sent: 100")
                                 .font(.subheadline)
+                                .foregroundColor(.primary)
                             Image(systemName: "paperplane")
                         }
                         HStack{
                             Text("My Favorite Messages: 7")
                                 .font(.subheadline)
+                                .foregroundColor(.primary)
                             Image(systemName: "heart.fill")
                                 .foregroundColor(.red)
                         }
                         HStack{
                             Text("Recipient's Favorite Messages: 5")
                                 .font(.subheadline)
+                                .foregroundColor(.primary)
                             Image(systemName: "heart.fill")
                                 .foregroundColor(.blue)
                         }
@@ -184,7 +187,7 @@ struct ProfileView: View {
             }
         }
         .alert(isPresented: $updateSuccessful, content: {
-            Alert(title: Text("Profile Updated"), message: Text("Your profile was updated successfully!"), dismissButton: .cancel())
+            Alert(title: Text("Profile Updated"), message: Text("Your profile was updated successfully!"), dismissButton: .cancel(Text("OK") ))
         })
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {

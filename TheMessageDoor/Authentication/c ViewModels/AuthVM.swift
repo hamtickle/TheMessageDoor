@@ -10,7 +10,8 @@ import Foundation
 @MainActor
 final class AuthenticationVM: ObservableObject {
 
- 
+    
+    
     let signInAppleHelper = SignInAppleHelper()
 
     func signInGoogle() async throws {
@@ -19,8 +20,10 @@ final class AuthenticationVM: ObservableObject {
         let authDataResult = try await AuthManager.shared.signInWithGoogle(tokens: tokens)
         
         let user = Profile(auth: authDataResult)
-        try await UserManager.shared.createNewUser(user: user)
-
+//        try await UserManager.shared.getUser(userId: user.userId)
+//        if UserManager.shared.newUser {
+            try await UserManager.shared.createNewUser(user: user)
+//        }
     }
 
     func signInApple() async throws {

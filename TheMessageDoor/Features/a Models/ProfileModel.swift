@@ -27,7 +27,7 @@ struct Profile: Codable {
         self.dateCreated = Date()
         self.firstName = nil
         self.lastName = nil
-        self.myFont = "Arial"
+        self.myFont = nil
         self.mySignature = ""
     }
     
