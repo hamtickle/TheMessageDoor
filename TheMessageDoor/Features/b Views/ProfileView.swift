@@ -9,13 +9,12 @@ import SwiftUI
 
 struct ProfileView: View {
 
-    //  @EnvironmentObject var pVM: PersonVM
     @StateObject private var pVM = ProfileViewModel()
 
     @Binding var showSignInView: Bool
     @State var updateSuccessful: Bool = false
     @FocusState private var isFocused: Bool
-
+    
     @State var selectionOptions: [String] = [
         "Arial",
         "Copperplate",
@@ -29,14 +28,10 @@ struct ProfileView: View {
 
     var body: some View {
         ZStack(alignment: .top) {
-            //            Rectangle()
-            //                .fill(Color.gray.opacity(0.3))
-            //                .frame(maxWidth: .infinity)
-            //                .frame(height: 230)
-            //                .padding(-15)
 
             List {
                 if let user = pVM.user {
+
                     VStack(alignment: .center) {
                         VStack(alignment: .center) {
 
@@ -68,7 +63,7 @@ struct ProfileView: View {
                                 .foregroundColor(.black)
                                 .padding(.vertical, 2)
                             }
-                            Text("UserID: \(user.userId)")
+                            Text("UserID: \(pVM.currentUserId)")
                                 .font(.caption)
                                 .foregroundColor(.primary)
                                 .padding(.vertical, 2)
@@ -133,51 +128,10 @@ struct ProfileView: View {
                                 .padding(.horizontal)
 
                         }
-                    }  //end list
+                    }
 
-                    // Button to update User data here
-                    Button {
-                        pVM.updateUser(
-                            email: pVM.currentUserEmail,
-                            firstName: pVM.currentUserFirstName,
-                            lastName: pVM.currentUserLastName,
-                            myFont: pVM.currentUserMyFont, mySignature: "")
-                        updateSuccessful.toggle()
-                    } label: {
-                        Text("Update Profile")
-                    }
-                    .frame(width: 300, height: 50)
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .padding()
-                    .cornerRadius(10)
-                    .padding(.vertical, 5)
+                    ProfileStats(showSignInView: $showSignInView)
 
-                    //                        Message Door Stats
-
-                    Text("Message Door Stats")
-                        .font(.headline)
-                        .foregroundColor(.primary)
-                    HStack {
-                        Text("Messages Sent: 100")
-                            .font(.subheadline)
-                            .foregroundColor(.primary)
-                        Image(systemName: "paperplane")
-                    }
-                    HStack {
-                        Text("My Favorite Messages: 7")
-                            .font(.subheadline)
-                            .foregroundColor(.primary)
-                        Image(systemName: "heart.fill")
-                            .foregroundColor(.red)
-                    }
-                    HStack {
-                        Text("Recipient's Favorite Messages: 5")
-                            .font(.subheadline)
-                            .foregroundColor(.primary)
-                        Image(systemName: "heart.fill")
-                            .foregroundColor(.blue)
-                    }
                 }
 
             }
@@ -223,4 +177,64 @@ struct ProfileView: View {
 
     }
 
+}
+
+
+
+struct ProfileStats: View {
+
+    @StateObject private var pVM = ProfileViewModel()
+
+    @Binding var showSignInView: Bool
+    @State var updateSuccessful: Bool = false
+
+    var body: some View {
+        VStack(alignment: .center) {
+
+            // Button to update User data here
+            Button {
+                pVM.updateUser(
+                    email: pVM.currentUserEmail,
+                    firstName: pVM.currentUserFirstName,
+                    lastName: pVM.currentUserLastName,
+                    myFont: pVM.currentUserMyFont, mySignature: "")
+                updateSuccessful.toggle()
+            } label: {
+                Text("Update Profile")
+            }
+            .frame(width: 300, height: 50)
+            .background(Color.blue)
+            .foregroundColor(.white)
+            .padding()
+            .cornerRadius(10)
+            .padding(.vertical, 5)
+
+            // Profile Stats
+
+            Text("Message Door Stats")
+                .font(.headline)
+                .foregroundColor(.primary)
+            HStack {
+                Text("Messages Sent: 100")
+                    .font(.subheadline)
+                    .foregroundColor(.primary)
+                Image(systemName: "paperplane")
+            }
+            HStack {
+                Text("My Favorite Messages: 7")
+                    .font(.subheadline)
+                    .foregroundColor(.primary)
+                Image(systemName: "heart.fill")
+                    .foregroundColor(.red)
+            }
+            HStack {
+                Text("Recipient's Favorite Messages: 5")
+                    .font(.subheadline)
+                    .foregroundColor(.primary)
+                Image(systemName: "heart.fill")
+                    .foregroundColor(.blue)
+            }
+        }
+        .padding(.horizontal)
+    }
 }

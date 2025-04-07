@@ -18,6 +18,7 @@ final class ProfileViewModel: ObservableObject {
     @Published var currentUserDateCreated: Date = Date()
     @Published var currentUserPhotoUrl: String = ""
     @Published var currentUserMySignature: String = ""
+    @Published var currentUserId: String = ""
     
     @Published var updateSuccessful: Bool = false
     
@@ -29,6 +30,7 @@ final class ProfileViewModel: ObservableObject {
     }
     
     func unwrapUser() {
+        currentUserId = self.user?.userId ?? ""
         currentUserEmail = self.user?.email ?? ""
         currentUserFirstName = self.user?.firstName ?? ""
         currentUserLastName = self.user?.lastName ?? ""
