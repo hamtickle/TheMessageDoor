@@ -11,9 +11,10 @@ struct ProfileView: View {
 
     //  @EnvironmentObject var pVM: PersonVM
     @StateObject private var pVM = ProfileViewModel()
+    
     @Binding var showSignInView: Bool
-
-    @State var username: String = ""
+    @State var updateSuccessful: Bool = false
+    @FocusState private var isFocused: Bool
 
     @State var selectionOptions: [String] = [
         "Arial",
@@ -26,107 +27,179 @@ struct ProfileView: View {
         "Zapfino",
     ]
 
-    @State var myFont: String = "Chalkduster"
+    
 
     var body: some View {
-
-        List {
-            if let user = pVM.user {
-                VStack() {
-                    
-                    ZStack(alignment: .top) {
-                        Rectangle()
-                            .fill(Color.gray.opacity(0.3))
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 230)
-                            .padding(-15)
-                        
-                        
-                        VStack(alignment: .leading) {
-                            Text("Your information")
-                                .font(.body)
-                                .foregroundColor(.black)
+        ZStack (alignment: .top) {
+//            Rectangle()
+//                .fill(Color.gray.opacity(0.3))
+//                .frame(maxWidth: .infinity)
+//                .frame(height: 230)
+//                .padding(-15)
+            
+            List {
+                if let user = pVM.user {
+                    VStack (alignment: .center) {
+                        VStack(alignment: .center) {
                             
-                            HStack() {
-                                
-                                Text("first: \(user.firstName ?? "Brad")")
+                            HStack {
+                                TextField("First", text: $pVM.currentUserFirstName)
+                                    .focused($isFocused)
                                     .padding(.horizontal)
-                                    .frame( height: 50)
-                                    .background(Color.white)
+                                    .multilineTextAlignment(.center)
+                                    .frame(width: 170, height: 50, alignment: .center)
+                                    .border(Color.blue)
                                     .foregroundColor(.black)
-                                    .cornerRadius(10)
                                     .padding(.vertical, 2)
                                 
-                                Text("last: \(user.lastName ?? "Smith")")
+                                TextField("First", text: $pVM.currentUserLastName)
                                     .padding(.horizontal)
-                                    .frame( height: 50)
-                                    .background(Color.white)
+                                    .multilineTextAlignment(.center)
+                                    .frame(width: 170, height: 50, alignment: .center)
+                                    .border(Color.blue)
                                     .foregroundColor(.black)
-                                    .cornerRadius(10)
                                     .padding(.vertical, 2)
                             }
                             Text("UserID: \(user.userId)")
                                 .font(.caption)
                                 .foregroundColor(.black)
-                                .padding(.vertical,2)
+                                .padding(.vertical, 2)
                             
-                            
-                            Text("email: \(user.email ?? "brad.smith@test.com")")
-                                .textInputAutocapitalization(.never)
-                                .padding(.horizontal)
-                                .frame( width: 280, height: 50)
-                                .background(Color.white)
-                                .foregroundColor(.black)
-                                .cornerRadius(10)
-                                .padding(.vertical,2)
-                            
-                            HStack() {
+                            HStack {
                                 Text("Date Created: ")
                                     .font(.caption)
                                     .foregroundColor(.black)
-                                    .padding(.vertical,2)
-                                Text(user.dateCreated!, format: Date.FormatStyle(date: .numeric))
-                                    .font(.caption)
-                                    .foregroundColor(.black)
-                                    .padding(.vertical,2)
+                                    .padding(.vertical, 2)
+                                Text(
+                                    user.dateCreated!,
+                                    format: Date.FormatStyle(date: .numeric)
+                                )
+                                .font(.caption)
+                                .foregroundColor(.black)
+                                .padding(.vertical, 2)
                             }
                             
+                            TextField("email", text: $pVM.currentUserEmail)
+                            .textInputAutocapitalization(.never)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)
+                            .frame(width: 350, height: 50, alignment: .center)
+                            .border(Color.blue)
+                            .background(Color.white)
+                            .foregroundColor(.black)
+                            .padding(.vertical, 2)
+
+
+                        }
+                        
+                        HStack {
+                            Text("My Font:")
+                            
+                            Picker("",
+                                   selection: $pVM.currentUserMyFont) {
+                                ForEach(selectionOptions, id: \.self) {
+                                    Text($0)
+                                }
+                            }.pickerStyle(.menu)
+                                .frame(width: 200, height: 60)
+                                .padding(.vertical, -15)
+                        }
+                        .frame(width: 350, height: 75)
+                        .border(Color.blue)
+                            
+
+                        
+                        ZStack()  {
+                            Rectangle()
+                                .fill(Color.yellow)
+                                .frame(height: 100)
+                                .padding(5)
+                                .shadow(color: Color.black, radius: 10, x: 10, y: 10 )
+                            Text("Choose the font you want for your messages?")
+                                .foregroundColor(.black)
+                                .font(.custom(pVM.currentUserMyFont, size: 25))
+                                .multilineTextAlignment(.center)
+                                .frame(height: 100)
+                                .padding(.horizontal)
                             
                         }
                         
                         // Button to update User data here
+                        Button {
+                            pVM.updateUser(email: pVM.currentUserEmail, firstName: pVM.currentUserFirstName, lastName: pVM.currentUserLastName, myFont: pVM.currentUserMyFont, mySignature: "" )
+                            updateSuccessful.toggle()
+                        }
+                        label: {
+                            Text("Update Profile")
+                        }
+                        .frame(width: 300, height: 50)
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .padding()
+                        .cornerRadius(10)
+                        .padding(.vertical, 5)
                         
-                    }       // pVM.updateUser()
+//                        Message Door Stats
+                        
+                        Text("Message Door Stats")
+                            .font(.headline)
+                        HStack{
+                            Text("Messages Sent: 100")
+                                .font(.subheadline)
+                            Image(systemName: "paperplane")
+                        }
+                        HStack{
+                            Text("My Favorite Messages: 7")
+                                .font(.subheadline)
+                            Image(systemName: "heart.fill")
+                                .foregroundColor(.red)
+                        }
+                        HStack{
+                            Text("Recipient's Favorite Messages: 5")
+                                .font(.subheadline)
+                            Image(systemName: "heart.fill")
+                                .foregroundColor(.blue)
+                        }
                     }
-                    }
+                    
                 }
-        .task {
-            try? await pVM.loadCurrentUser()
+                   
+                
+            }
+            .task {
+                try? await pVM.loadCurrentUser()
+            }
+            .frame(maxWidth: .infinity, alignment: .center)
         }
-        .navigationTitle("Welcome")
+        .navigationTitle("Your Profile")
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                
+
                 NavigationLink {
                     SettingsView(showSignInView: $showSignInView)
                 } label: {
                     Image(systemName: "gear")
                         .font(.headline)
                 }
-                }
             }
         }
+        .alert(isPresented: $updateSuccessful, content: {
+            Alert(title: Text("Profile Updated"), message: Text("Your profile was updated successfully!"), dismissButton: .cancel())
+        })
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.isFocused = true
+            }
+        }
+    }
 
-    
 }
 
 #Preview {
     NavigationStack {
-
-        ProfileView(showSignInView: .constant(true))
+       
+        ProfileView(showSignInView: .constant(false))
 
     }
-    //    .environmentObject(PersonVM())
-    //    .environmentObject(MessageVM())
-    //    .environmentObject(OrderVM())
+
 }

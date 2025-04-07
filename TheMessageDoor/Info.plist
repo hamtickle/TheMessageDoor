@@ -17,5 +17,12 @@
 	</array>
 	<key>GIDClientID</key>
 	<string>568271268870-jn24vbghdms86bic4qpo09ce06rqm0qh.apps.googleusercontent.com</string>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIImageName</key>
+		<string>Logo_TMD_large</string>
+		<key>UILaunchScreen</key>
+		<dict/>
+	</dict>
 </dict>
 </plist>
