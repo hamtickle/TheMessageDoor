@@ -1,0 +1,135 @@
+//
+//  OrderViewModel.swift
+//  TheMessageDoor
+//
+//  Created by Graham Tickell on 4/7/25.
+//
+
+import Foundation
+
+@MainActor
+final class OrderViewModel: ObservableObject {
+    
+    var pVM = ProfileViewModel()
+    
+    @Published var receiverList: [String] = []
+    @Published var receiverData: [ReceiverModel] = []
+    
+    @Published var thisReceiverId: String = ""
+    @Published var thisReceiverFirst: String = ""
+    @Published var thisReceiverLast: String = ""
+    
+    @Published private(set) var order: Order? = nil
+    
+    @Published var currentReceiverId: String = ""
+    @Published var currentReceiverEmail: String = ""
+    @Published var currentReceiverFirstName: String = ""
+    @Published var currentReceiverLastName: String = ""
+
+    @Published var currentOrderDateCreated: Date = Date()
+    @Published var currentOrderStatus: String = ""
+    @Published var currentOrderType: String = ""
+  
+    
+    @Published var updateOrderSuccessful: Bool = false
+    
+//    func getSenderOrders(userId: String) async throws -> [Order] {
+//        return try await OrderManager.shared.getSenderOrders(userId: userId)
+//    }
+    
+    
+    func loadCurrentOrder(orderId: String) async throws {
+        self.order = try await OrderManager.shared.getOrder(orderId: orderId)
+        unwrapOrder()
+    }
+    
+    func unwrapOrder() {
+        currentReceiverId = self.order?.receiverId ?? ""
+        currentReceiverEmail = self.order?.receiverEmail ?? ""
+        currentReceiverFirstName = self.order?.receiverFirstName ?? ""
+        currentReceiverLastName = self.order?.receiverLastName ?? ""
+
+        currentOrderDateCreated = self.order?.orderDateCreated ?? Date()
+        currentOrderType = self.order?.orderType ?? ""
+        currentOrderStatus = self.order?.orderStatus ?? ""
+       
+    }
+    
+    func createOrder(senderId: String, senderFirstName: String, senderLastName: String, receiverId: String, receiverEmail: String, receiverFirstName: String, receiverLastName: String) {
+//        if receiverId == "" {
+//            
+//            // create new user for the receiver and get the receiver ID
+//            pVM.updateUser(email: receiverEmail, firstName: receiverFirstName, lastName: receiverLastName, myFont: "Arial", mySignature: "")
+//            
+//        } else {
+//            // receiver already exists no further action
+//        }
+        // create the order
+        
+        let updatedOrder = Order(orderId: "",
+                                 senderId: senderId,
+                                 senderFirstName:senderFirstName ,
+                                 senderLastName: senderLastName,
+                                 receiverId: receiverId,
+                                 receiverFirstName: currentReceiverFirstName,
+                                 receiverLastName: currentReceiverLastName,
+                                 receiverEmail: currentReceiverEmail,
+                                 orderType: "",
+                                 orderStatus: "Active",
+                                 orderDateCreated: Date())
+        Task {
+            try await OrderManager.shared.createNewOrder(order: updatedOrder)
+        }
+ 
+    }
+    
+    func getReceivers(senderId: String) async throws{
+        var (result, receiverData) = try await OrderManager.shared.getReceivers(senderId: senderId)
+        // remove duplicates from receiverlist
+        receiverList = result.unique()
+        self.receiverData = receiverData
+        print("receiverList: \(receiverList)")
+        print("receiverData: \(receiverData)")
+        
+        
+        
+    }
+    
+    func getReceiverProperties(receiverEmail: String) {
+        if let offset = receiverData.firstIndex(where: {$0.receiverEmail == receiverEmail})
+        {
+            let currentReceiverId = receiverData[offset].receiverId ?? ""
+            let currentReceiverFirstName = receiverData[offset].receiverFirstName ?? ""
+            let currentReceiverLastName = receiverData[offset].receiverLastName ?? ""
+            print("offset: \(offset)")
+//            print("First: \(thisReceiverFirst)")
+//            print("Last: \(thisReceiverLast)")
+//            print("Receiver Id: \(thisReceiverId)")
+        }
+        
+    }
+  
+    
+    
+    
+//    func updateUser(email: String, firstName: String, lastName: String, myFont: String, mySignature: String) {
+//        guard let order else { return }
+//        
+//        let updatedUser = Profile(userId: user.userId, email: email, photoUrl: user.photoUrl, firstName: firstName, lastName: lastName, myFont: myFont, mySignature: ""  )
+//        Task {
+//            try await UserManager.shared.updateUser(user: updatedUser)
+//            self.user = try await UserManager.shared.getUser(userId: user.userId)
+//            updateSuccessful.toggle()
+//        }
+//    }
+}
+
+extension Array where Element: Equatable {
+    func unique() -> [Element] {
+        self.reduce([]) {result, element in
+            result.contains(element) ? result : result + [element]
+        }
+    }
+}
+
+

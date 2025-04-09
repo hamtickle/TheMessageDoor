@@ -37,19 +37,15 @@ final class UserManager {
     }
 
     func getUser(userId: String) async throws -> Profile {
-//        do {
+
             try await userDocument(userId: userId).getDocument(
                 as: Profile.self, decoder: decoder)
-//        } catch {
-//            print("user document doesn't exist")
-//            newUser = true
-//        }
-//        return Profile(userId: userId)
     }
 
     func updateUser(user: Profile) async throws {
         try userDocument(userId: user.userId).setData(
             from: user, merge: true, encoder: encoder)
     }
+    
 
 }

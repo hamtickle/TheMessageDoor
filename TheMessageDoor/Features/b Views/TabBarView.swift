@@ -21,7 +21,7 @@ struct TabBarView: View {
                     Text("Profile")
                 }
             NavigationStack {
-                OrderView()
+                OrderView(currentReceiver: .constant(""))
             }
                 .tabItem{
                     Image(systemName: "cart")

@@ -41,6 +41,20 @@ final class ProfileViewModel: ObservableObject {
        
     }
     
+//    func getReceiver(email: String) async throws -> Profile? {
+//        
+//    }
+    
+    func createReceiver(userId: String, email: String, firstName: String, lastName: String, myFont: String, mySignature: String) {
+        
+        let receiverUser = Profile(userId: userId, email: email, photoUrl: "", firstName: firstName, lastName: lastName, myFont: myFont, mySignature: ""  )
+        
+        Task {
+            try await UserManager.shared.updateUser(user: receiverUser)
+            //          self.user = try await UserManager.shared.getUser(userId: userId)
+            updateSuccessful.toggle()
+        }
+    }
     
     func updateUser(email: String, firstName: String, lastName: String, myFont: String, mySignature: String) {
         guard let user else { return }
