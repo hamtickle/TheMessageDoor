@@ -12,9 +12,11 @@ final class UserManager {
 
     static let shared = UserManager()
     @Published var newUser: Bool = false
+    @Published var currentReceiver: Profile?
     private init() {}
 
     private let userCollection = Firestore.firestore().collection("users")
+    
     private func userDocument(userId: String) -> DocumentReference {
         return userCollection.document(userId)
     }
@@ -47,5 +49,18 @@ final class UserManager {
             from: user, merge: true, encoder: encoder)
     }
     
+    func getUserWithEmail(email: String) async throws -> Profile? {
+
+        let query = userCollection.whereField("email", isEqualTo: email)
+        do {
+            let querySnapshot = try await query.getDocuments()
+            for document in querySnapshot.documents  {
+                let _currentReceiver = try document.data(as: Profile.self, decoder: decoder)
+                currentReceiver = _currentReceiver
+            }
+        }
+
+        return currentReceiver
+    }
 
 }
