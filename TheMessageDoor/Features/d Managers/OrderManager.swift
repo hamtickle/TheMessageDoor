@@ -43,11 +43,6 @@ final class OrderManager {
             as: Order.self, decoder: decoder)
     }
 
-    //    func getSenderOrders(userId: String) async throws -> [Order] {
-    //            try await orderDocument(senderId: userId).getDocument(
-    //                as: Order.self, decoder: decoder)
-    //    }
-
     func updateOrder(order: Order) async throws {
         try orderDocument(orderId: order.orderId).setData(
             from: order, merge: true, encoder: encoder)
@@ -59,7 +54,7 @@ final class OrderManager {
         var receiverData: [ReceiverModel] = []
         var thisReceiver: ReceiverModel
         let query = orderCollection.whereField("sender_id", isEqualTo: senderId)
-        print(query)
+  
         do {
             let querySnapshot = try await query.getDocuments()
             for document in querySnapshot.documents  {
@@ -80,10 +75,8 @@ final class OrderManager {
                     var thisReceiverEmail = order.receiverEmail ?? ""
                     
                     var thisReceiver = ReceiverModel(receiverId: thisReceiverId, receiverFirstName: thisReceiverFirstName, receiverLastName: thisReceiverLastName, receiverEmail: thisReceiverEmail)
-                    print("thisReceiver: \(thisReceiver)")
                     receiverData.append(thisReceiver)
                 }
-            print("receiverList: \(receiverList)")
             
         }
         return (receiverList, receiverData)

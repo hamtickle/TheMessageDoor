@@ -12,6 +12,8 @@ final class OrderViewModel: ObservableObject {
     
     var pVM = ProfileViewModel()
     
+    @Published var selectedReceiverEmail: String = ""
+    
     @Published var receiverList: [String] = []
     @Published var receiverData: [ReceiverModel] = []
     
@@ -52,33 +54,24 @@ final class OrderViewModel: ObservableObject {
         currentOrderDateCreated = self.order?.orderDateCreated ?? Date()
         currentOrderType = self.order?.orderType ?? ""
         currentOrderStatus = self.order?.orderStatus ?? ""
-       
     }
     
     func createOrder(senderId: String, senderFirstName: String, senderLastName: String, receiverId: String, receiverEmail: String, receiverFirstName: String, receiverLastName: String) {
-//        if receiverId == "" {
-//            
-//            // create new user for the receiver and get the receiver ID
-//            pVM.updateUser(email: receiverEmail, firstName: receiverFirstName, lastName: receiverLastName, myFont: "Arial", mySignature: "")
-//            
-//        } else {
-//            // receiver already exists no further action
-//        }
-        // create the order
         
         let updatedOrder = Order(orderId: "",
                                  senderId: senderId,
                                  senderFirstName:senderFirstName ,
                                  senderLastName: senderLastName,
                                  receiverId: receiverId,
-                                 receiverFirstName: currentReceiverFirstName,
-                                 receiverLastName: currentReceiverLastName,
-                                 receiverEmail: currentReceiverEmail,
-                                 orderType: "",
+                                 receiverFirstName: receiverFirstName,
+                                 receiverLastName: receiverLastName,
+                                 receiverEmail: receiverEmail,
+                                 orderType: "monthly",
                                  orderStatus: "Active",
                                  orderDateCreated: Date())
         Task {
             try await OrderManager.shared.createNewOrder(order: updatedOrder)
+            updateOrderSuccessful.toggle()
         }
  
     }
@@ -88,11 +81,6 @@ final class OrderViewModel: ObservableObject {
         // remove duplicates from receiverlist
         receiverList = result.unique()
         self.receiverData = receiverData
-        print("receiverList: \(receiverList)")
-        print("receiverData: \(receiverData)")
-        
-        
-        
     }
     
     func getReceiverProperties(receiverEmail: String) {
@@ -101,10 +89,6 @@ final class OrderViewModel: ObservableObject {
             let currentReceiverId = receiverData[offset].receiverId ?? ""
             let currentReceiverFirstName = receiverData[offset].receiverFirstName ?? ""
             let currentReceiverLastName = receiverData[offset].receiverLastName ?? ""
-            print("offset: \(offset)")
-//            print("First: \(thisReceiverFirst)")
-//            print("Last: \(thisReceiverLast)")
-//            print("Receiver Id: \(thisReceiverId)")
         }
         
     }
