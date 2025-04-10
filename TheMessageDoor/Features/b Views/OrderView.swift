@@ -15,8 +15,6 @@ struct OrderView: View {
         "New Recipient"
     ]
 
-    @Binding var currentReceiver: String
-
     var newReceiver: Profile? = nil
 
     var body: some View {
@@ -90,7 +88,7 @@ struct OrderView: View {
 
                             Picker(
                                 "",
-                                selection: $oVM.currentReceiverEmail
+                                selection: $oVM.selectedReceiverEmail
                             ) {
                                 ForEach(receiverList, id: \.self) {
                                     Text($0)
@@ -106,7 +104,7 @@ struct OrderView: View {
 
                         TextField(
                             "recipient first:",
-                            text: $oVM.currentReceiverFirstName
+                            text: $pVM.currentReceiverFirst
                         )
                         .padding(.horizontal)
                         .frame(width: 330, height: 50)
@@ -118,7 +116,7 @@ struct OrderView: View {
                         )
                         TextField(
                             "recipient Last:",
-                            text: $oVM.currentReceiverLastName
+                            text: $pVM.currentReceiverLast
                         )
                         .padding(.horizontal)
                         .frame(width: 330, height: 50)
@@ -129,7 +127,7 @@ struct OrderView: View {
                                 .padding(.vertical, 5)
                         )
                         TextField(
-                            "recipient email:", text: $oVM.currentReceiverEmail
+                            "recipient email:", text: $pVM.currentReceiverEmail
                         )
                         .textInputAutocapitalization(.never)
                         .padding(.horizontal)
@@ -143,42 +141,47 @@ struct OrderView: View {
                     }
                     .padding(.horizontal, 10)
 
-                    Text("UserID: \(oVM.currentReceiverId)")
+                    Text("UserID: \(pVM.currentReceiverId)")
                         .frame(maxWidth: .infinity, alignment: .center)
                         .font(.caption)
                         .foregroundColor(.primary)
                         .padding(.vertical, 2)
-
                 }
             }
 
             Button(action: {
                 // Add Recipient
-                if oVM.currentReceiverEmail == "New Recipient" {
-                    var receiverId = UUID().uuidString
+                if oVM.selectedReceiverEmail == "New Recipient" {
+                    let receiverId = UUID().uuidString
+                    pVM.currentReceiverId = receiverId
 
                     pVM.createReceiver(
                         userId: receiverId,
-                        email: oVM.currentReceiverEmail,
-                        firstName: oVM.currentReceiverFirstName,
-                        lastName: oVM.currentReceiverLastName,
-                        myFont: "",
-                        mySignature: ""
-                    )
-                    oVM.currentReceiverId = receiverId
-                }
+                        email: pVM.currentReceiverEmail,
+                        firstName: pVM.currentReceiverFirst,
+                        lastName: pVM.currentReceiverLast,
+                        myFont: "Arial",
+                        mySignature: "no signature on file"
 
-                var receiverId = oVM.currentReceiverId
+                    )
+
+                }  // end if new receiver
 
                 oVM.createOrder(
                     senderId: pVM.currentUserId,
                     senderFirstName: pVM.currentUserFirstName,
                     senderLastName: pVM.currentUserLastName,
-                    receiverId: receiverId,
-                    receiverEmail: oVM.currentReceiverEmail,
-                    receiverFirstName: oVM.currentReceiverFirstName,
-                    receiverLastName: oVM.currentReceiverLastName
+
+                    receiverId: pVM.currentReceiverId,
+                    receiverEmail: pVM.currentReceiverEmail,
+                    receiverFirstName: pVM.currentReceiverFirst,
+                    receiverLastName: pVM.currentReceiverLast
                 )
+
+                // after creating order, reset the form
+
+                oVM.selectedReceiverEmail = "New Recipient"
+
             }) {
                 Text("Create Order")
                     .frame(width: 200, height: 50)
@@ -197,18 +200,34 @@ struct OrderView: View {
                 try? await pVM.loadCurrentUser()
                 try? await oVM.getReceivers(senderId: pVM.currentUserId)
                 receiverList.append(contentsOf: oVM.receiverList)
-                print("Final ReceiverList: \(receiverList)")
 
             }
         }
-        .onChange(of: oVM.currentReceiverEmail) {
-            oVM.getReceiverProperties(receiverEmail: oVM.currentReceiverEmail)
-            //print("x: \(x), y: \(y), z: \(z)")
-            oVM.currentReceiverId = oVM.thisReceiverId
-            oVM.currentReceiverFirstName = oVM.thisReceiverFirst
-            oVM.currentReceiverLastName = oVM.thisReceiverLast
-            print("First: \(oVM.thisReceiverFirst)")
+        .onChange(of: oVM.selectedReceiverEmail) {
+
+            if oVM.selectedReceiverEmail == "New Recipient" {
+                pVM.currentReceiverId = ""
+                pVM.currentReceiverFirst = ""
+                pVM.currentReceiverLast = ""
+                pVM.currentReceiverEmail = ""
+            } else {
+                do {
+                    Task {
+                        try await pVM.getReceiver(
+                            email: oVM.selectedReceiverEmail)
+                    }
+                }
+            }
         }
+        .alert(
+            isPresented: $oVM.updateOrderSuccessful,
+            content: {
+                Alert(
+                    title: Text("Order Created"),
+                    message: Text("Your order has been created. Thank You."),
+                    dismissButton: .cancel(Text("OK")))
+            }
+        )
 
         .padding(.bottom, 100)
         .navigationTitle(Text("Create Order"))
@@ -218,7 +237,7 @@ struct OrderView: View {
 #Preview {
 
     NavigationStack {
-        OrderView(currentReceiver: .constant(""))
+        OrderView()
     }
 
 }

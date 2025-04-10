@@ -11,6 +11,8 @@ import Foundation
 final class ProfileViewModel: ObservableObject {
     
     @Published private(set) var user: Profile? = nil
+    @Published var currentReceiver: Profile? = nil
+    
     @Published var currentUserEmail: String = ""
     @Published var currentUserFirstName: String = ""
     @Published var currentUserLastName: String = ""
@@ -19,6 +21,11 @@ final class ProfileViewModel: ObservableObject {
     @Published var currentUserPhotoUrl: String = ""
     @Published var currentUserMySignature: String = ""
     @Published var currentUserId: String = ""
+    
+    @Published var currentReceiverId: String = ""
+    @Published var currentReceiverFirst: String = ""
+    @Published var currentReceiverLast: String = ""
+    @Published var currentReceiverEmail: String = ""
     
     @Published var updateSuccessful: Bool = false
     
@@ -41,13 +48,19 @@ final class ProfileViewModel: ObservableObject {
        
     }
     
-//    func getReceiver(email: String) async throws -> Profile? {
-//        
-//    }
+    func getReceiver(email: String) async throws {
+        currentReceiver = try await UserManager.shared.getUserWithEmail(email: email)
+        
+        currentReceiverId = self.currentReceiver?.userId ?? ""
+        currentReceiverFirst = self.currentReceiver?.firstName ?? ""
+        currentReceiverLast = self.currentReceiver?.lastName ?? ""
+        currentReceiverEmail = self.currentReceiver?.email ?? ""
+    }
+
     
     func createReceiver(userId: String, email: String, firstName: String, lastName: String, myFont: String, mySignature: String) {
         
-        let receiverUser = Profile(userId: userId, email: email, photoUrl: "", firstName: firstName, lastName: lastName, myFont: myFont, mySignature: ""  )
+        let receiverUser = Profile(userId: userId, email: email, photoUrl: "no photo on file", dateCreated: Date(), firstName: firstName, lastName: lastName, myFont: myFont, mySignature: mySignature  )
         
         Task {
             try await UserManager.shared.updateUser(user: receiverUser)
