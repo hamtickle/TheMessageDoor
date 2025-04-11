@@ -10,21 +10,13 @@ import SwiftUI
 struct ProfileView: View {
 
     @StateObject private var pVM = ProfileViewModel()
+    @StateObject private var fonts = Fonts()
 
     @Binding var showSignInView: Bool
     @State var updateSuccessful: Bool = false
     @FocusState private var isFocused: Bool
     
-    @State var selectionOptions: [String] = [
-        "Arial",
-        "Copperplate",
-        "Chalkduster",
-        "Noteworthy",
-        "SignPainter",
-        "Snell Roundhand",
-        "Times New Roman",
-        "Zapfino",
-    ]
+    @State var fontList: [String] = []
 
     var body: some View {
         
@@ -74,19 +66,19 @@ struct ProfileView: View {
                             }
                             Text("UserID: \(pVM.currentUserId)")
                                 .font(.caption)
-                                .foregroundColor(.primary)
+                                .foregroundColor(.tmdText)
                                 .padding(.vertical, 2)
 
                             HStack {
                                 Text("First Door Opened: ")
                                     .font(.caption)
-                                    .foregroundColor(.primary)
+                                    .foregroundColor(.tmdText)
                                     .padding(.vertical, 2)
                                 Text(
                                     "\(pVM.currentUserDateCreated.formatted(date: .numeric, time: .standard))"
                                 )
                                 .font(.caption)
-                                .foregroundColor(.primary)
+                                .foregroundColor(.tmdText)
                                 .padding(.vertical, 2)
                             }
 
@@ -111,7 +103,7 @@ struct ProfileView: View {
                                 "",
                                 selection: $pVM.currentUserMyFont
                             ) {
-                                ForEach(selectionOptions, id: \.self) {
+                                ForEach(fontList, id: \.self) {
                                     Text($0)
                                 }
                             }.pickerStyle(.menu)
@@ -170,24 +162,24 @@ struct ProfileView: View {
 
                 Text("Message Door Stats")
                     .font(.headline)
-                    .foregroundColor(.primary)
+                    .foregroundColor(.tmdText)
                 HStack {
                     Text("Messages Sent: 100")
                         .font(.subheadline)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.tmdText)
                     Image(systemName: "paperplane")
                 }
                 HStack {
                     Text("My Favorite Messages: 7")
                         .font(.subheadline)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.tmdText)
                     Image(systemName: "heart.fill")
                         .foregroundColor(.red)
                 }
                 HStack {
                     Text("Recipient's Favorite Messages: 5")
                         .font(.subheadline)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.tmdText)
                     Image(systemName: "heart.fill")
                         .foregroundColor(.blue)
                 }
@@ -226,6 +218,8 @@ struct ProfileView: View {
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.isFocused = true
+                fontList.removeAll()
+                fontList.append(contentsOf: fonts.fonts)
             }
         }
     }

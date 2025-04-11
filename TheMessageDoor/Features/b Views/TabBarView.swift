@@ -34,7 +34,13 @@ struct TabBarView: View {
                     Image(systemName: "paperplane")
                     Text("Message")
                 }
-            
+            NavigationStack {
+                SettingsView(showSignInView: $showSignInView)
+            }
+                .tabItem{
+                    Image(systemName: "gear")
+                    Text("Settings")
+                }
         }
        
     }

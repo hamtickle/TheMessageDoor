@@ -56,8 +56,9 @@ final class OrderViewModel: ObservableObject {
         currentOrderStatus = self.order?.orderStatus ?? ""
     }
     
-    func createOrder(senderId: String, senderFirstName: String, senderLastName: String, receiverId: String, receiverEmail: String, receiverFirstName: String, receiverLastName: String) {
+    func createOrder(senderId: String, senderFirstName: String, senderLastName: String, receiverId: String, receiverEmail: String, receiverFirstName: String, receiverLastName: String)
         
+        {
         let updatedOrder = Order(orderId: "",
                                  senderId: senderId,
                                  senderFirstName:senderFirstName ,
@@ -77,7 +78,8 @@ final class OrderViewModel: ObservableObject {
     }
     
     func getReceivers(senderId: String) async throws{
-        var (result, receiverData) = try await OrderManager.shared.getReceivers(senderId: senderId)
+        let (result, receiverData) = try await OrderManager.shared.getReceivers(senderId: senderId)
+        
         // remove duplicates from receiverlist
         receiverList = result.unique()
         self.receiverData = receiverData
@@ -92,20 +94,7 @@ final class OrderViewModel: ObservableObject {
         }
         
     }
-  
-    
-    
-    
-//    func updateUser(email: String, firstName: String, lastName: String, myFont: String, mySignature: String) {
-//        guard let order else { return }
-//        
-//        let updatedUser = Profile(userId: user.userId, email: email, photoUrl: user.photoUrl, firstName: firstName, lastName: lastName, myFont: myFont, mySignature: ""  )
-//        Task {
-//            try await UserManager.shared.updateUser(user: updatedUser)
-//            self.user = try await UserManager.shared.getUser(userId: user.userId)
-//            updateSuccessful.toggle()
-//        }
-//    }
+
 }
 
 extension Array where Element: Equatable {
