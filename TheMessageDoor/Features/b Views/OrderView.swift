@@ -103,7 +103,6 @@ struct OrderView: View {
                         .background(Color.white)
                         .border(Color.blue, width: 2)
 
-                        
                         HStack {
                             TextField(
                                 "recipient first:",
@@ -113,10 +112,11 @@ struct OrderView: View {
                             .frame(width: 170, height: 50)
                             .background(
                                 Color.white
-                                    .foregroundColor(.black)
-                                    .cornerRadius(10)
-                                    .padding(.vertical, 5)
                             )
+                            .foregroundColor(.black)
+                            .cornerRadius(10)
+                            .padding(.vertical, 5)
+
                             TextField(
                                 "recipient last:",
                                 text: $pVM.currentReceiverLast
@@ -125,12 +125,13 @@ struct OrderView: View {
                             .frame(width: 170, height: 50)
                             .background(
                                 Color.white
-                                    .foregroundColor(.white)
-                                    .cornerRadius(10)
-                                    .padding(.vertical, 5)
                             )
+                            .foregroundColor(.black)
+                            .cornerRadius(10)
+                            .padding(.vertical, 5)
+
                         }
-                        
+
                         TextField(
                             "recipient email:", text: $pVM.currentReceiverEmail
                         )
@@ -139,10 +140,11 @@ struct OrderView: View {
                         .frame(width: 350, height: 50)
                         .background(
                             Color.white
-                                .foregroundColor(.white)
-                                .cornerRadius(10)
-                                .padding(.vertical, 5)
                         )
+                        .foregroundColor(.black)
+                        .cornerRadius(10)
+                        .padding(.vertical, 5)
+
                     }
                     .padding(.horizontal, 10)
 
