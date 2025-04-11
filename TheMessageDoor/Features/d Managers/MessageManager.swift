@@ -36,4 +36,32 @@ final class MessageManager {
         try messageDocument(messageId: message.messageId).setData(
             from: message, merge: true, encoder: encoder)
     }
+    
+    func getMessages(senderId: String) async throws -> [Message] {
+        var messageList: [Message] = []
+        let query = messageCollection.whereField("sender_id", isEqualTo: senderId)
+        
+        do {
+            let querySnapshot = try await query.getDocuments()
+            for document in querySnapshot.documents  {
+                let message = try document.data(as: Message.self, decoder: decoder)
+                messageList.append(message)
+            }
+        }
+        return messageList
+    }
+    
+    func fetchSpecificMessage(messageId: String) async throws -> Message {
+        var message: Message = .init(messageId: messageId)
+        let query = messageCollection.whereField("message_id", isEqualTo: messageId)
+        
+        do {
+            let querySnapshot = try await query.getDocuments()
+            for document in querySnapshot.documents  {
+                let message = try document.data(as: Message.self, decoder: decoder)
+     
+            }
+        }
+        return message
+    }
 }
