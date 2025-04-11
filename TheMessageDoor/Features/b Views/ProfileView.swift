@@ -74,19 +74,19 @@ struct ProfileView: View {
                             }
                             Text("UserID: \(pVM.currentUserId)")
                                 .font(.caption)
-                                .foregroundColor(.primary)
+                                .foregroundColor(.tmdText)
                                 .padding(.vertical, 2)
 
                             HStack {
                                 Text("First Door Opened: ")
                                     .font(.caption)
-                                    .foregroundColor(.primary)
+                                    .foregroundColor(.tmdText)
                                     .padding(.vertical, 2)
                                 Text(
                                     "\(pVM.currentUserDateCreated.formatted(date: .numeric, time: .standard))"
                                 )
                                 .font(.caption)
-                                .foregroundColor(.primary)
+                                .foregroundColor(.tmdText)
                                 .padding(.vertical, 2)
                             }
 
@@ -170,24 +170,24 @@ struct ProfileView: View {
 
                 Text("Message Door Stats")
                     .font(.headline)
-                    .foregroundColor(.primary)
+                    .foregroundColor(.tmdText)
                 HStack {
                     Text("Messages Sent: 100")
                         .font(.subheadline)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.tmdText)
                     Image(systemName: "paperplane")
                 }
                 HStack {
                     Text("My Favorite Messages: 7")
                         .font(.subheadline)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.tmdText)
                     Image(systemName: "heart.fill")
                         .foregroundColor(.red)
                 }
                 HStack {
                     Text("Recipient's Favorite Messages: 5")
                         .font(.subheadline)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.tmdText)
                     Image(systemName: "heart.fill")
                         .foregroundColor(.blue)
                 }

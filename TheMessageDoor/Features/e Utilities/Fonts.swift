@@ -6,3 +6,18 @@
 //
 
 import Foundation
+
+final class Fonts: ObservableObject {
+    
+    @Published var fonts: [String] =
+    [
+        "Arial",
+        "Copperplate",
+        "Chalkduster",
+        "Noteworthy",
+        "SignPainter",
+        "Snell Roundhand",
+        "Times New Roman",
+        "Zapfino"
+    ]
+}

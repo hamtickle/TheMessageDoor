@@ -35,7 +35,7 @@ struct OrderView: View {
                 VStack(alignment: .leading) {
                     Text("Your information")
                         .font(.body)
-                        .foregroundColor(.black)
+                        .foregroundColor(.tmdText)
                         .padding(.horizontal, 20)
 
                     HStack {
@@ -44,7 +44,7 @@ struct OrderView: View {
                             .padding(.horizontal)
                             .frame(width: 170, height: 50)
                             .background(Color.gray.opacity(0.2))
-                            .foregroundColor(.black)
+                            .foregroundColor(.tmdText)
                             .cornerRadius(10)
                             .padding(.vertical, 2)
 
@@ -52,13 +52,13 @@ struct OrderView: View {
                             .padding(.horizontal)
                             .frame(width: 170, height: 50)
                             .background(Color.gray.opacity(0.2))
-                            .foregroundColor(.black)
+                            .foregroundColor(.tmdText)
                             .cornerRadius(10)
                             .padding(.vertical, 2)
                     }
                     .frame(maxWidth: .infinity, alignment: .center)
 
-                    Text("UserID: \(pVM.currentUserId)")
+                    Text("Sender's ID: \(pVM.currentUserId)")
                         .frame(maxWidth: .infinity, alignment: .center)
                         .font(.caption)
                         .foregroundColor(.primary)
@@ -71,13 +71,13 @@ struct OrderView: View {
             ZStack {
                 Rectangle()
                     .fill(Color.blue)
-                    .frame(height: 330)
+                    .frame(height: 280)
                     .padding(-15)
 
                 VStack {
                     Text("Recipient information")
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 40)
+                        .padding(.horizontal, 30)
                         .font(.body)
                         .foregroundColor(.white)
 
@@ -85,6 +85,7 @@ struct OrderView: View {
 
                         HStack {
                             Text("Recipient:")
+                                .foregroundColor(.black)
 
                             Picker(
                                 "",
@@ -98,40 +99,44 @@ struct OrderView: View {
                                 .padding(.vertical, -15)
                                 .padding(.horizontal, -10)
                         }
-                        .frame(width: 330, height: 75)
+                        .frame(width: 350, height: 75)
                         .background(Color.white)
                         .border(Color.blue, width: 2)
 
-                        TextField(
-                            "recipient first:",
-                            text: $pVM.currentReceiverFirst
-                        )
-                        .padding(.horizontal)
-                        .frame(width: 330, height: 50)
-                        .background(
-                            Color.white
-                                .foregroundColor(.black)
-                                .cornerRadius(10)
-                                .padding(.vertical, 5)
-                        )
-                        TextField(
-                            "recipient Last:",
-                            text: $pVM.currentReceiverLast
-                        )
-                        .padding(.horizontal)
-                        .frame(width: 330, height: 50)
-                        .background(
-                            Color.white
-                                .foregroundColor(.white)
-                                .cornerRadius(10)
-                                .padding(.vertical, 5)
-                        )
+                        
+                        HStack {
+                            TextField(
+                                "recipient first:",
+                                text: $pVM.currentReceiverFirst
+                            )
+                            .padding(.horizontal)
+                            .frame(width: 170, height: 50)
+                            .background(
+                                Color.white
+                                    .foregroundColor(.black)
+                                    .cornerRadius(10)
+                                    .padding(.vertical, 5)
+                            )
+                            TextField(
+                                "recipient last:",
+                                text: $pVM.currentReceiverLast
+                            )
+                            .padding(.horizontal)
+                            .frame(width: 170, height: 50)
+                            .background(
+                                Color.white
+                                    .foregroundColor(.white)
+                                    .cornerRadius(10)
+                                    .padding(.vertical, 5)
+                            )
+                        }
+                        
                         TextField(
                             "recipient email:", text: $pVM.currentReceiverEmail
                         )
                         .textInputAutocapitalization(.never)
                         .padding(.horizontal)
-                        .frame(width: 330, height: 50)
+                        .frame(width: 350, height: 50)
                         .background(
                             Color.white
                                 .foregroundColor(.white)
@@ -141,10 +146,10 @@ struct OrderView: View {
                     }
                     .padding(.horizontal, 10)
 
-                    Text("UserID: \(pVM.currentReceiverId)")
+                    Text("Recipient's ID: \(pVM.currentReceiverId)")
                         .frame(maxWidth: .infinity, alignment: .center)
                         .font(.caption)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.tmdText)
                         .padding(.vertical, 2)
                 }
             }
