@@ -10,21 +10,13 @@ import SwiftUI
 struct ProfileView: View {
 
     @StateObject private var pVM = ProfileViewModel()
+    @StateObject private var fonts = Fonts()
 
     @Binding var showSignInView: Bool
     @State var updateSuccessful: Bool = false
     @FocusState private var isFocused: Bool
     
-    @State var selectionOptions: [String] = [
-        "Arial",
-        "Copperplate",
-        "Chalkduster",
-        "Noteworthy",
-        "SignPainter",
-        "Snell Roundhand",
-        "Times New Roman",
-        "Zapfino",
-    ]
+    @State var fontList: [String] = []
 
     var body: some View {
         
@@ -111,7 +103,7 @@ struct ProfileView: View {
                                 "",
                                 selection: $pVM.currentUserMyFont
                             ) {
-                                ForEach(selectionOptions, id: \.self) {
+                                ForEach(fontList, id: \.self) {
                                     Text($0)
                                 }
                             }.pickerStyle(.menu)
@@ -226,6 +218,8 @@ struct ProfileView: View {
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.isFocused = true
+                fontList.removeAll()
+                fontList.append(contentsOf: fonts.fonts)
             }
         }
     }
