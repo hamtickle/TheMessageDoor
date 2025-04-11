@@ -14,19 +14,13 @@ struct TabBarView: View {
     var body: some View {
         TabView {
             NavigationStack {
-                ProfileView(showSignInView: $showSignInView)
+                MessageListView()
             }
                 .tabItem{
-                    Image(systemName: "person")
-                    Text("Profile")
+                    Image(systemName: "door.right.hand.closed")
+                    Text("Your Door")
                 }
-            NavigationStack {
-                OrderView()
-            }
-                .tabItem{
-                    Image(systemName: "cart")
-                    Text("Order")
-                }
+            
             NavigationStack {
                 MessageView()
             }
@@ -34,6 +28,23 @@ struct TabBarView: View {
                     Image(systemName: "paperplane")
                     Text("Message")
                 }
+            
+            NavigationStack {
+                OrderView()
+            }
+                .tabItem{
+                    Image(systemName: "cart")
+                    Text("Order")
+                }
+            
+            NavigationStack {
+                ProfileView(showSignInView: $showSignInView)
+            }
+                .tabItem{
+                    Image(systemName: "person")
+                    Text("Profile")
+                }
+            
             NavigationStack {
                 SettingsView(showSignInView: $showSignInView)
             }

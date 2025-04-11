@@ -32,7 +32,7 @@ class Message: Codable, Identifiable, Hashable, ObservableObject {
     var senderFavorite: Bool
     var dateCreated: Date
     var isSent: Bool
-    var dateSent: Date?
+    var dateSent: Date
 
     var messageOpenedStatus: String
     var messageDateOpened: Date?
@@ -60,5 +60,26 @@ class Message: Codable, Identifiable, Hashable, ObservableObject {
         self.receiverFavorite = false
         self.receiverDeleted = false
 
+    }
+    
+    init(messageId: String)
+    {
+        self.messageId = messageId
+        self.from = ""
+        self.senderId = ""
+        self.to = ""
+        self.receiverId = ""
+        self.message = ""
+        self.messageFont = ""
+        self.senderFavorite = false
+        self.dateCreated = Date()
+        self.isSent = false
+        self.dateSent = Date()
+
+        self.messageOpenedStatus = ""
+        self.messageDateOpened = Date()
+        self.receiverFavorite = false
+        self.receiverDeleted = false
+        
     }
 }

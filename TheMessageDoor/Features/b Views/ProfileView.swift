@@ -10,6 +10,7 @@ import SwiftUI
 struct ProfileView: View {
 
     @StateObject private var pVM = ProfileViewModel()
+    @StateObject private var mVM = MessageViewModel()
     @StateObject private var fonts = Fonts()
 
     @Binding var showSignInView: Bool
@@ -40,7 +41,7 @@ struct ProfileView: View {
                                 TextField(
                                     "First", text: $pVM.currentUserFirstName
                                 )
-                                .focused($isFocused)
+//                                .focused($isFocused)
                                 .padding(.horizontal)
                                 .multilineTextAlignment(.center)
                                 .frame(
@@ -164,20 +165,26 @@ struct ProfileView: View {
                     .font(.headline)
                     .foregroundColor(.tmdText)
                 HStack {
-                    Text("Messages Sent: 100")
+                    Text("Total Messages: \(mVM.myTotalMessages)")
+                        .font(.subheadline)
+                        .foregroundColor(.tmdText)
+                    Image(systemName: "sum")
+                }
+                HStack {
+                    Text("Messages Sent: \(mVM.mySentMessages)")
                         .font(.subheadline)
                         .foregroundColor(.tmdText)
                     Image(systemName: "paperplane")
                 }
                 HStack {
-                    Text("My Favorite Messages: 7")
+                    Text("My Favorite Messages: \(mVM.myFavMessages)")
                         .font(.subheadline)
                         .foregroundColor(.tmdText)
                     Image(systemName: "heart.fill")
                         .foregroundColor(.red)
                 }
                 HStack {
-                    Text("Recipient's Favorite Messages: 5")
+                    Text("Recipient's Favorite Messages: \(mVM.receiverFavMessages)")
                         .font(.subheadline)
                         .foregroundColor(.tmdText)
                     Image(systemName: "heart.fill")
