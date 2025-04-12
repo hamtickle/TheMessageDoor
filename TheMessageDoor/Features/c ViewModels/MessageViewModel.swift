@@ -117,9 +117,17 @@ class MessageViewModel: ObservableObject {
     func fetchSenderMessages(senderId: String) async  {
         
         let displayMessges = try? await MessageManager.shared.getMessages(senderId: senderId)
+   
         self.displayMessages = displayMessges ?? []
+        sortMessagesByDate()
         
         buildSenderStats()
+    }
+    
+    func sortMessagesByDate() {
+        displayMessages.sort { (message1, message2) -> Bool in
+            return message1.dateCreated > message2.dateCreated
+        }
     }
     
     func buildSenderStats() {

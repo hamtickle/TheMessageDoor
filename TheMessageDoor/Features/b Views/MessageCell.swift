@@ -26,7 +26,7 @@ struct MessageCell: View {
             // Rectangle
             ZStack {
                 Rectangle()
-                    .fill(message.isSent ? Color(#colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)) : Color.white)
+                    .fill(message.isSent ? Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)) : Color.white)
                     .frame(width: 270, height: 110)
                     .shadow(color: Color.gray, radius: 10, x: 10, y: 10)
                 HStack {
@@ -48,7 +48,7 @@ struct MessageCell: View {
                                 .foregroundColor(Color.black)
                             
                             Text(
-                                message.dateSent,
+                                message.dateCreated,
                                 format: Date.FormatStyle(date: .numeric)
                                 )
                                 .font(.caption)
@@ -63,6 +63,16 @@ struct MessageCell: View {
                             Text(message.isSent ? "Sent" : "Saved")
                                 .font(.caption)
                                 .foregroundColor(Color.black)
+                            if message.isSent {
+                                Text(message.dateSent,
+                                format: Date.FormatStyle(date: .numeric))
+                                    .font(.caption)
+                                    .foregroundColor(Color.black)
+                                Image(systemName: "paperplane")
+                                    .foregroundColor(Color.blue)
+                                    .font(.caption)
+                            }
+                            
                         }
                         Text(message.messageId)
                             .font(.caption2)
@@ -87,14 +97,13 @@ struct MessageCell: View {
                         Text(message.isSent ? message.messageOpenedStatus : "")
                             .font(.caption)
                             .foregroundColor(Color.black)
-                        Text(message.isSent ? "3/25/2025" : "")
-                            .font(.caption)
-                            .foregroundColor(Color.black)
+                        
                         Spacer()
                     }
 
                 }
-                .padding()
+                .padding(.horizontal)
+                .padding(.vertical, -10)
 
             }
         }

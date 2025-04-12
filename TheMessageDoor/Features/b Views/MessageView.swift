@@ -12,6 +12,7 @@ struct MessageView: View {
     @StateObject private var oVM = OrderViewModel()
     @StateObject private var mVM = MessageViewModel()
     @StateObject private var fonts = Fonts()
+    @Environment(\.colorScheme) var colorScheme
     
 //    @Binding var isFavorite: Bool
     @State var fontList: [String] = []
@@ -62,10 +63,14 @@ struct MessageView: View {
                 
            //     ShowNote()
                 ZStack{
-                    Rectangle()
-                        .fill(Color(.yellow))
-                        .frame(width: 350, height: 305)
-                        .shadow(color: Color.black, radius: 10, x: 10, y: 10 )
+                    
+                        Rectangle()
+                            .fill(Color(.yellow))
+                            .frame(width: 350, height: 305)
+                            .shadow(color: colorScheme == .dark ? Color.gray : Color.black,
+                                    radius: 10, x: 10, y: 10 )
+                   
+                    
                     VStack(alignment: .trailing)  {
                         Rectangle()
                             .fill(Color(.yellow))
@@ -127,35 +132,40 @@ struct MessageView: View {
                 }) {
                     Text("Save Message")
                         .frame(width: 200, height: 40)
-                        .background(Color.blue)
-                        .foregroundColor(.white)
+                        .background(Color.white)
+                        .foregroundColor(.black)
+                        .border(Color.blue, width: 2)
                         .padding(.horizontal)
                         .cornerRadius(10)
                         .padding(.vertical, 5)
                     
                 }
                 
-                // Send Message
-    //            if mVM.selectMessage.isSent {}
-    //            else {
+          //       Send Message
+
                     Button(action: {
-    //                    mVM.updateMessage(
-    //                        xid: mVM.selectMessage.id,
-    //                        xmessage: mVM.selectMessage.message,
-    //                        xisFavorite: mVM.selectMessage.isFavorite,
-    //                        xisSent: true,
-    //                        xmessageFont: mVM.selectMessage.messageFont)
+                    mVM.createMessage(
+                        messageId: UUID().uuidString,
+                        from: pVM.currentUserFirstName,
+                        senderId: pVM.currentUserId,
+                        to: pVM.currentReceiverEmail,
+                        receiverId: pVM.currentReceiverId,
+                        message: mVM.currentMessage,
+                        dateSent: Date(),
+                        senderFavorite: mVM.currentSenderFavorite,
+                        isSent: true,
+                        messageFont: mVM.messageFont)
                         
                     }) {
                         Text("Send Message")
                             .frame(width: 200, height: 40)
-                            .background(Color.yellow)
-                            .foregroundColor(.black)
+                            .background(Color.blue)
+                            .foregroundColor(.white)
                             .padding(.horizontal)
                             .cornerRadius(10)
                             .padding(.vertical, 5)
                     }
-    //            }
+ 
 
                 Spacer()
                 
@@ -167,6 +177,7 @@ struct MessageView: View {
             Task {
                 try? await pVM.loadCurrentUser()
                 try? await oVM.getReceivers(senderId: pVM.currentUserId)
+                receiverList.removeAll()
                 receiverList.append(contentsOf: oVM.receiverList)
                 fontList.removeAll()
                 fontList.append(contentsOf: fonts.fonts)

@@ -37,8 +37,8 @@ struct MessageListView: View {
                     HStack {
                         MessageCell(message: message)
                             .frame(width: 300)
-                            .padding(.vertical, 0)
-                            .padding(.horizontal, 20)
+//                            .padding(.vertical, 0)
+//                            .padding(.horizontal, 20)
                     }
                 }
             }
