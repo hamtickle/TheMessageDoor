@@ -81,5 +81,13 @@ final class OrderManager {
         }
         return (receiverList, receiverData)
     }
+    
+    func deleteSenderOrder(orderId: String) async throws {
+        
+        let querySnapshot = try await orderCollection.whereField("order_Id", isEqualTo: orderId).getDocuments()
+        for document in querySnapshot.documents {
+            try await document.reference.delete()
+        }
+    }
 
 }

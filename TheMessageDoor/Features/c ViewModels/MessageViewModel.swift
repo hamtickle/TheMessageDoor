@@ -114,6 +114,16 @@ class MessageViewModel: ObservableObject {
         }
     }
     
+    func fetchReceiverMessages(receiverId: String) async  {
+        
+        let displayMessges = try? await MessageManager.shared.getReceiverMessages(receiverId: receiverId)
+   
+        self.displayMessages = displayMessges ?? []
+        sortMessagesByDate()
+        
+        buildSenderStats()
+    }
+    
     func fetchSenderMessages(senderId: String) async  {
         
         let displayMessges = try? await MessageManager.shared.getMessages(senderId: senderId)
@@ -160,5 +170,6 @@ class MessageViewModel: ObservableObject {
         self.currentReceiverFavorite = specificMessage?.receiverFavorite ?? false
         self.currentReceiverDeleted = specificMessage?.receiverDeleted ?? false
     }
+    
     
 }

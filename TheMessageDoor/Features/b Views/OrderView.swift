@@ -152,20 +152,28 @@ struct OrderView: View {
             }
 
             Button(action: {
+                
+                
                 // Add Recipient
                 if oVM.selectedReceiverEmail == "New Recipient" {
                     let receiverId = UUID().uuidString
                     pVM.currentReceiverId = receiverId
 
-                    pVM.createReceiver(
-                        userId: receiverId,
-                        email: pVM.currentReceiverEmail,
-                        firstName: pVM.currentReceiverFirst,
-                        lastName: pVM.currentReceiverLast,
-                        myFont: "Arial",
-                        mySignature: "no signature on file"
+                   do {
+                        Task {
+                            try await pVM.createReceiver(
+                                userId: receiverId,
+                                email: pVM.currentReceiverEmail,
+                                firstName: pVM.currentReceiverFirst,
+                                lastName: pVM.currentReceiverLast,
+                                myFont: "Arial",
+                                mySignature: "no signature on file"
 
-                    )
+                            )
+                       }
+                    }
+                    
+              
 
                 }  // end if new receiver
 
@@ -233,7 +241,7 @@ struct OrderView: View {
             }
         )
 
-        .padding(.bottom, 100)
+//        .padding(.bottom, 100)
         .navigationTitle(Text("Create Order"))
     }
 }

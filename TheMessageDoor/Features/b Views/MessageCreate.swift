@@ -59,7 +59,7 @@ struct MessageView: View {
                     
                 Toggle("Favorite?", isOn: $mVM.currentSenderFavorite)
                     .foregroundColor(.blue)
-                    .padding(.bottom, 20)
+                    .padding(.bottom, 10)
                 
            //     ShowNote()
                 ZStack{
@@ -74,14 +74,15 @@ struct MessageView: View {
                     VStack(alignment: .trailing)  {
                         Rectangle()
                             .fill(Color(.yellow))
-                            .frame(width: 300, height: 20)
+                            .frame(width: 350, height: 20)
     //                    Text("message")
                         TextEditor(text: $mVM.currentMessage)
                             .font(.custom(mVM.messageFont, size: 25))
                             .foregroundColor(.black)
+                            .padding(.horizontal, 10)
                             .multilineTextAlignment(.center)
                             .scrollContentBackground(.hidden)
-                            .frame(width: 310, height: 190)
+                            .frame(width: 350, height: 190)
                             .background(Color(.yellow))
                         Image(_:"signature no background")
                             .resizable( )
@@ -207,7 +208,7 @@ struct MessageView: View {
         .onTapGesture {
             self.endTextEditing()
         }
-        .padding(.bottom, 100)
+//        .padding(.bottom, 100)
         .navigationTitle(Text("Create Message"))
     }
 }

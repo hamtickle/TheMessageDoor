@@ -53,6 +53,7 @@ struct TabBarView: View {
                     Text("Settings")
                 }
         }
+  
        
     }
 }

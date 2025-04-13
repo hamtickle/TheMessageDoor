@@ -37,6 +37,20 @@ final class MessageManager {
             from: message, merge: true, encoder: encoder)
     }
     
+    func getReceiverMessages(receiverId: String) async throws -> [Message] {
+        var messageList: [Message] = []
+        let query = messageCollection.whereField("receiver_id", isEqualTo: receiverId)
+        
+        do {
+            let querySnapshot = try await query.getDocuments()
+            for document in querySnapshot.documents  {
+                let message = try document.data(as: Message.self, decoder: decoder)
+                messageList.append(message)
+            }
+        }
+        return messageList
+    }
+    
     func getMessages(senderId: String) async throws -> [Message] {
         var messageList: [Message] = []
         let query = messageCollection.whereField("sender_id", isEqualTo: senderId)
@@ -64,4 +78,13 @@ final class MessageManager {
         }
         return message
     }
+    
+    func deleteSenderMessage(messageId: String) async throws {
+        
+        let querySnapshot = try await messageCollection.whereField("message_Id", isEqualTo: messageId).getDocuments()
+        for document in querySnapshot.documents {
+            try await document.reference.delete()
+        }
+    }
+    
 }

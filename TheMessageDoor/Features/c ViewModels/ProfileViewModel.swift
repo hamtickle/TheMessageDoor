@@ -58,15 +58,23 @@ final class ProfileViewModel: ObservableObject {
     }
 
     
-    func createReceiver(userId: String, email: String, firstName: String, lastName: String, myFont: String, mySignature: String) {
+    func createReceiver(userId: String, email: String, firstName: String, lastName: String, myFont: String, mySignature: String) async throws {
         
-        let receiverUser = Profile(userId: userId, email: email, photoUrl: "no photo on file", dateCreated: Date(), firstName: firstName, lastName: lastName, myFont: myFont, mySignature: mySignature  )
+        // check receiver is not already registered
         
-        Task {
-            try await UserManager.shared.updateUser(user: receiverUser)
-            //          self.user = try await UserManager.shared.getUser(userId: userId)
-            updateSuccessful.toggle()
+        try await getReceiver(email: email)
+        
+        if UserManager.shared.newUser {
+            let receiverUser = Profile(userId: userId, email: email, photoUrl: "no photo on file", dateCreated: Date(), firstName: firstName, lastName: lastName, myFont: myFont, mySignature: mySignature  )
+            
+            Task {
+                try await UserManager.shared.updateUser(user: receiverUser)
+                //          self.user = try await UserManager.shared.getUser(userId: userId)
+                updateSuccessful.toggle()
+            }
         }
+        
+        
     }
     
     func updateUser(email: String, firstName: String, lastName: String, myFont: String, mySignature: String) {

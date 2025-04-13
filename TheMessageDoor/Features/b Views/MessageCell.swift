@@ -11,6 +11,7 @@ struct MessageCell: View {
 
     @EnvironmentObject var mVM: MessageViewModel
     @State var message: Message
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
 
@@ -26,14 +27,14 @@ struct MessageCell: View {
             // Rectangle
             ZStack {
                 Rectangle()
-                    .fill(message.isSent ? Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)) : Color.white)
-                    .frame(width: 270, height: 110)
-                    .shadow(color: Color.gray, radius: 10, x: 10, y: 10)
+                    .fill(!message.isSent ? Color(#colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1)) : Color.white)
+                    .frame(width: 280, height: 110)
+                    .shadow(color: message.isSent ? Color.white : Color.gray, radius: 5, x: 5, y: 5)
                 HStack {
 
                     VStack(alignment: .leading) {
                         Text(message.message)
-                            .foregroundColor(Color.blue)
+                            .foregroundColor(!message.isSent ? Color.white :Color.blue)
                             .font(.caption)
                             .lineLimit(1)
                             .bold()
@@ -69,14 +70,15 @@ struct MessageCell: View {
                                     .font(.caption)
                                     .foregroundColor(Color.black)
                                 Image(systemName: "paperplane")
+                                    .resizable()
+                                    .frame(width: 10, height: 10)
                                     .foregroundColor(Color.blue)
-                                    .font(.caption)
                             }
                             
                         }
-                        Text(message.messageId)
-                            .font(.caption2)
-                            .foregroundColor(Color.black)
+//                        Text(message.messageId)
+//                            .font(.caption2)
+//                            .foregroundColor(Color.black)
 
                     }
                     Spacer()
@@ -86,14 +88,28 @@ struct MessageCell: View {
                         if message.senderFavorite {
                             Image(systemName: "heart.fill")
                                 .foregroundColor(.red)
+                                .font(.caption)
+                                .padding(.bottom, 5)
                         } else {
                             Image(systemName: "heart")
+                            .font(.caption)
+                            .foregroundColor(colorScheme == .dark ? Color.gray : Color.black)
+                            .padding(.bottom, 5)
                         }
+                          
+                       
                         if message.receiverFavorite {
                             Image(systemName: "heart.fill")
                                 .foregroundColor(.blue)
+                                .font(.caption)
+                                .padding(.bottom, 10)
+                        } else {
+                            Image(systemName: "heart")
+                            .font(.caption)
+                            .foregroundColor(colorScheme == .dark ? Color.gray : Color.black)
+                            .padding(.bottom, 5)
                         }
-                        Spacer()
+                        
                         Text(message.isSent ? message.messageOpenedStatus : "")
                             .font(.caption)
                             .foregroundColor(Color.black)
@@ -104,6 +120,7 @@ struct MessageCell: View {
                 }
                 .padding(.horizontal)
                 .padding(.vertical, -10)
+                .frame(width: 280, height: 100)
 
             }
         }
