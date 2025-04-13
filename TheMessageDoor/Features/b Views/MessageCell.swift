@@ -93,7 +93,7 @@ struct MessageCell: View {
                         } else {
                             Image(systemName: "heart")
                             .font(.caption)
-                            .foregroundColor(colorScheme == .dark ? Color.gray : Color.black)
+                            .foregroundColor(colorScheme == .dark ? Color.white : Color.black)
                             .padding(.bottom, 5)
                         }
                           
@@ -106,7 +106,7 @@ struct MessageCell: View {
                         } else {
                             Image(systemName: "heart")
                             .font(.caption)
-                            .foregroundColor(colorScheme == .dark ? Color.gray : Color.black)
+                            .foregroundColor(colorScheme == .dark ? Color.white : Color.black)
                             .padding(.bottom, 5)
                         }
                         
