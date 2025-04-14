@@ -39,27 +39,36 @@ final class UserManager {
     }
 
     func getUser(userId: String) async throws -> Profile {
-
             try await userDocument(userId: userId).getDocument(
                 as: Profile.self, decoder: decoder)
     }
 
     func updateUser(user: Profile) async throws {
-        try userDocument(userId: user.userId).setData(
-            from: user, merge: true, encoder: encoder)
+        do {
+            try userDocument(userId: user.userId).setData(
+                from: user, merge: true, encoder: encoder)
+        }
+        catch {
+            print("Error updating user: \(error)")
+        }
     }
     
     func getUserWithEmail(email: String) async throws -> Profile? {
 
         let query = userCollection.whereField("email", isEqualTo: email)
+        
         do {
             let querySnapshot = try await query.getDocuments()
+
             for document in querySnapshot.documents  {
                 let _currentReceiver = try document.data(as: Profile.self, decoder: decoder)
                 currentReceiver = _currentReceiver
             }
+        } catch {
+            // no User with that email exists
+            print("No User with \(email) exists.")
+            newUser = true
         }
-
         return currentReceiver
     }
 

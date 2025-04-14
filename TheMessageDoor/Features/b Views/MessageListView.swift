@@ -13,6 +13,7 @@ struct MessageListView: View {
     @StateObject private var pVM = ProfileViewModel()
 
     @State private var messageFilter = 0
+    @State var sender: Bool = true
 
     var body: some View {
 
@@ -24,7 +25,7 @@ struct MessageListView: View {
                 .padding(.top, 30)
 
             Picker("Filter", selection: $messageFilter) {
-                Text("Sent Messages").tag(0)
+                Text("My Messages").tag(0)
                 Text("Received Messages").tag(1)
             }
             .pickerStyle(.segmented)
@@ -33,16 +34,34 @@ struct MessageListView: View {
             // The List
 
             List(mVM.displayMessages) { message in
-                NavigationLink(destination: MessageDetail(messageId: message.messageId)) {
+                NavigationLink(destination: MessageDetail(message: message, sender: sender)) {
                     HStack {
                         MessageCell(message: message)
                             .frame(width: 300)
-                            .padding(.vertical, 0)
+//                            .padding(.vertical, 0)
                             .padding(.horizontal, 20)
                     }
                 }
             }
             .listStyle(.plain)
+            .onChange(of: messageFilter) { newValue in
+                if newValue == 0 {
+                    do {
+                        Task {
+                            try? await mVM.fetchSenderMessages(
+                                senderId: pVM.currentUserId)
+                        }
+                        sender = true
+                    }
+                } else {
+                    do {
+                        Task {  try? await mVM.fetchReceiverMessages(
+                            receiverId: pVM.currentUserId)
+                        }
+                        sender = false
+                    }
+                }
+            }
             .onAppear {
 
                 do {

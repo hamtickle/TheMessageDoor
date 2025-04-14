@@ -11,9 +11,7 @@ struct OrderView: View {
     @StateObject private var pVM = ProfileViewModel()
     @StateObject private var oVM = OrderViewModel()
 
-    @State var receiverList: [String] = [
-        "New Recipient"
-    ]
+    @State var receiverList: [String] = [""]
 
     var newReceiver: Profile? = nil
 
@@ -104,15 +102,12 @@ struct OrderView: View {
                         .border(Color.blue, width: 2)
 
                         HStack {
-                            TextField(
-                                "recipient first:",
+                            TextField("recipient first:",
                                 text: $pVM.currentReceiverFirst
                             )
                             .padding(.horizontal)
                             .frame(width: 170, height: 50)
-                            .background(
-                                Color.white
-                            )
+                            .background(Color.white)
                             .foregroundColor(.black)
                             .cornerRadius(10)
                             .padding(.vertical, 5)
@@ -151,26 +146,34 @@ struct OrderView: View {
                     Text("Recipient's ID: \(pVM.currentReceiverId)")
                         .frame(maxWidth: .infinity, alignment: .center)
                         .font(.caption)
-                        .foregroundColor(.tmdText)
+                        .foregroundColor(.black)
                         .padding(.vertical, 2)
                 }
             }
 
             Button(action: {
+                
+                
                 // Add Recipient
                 if oVM.selectedReceiverEmail == "New Recipient" {
                     let receiverId = UUID().uuidString
                     pVM.currentReceiverId = receiverId
 
-                    pVM.createReceiver(
-                        userId: receiverId,
-                        email: pVM.currentReceiverEmail,
-                        firstName: pVM.currentReceiverFirst,
-                        lastName: pVM.currentReceiverLast,
-                        myFont: "Arial",
-                        mySignature: "no signature on file"
+                   do {
+                        Task {
+                            try await pVM.createReceiver(
+                                userId: receiverId,
+                                email: pVM.currentReceiverEmail,
+                                firstName: pVM.currentReceiverFirst,
+                                lastName: pVM.currentReceiverLast,
+                                myFont: "Arial",
+                                mySignature: "no signature on file"
 
-                    )
+                            )
+                       }
+                    }
+                    
+              
 
                 }  // end if new receiver
 
@@ -206,6 +209,8 @@ struct OrderView: View {
             Task {
                 try? await pVM.loadCurrentUser()
                 try? await oVM.getReceivers(senderId: pVM.currentUserId)
+                receiverList.removeAll()
+                receiverList.append("New Recipient")
                 receiverList.append(contentsOf: oVM.receiverList)
 
             }
@@ -236,7 +241,7 @@ struct OrderView: View {
             }
         )
 
-        .padding(.bottom, 100)
+//        .padding(.bottom, 100)
         .navigationTitle(Text("Create Order"))
     }
 }
