@@ -30,6 +30,7 @@ class MessageViewModel: ObservableObject {
     @Published var mySentMessages: Int = 0
     @Published var myFavMessages: Int = 0
     @Published var receiverFavMessages: Int = 0
+
     
     @Published var displayMessages: [Message] = []
     @Published var specificMessage: Message? = nil
@@ -150,6 +151,7 @@ class MessageViewModel: ObservableObject {
         self.myFavMessages = myFavMessages
         self.mySentMessages = mySentMessages
         self.receiverFavMessages = receiverFavMessages
+        
     }
     
     func getSpecificMessage(messageId: String) async throws {

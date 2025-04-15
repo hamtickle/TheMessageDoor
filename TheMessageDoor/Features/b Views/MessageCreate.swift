@@ -20,15 +20,18 @@ struct MessageView: View {
     @State var receiverList: [String] = []
 
     var body: some View {
+        
+        Text("Create Message")
+            .font(.system(size: 34, weight: .bold))
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 10)
+            .padding(.top, 10)
+        
         ScrollView {
             VStack  {
                 Spacer()
 
-                Text("Create Message")
-                    .font(.system(size: 34, weight: .bold))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, -20)
-                    .padding(.top, 30)
+                
                 
                 HStack{
                     Text("Sender:")

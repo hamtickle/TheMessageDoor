@@ -30,7 +30,7 @@ struct TabBarView: View {
                 }
             
             NavigationStack {
-                OrderView()
+                OrderListView()
             }
                 .tabItem{
                     Image(systemName: "cart")

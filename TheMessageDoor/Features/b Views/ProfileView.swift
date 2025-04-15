@@ -10,7 +10,7 @@ import SwiftUI
 struct ProfileView: View {
 
     @StateObject private var pVM = ProfileViewModel()
-    @StateObject private var mVM = MessageViewModel()
+    @StateObject var mVM = MessageViewModel()
     @StateObject private var fonts = Fonts()
 
     @Binding var showSignInView: Bool
@@ -27,7 +27,8 @@ struct ProfileView: View {
             .font(.system(size: 34, weight: .bold))
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal)
-            .padding(.top, 20)
+            .padding(.top, 10)
+        
         VStack(alignment: .center) {
 //            Spacer()
             
@@ -152,7 +153,7 @@ struct ProfileView: View {
                 } label: {
                     Text("Update Profile")
                 }
-                .frame(width: 300, height: 50)
+                .frame(width: 200, height: 50)
                 .background(Color.blue)
                 .foregroundColor(.white)
                 .padding()
@@ -197,20 +198,21 @@ struct ProfileView: View {
         }
         .navigationTitle("Your Profile")
         
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                NavigationLink {
-                    SettingsView(showSignInView: $showSignInView)
-                } label: {
-                    Image(systemName: "gear")
-                        .font(.headline)
-                }
-            }
-        }
+//        .toolbar {
+//            ToolbarItem(placement: .navigationBarTrailing) {
+//                NavigationLink {
+//                    SettingsView(showSignInView: $showSignInView)
+//                } label: {
+//                    Image(systemName: "gear")
+//                        .font(.headline)
+//                }
+//            }
+//        }
         .task {
             try? await pVM.loadCurrentUser()
+            try? await mVM.fetchSenderMessages(senderId: pVM.currentUserId)
         }
-        .frame(maxWidth: .infinity, alignment: .center)
+//        .frame(maxWidth: .infinity, alignment: .center)
         
         
         .alert(
@@ -228,6 +230,7 @@ struct ProfileView: View {
                 fontList.removeAll()
                 fontList.append(contentsOf: fonts.fonts)
             }
+           
         }
     }
 

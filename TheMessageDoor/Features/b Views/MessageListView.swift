@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MessageListView: View {
 
-    @StateObject private var mVM = MessageViewModel()
+    @StateObject var mVM = MessageViewModel()
     @StateObject private var pVM = ProfileViewModel()
 
     @State private var messageFilter = 0
@@ -23,6 +23,7 @@ struct MessageListView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal)
                 .padding(.top, 30)
+            Text("Total Messages: \(mVM.myTotalMessages)")
 
             Picker("Filter", selection: $messageFilter) {
                 Text("My Messages").tag(0)
