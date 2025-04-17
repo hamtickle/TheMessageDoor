@@ -9,8 +9,10 @@ import SwiftUI
 
 struct MessageDetail: View {
 
-    @StateObject private var mVM = MessageViewModel()
-    @StateObject private var pVM = ProfileViewModel()
+    @StateObject var pVM : ProfileViewModel
+    @StateObject var mVM : MessageViewModel
+ 
+    
     @StateObject private var fonts = Fonts()
     @Environment(\.colorScheme) var colorScheme
 
@@ -153,9 +155,6 @@ struct MessageDetail: View {
                                         colorScheme == .dark ? .white : .black
                                     )
                                     .font(.caption)
-                                //                            Text(message.messageDateOpened ?? "N/A",
-                                //                                 format: Date.FormatStyle(date: .numeric))
-                                //                                .foregroundColor(.black)
                             }
                             HStack {
                                 Text("Recipient Favorite?:")
@@ -293,12 +292,8 @@ struct MessageDetail: View {
 
         .onAppear {
             Task {
-                //                try? await pVM.loadCurrentUser()
-                //                try? await mVM.getSpecificMessage(messageId: messageId)
                 fontList.removeAll()
                 fontList.append(contentsOf: fonts.fonts)
-                //        mVM.messageFont = mVM.currentMessageFont
-
             }
         }
         //        .onChange(of: oVM.selectedReceiverEmail) {
@@ -323,6 +318,7 @@ struct MessageDetail: View {
 
         .padding(.bottom, 10)
         .navigationTitle(Text(""))
+        
     }
 }
 
@@ -333,5 +329,6 @@ struct MessageDetail: View {
 //
 //        MessageDetail(message: message)
 //    }
+//    .environmentObject(ProfileViewModel())
 //
 //}

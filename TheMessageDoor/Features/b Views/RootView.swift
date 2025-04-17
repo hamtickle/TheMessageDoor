@@ -9,6 +9,10 @@ import SwiftUI
 
 struct RootView: View {
 
+    @StateObject var pVM = ProfileViewModel()
+    @StateObject var mVM = MessageViewModel()
+    @StateObject var oVM = OrderViewModel()
+    
     @State private var showSignInView: Bool = false
 
 
@@ -28,6 +32,7 @@ struct RootView: View {
                 AuthenticationView(showSignInView: $showSignInView)
             }
         }
+        
     }
 }
 

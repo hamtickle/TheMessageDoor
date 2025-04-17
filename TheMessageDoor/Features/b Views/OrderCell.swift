@@ -9,7 +9,6 @@ import SwiftUI
 
 struct OrderCell: View {
 
-    @StateObject var oVM = OrderViewModel()
 
     @State var order: Order
     @Environment(\.colorScheme) var colorScheme
@@ -61,11 +60,15 @@ struct OrderCell: View {
             .padding(.horizontal, 30)
         }
 
+
     }
 }
 
-#Preview {
-    var order: Order!
-
-    OrderCell(order: order)
-}
+//#Preview {
+//    var order: Order!
+//    NavigationStack    {
+//        
+//        OrderCell(order: .init())
+//    }
+//    .environmentObject(ProfileViewModel())
+//}

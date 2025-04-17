@@ -8,56 +8,69 @@
 import SwiftUI
 
 struct TabBarView: View {
-    
+
+    @StateObject var pVM = ProfileViewModel()
+    @StateObject var mVM = MessageViewModel()
+    @StateObject var oVM = OrderViewModel()
+
     @Binding var showSignInView: Bool
-    
+
     var body: some View {
         TabView {
             NavigationStack {
-                MessageListView()
+                MessageListView(pVM: pVM, mVM: mVM)
             }
-                .tabItem{
-                    Image(systemName: "door.right.hand.closed")
-                    Text("Your Door")
-                }
-            
+
+            .tabItem {
+                Image(systemName: "door.right.hand.closed")
+                Text("Your Door")
+            }
+
             NavigationStack {
-                MessageView()
+                MessageView(pVM: pVM, mVM: mVM, oVM: oVM)
+
             }
-                .tabItem{
-                    Image(systemName: "paperplane")
-                    Text("Message")
-                }
-            
+
+            .tabItem {
+                Image(systemName: "paperplane")
+                Text("Message")
+            }
+
             NavigationStack {
-                OrderListView()
+                OrderListView(pVM: pVM)
+
             }
-                .tabItem{
-                    Image(systemName: "cart")
-                    Text("Order")
-                }
-            
+
+            .tabItem {
+                Image(systemName: "cart")
+                Text("Order")
+            }
+
             NavigationStack {
-                ProfileView(showSignInView: $showSignInView)
+                AchievementsView()
             }
-                .tabItem{
-                    Image(systemName: "person")
-                    Text("Profile")
-                }
-            
+
+            .tabItem {
+                Image(systemName: "trophy")
+                Text("Achievments")
+            }
+
             NavigationStack {
-                SettingsView(showSignInView: $showSignInView)
+                ProfileView(pVM: pVM, mVM: mVM, showSignInView: $showSignInView)
+
             }
-                .tabItem{
-                    Image(systemName: "gear")
-                    Text("Settings")
-                }
+
+            .tabItem {
+                Image(systemName: "person")
+                Text("Profile")
+            }
+
         }
-  
-       
+
     }
 }
 
 #Preview {
     TabBarView(showSignInView: .constant(false))
+
 }

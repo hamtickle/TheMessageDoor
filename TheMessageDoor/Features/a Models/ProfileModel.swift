@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import FirebaseFirestore
+//import FirebaseFirestore
 
 struct Profile: Codable {
     let userId : String

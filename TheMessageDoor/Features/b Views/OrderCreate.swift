@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct OrderCreate: View {
-    @StateObject private var pVM = ProfileViewModel()
-    @StateObject private var oVM = OrderViewModel()
+    
+    @StateObject var pVM : ProfileViewModel
+    @StateObject var oVM : OrderViewModel
 
     @State var receiverList: [String] = [""]
 
@@ -102,8 +103,9 @@ struct OrderCreate: View {
                         .border(Color.blue, width: 2)
 
                         HStack {
-                            TextField("recipient first:",
-                                text: $pVM.currentReceiverFirst
+                            TextField("",
+                                      text: $pVM.currentReceiverFirst,
+                                      prompt: Text("first name...").foregroundColor(.gray).font(.body)
                             )
                             .padding(.horizontal)
                             .frame(width: 170, height: 50)
@@ -114,7 +116,8 @@ struct OrderCreate: View {
 
                             TextField(
                                 "recipient last:",
-                                text: $pVM.currentReceiverLast
+                                text: $pVM.currentReceiverLast,
+                                prompt: Text("last name...").foregroundColor(.gray).font(.body)
                             )
                             .padding(.horizontal)
                             .frame(width: 170, height: 50)
@@ -128,7 +131,8 @@ struct OrderCreate: View {
                         }
 
                         TextField(
-                            "recipient email:", text: $pVM.currentReceiverEmail
+                            "recipient email:", text: $pVM.currentReceiverEmail,
+                            prompt: Text("email...").foregroundColor(.gray).font(.body)
                         )
                         .textInputAutocapitalization(.never)
                         .padding(.horizontal)
@@ -207,7 +211,6 @@ struct OrderCreate: View {
 
         .onAppear {
             Task {
-                try? await pVM.loadCurrentUser()
                 try? await oVM.getReceivers(senderId: pVM.currentUserId)
                 receiverList.removeAll()
                 receiverList.append("New Recipient")
@@ -241,15 +244,17 @@ struct OrderCreate: View {
             }
         )
 
-//        .padding(.bottom, 100)
+
         .navigationTitle(Text("Create Order"))
+        
+
     }
 }
 
 #Preview {
 
     NavigationStack {
-        OrderCreate()
+        OrderCreate(pVM: ProfileViewModel(), oVM: OrderViewModel())
     }
 
 }

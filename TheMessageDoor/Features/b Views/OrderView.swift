@@ -9,8 +9,8 @@ import SwiftUI
 
 struct OrderView: View {
     
-    @StateObject private var pVM = ProfileViewModel()
-    @StateObject private var oVM = OrderViewModel()
+    @StateObject var pVM : ProfileViewModel
+    @StateObject var oVM : OrderViewModel
 
     var order: Order
 
@@ -143,13 +143,6 @@ struct OrderView: View {
                 Spacer()
             }
 
-            .onAppear {
-                Task {
-                    try? await pVM.loadCurrentUser()
-
-                }
-            }
-//
         
             .alert(
                 isPresented: $oVM.updateOrderSuccessful,
@@ -161,6 +154,7 @@ struct OrderView: View {
                 }
             )
 
+
     }
 }
 
@@ -170,5 +164,6 @@ struct OrderView: View {
 //    NavigationStack {
 //        OrderView(order: order)
 //    }
-//  
+//    .environmentObject(ProfileViewModel())
+//
 //}

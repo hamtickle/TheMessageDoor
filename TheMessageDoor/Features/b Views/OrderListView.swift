@@ -9,9 +9,10 @@ import SwiftUI
 
 struct OrderListView: View {
 
-    @StateObject private var oVM = OrderViewModel()
-    @StateObject private var pVM = ProfileViewModel()
-    
+    @StateObject var pVM : ProfileViewModel
+    @StateObject var oVM = OrderViewModel()
+   
+
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
@@ -24,11 +25,11 @@ struct OrderListView: View {
                     .padding(.horizontal)
 
                 NavigationLink{
-                    OrderCreate()
+                    OrderCreate(pVM: pVM, oVM: oVM)
                 } label: {
                     Image(systemName: "cart")
-                        .font(.system(size: 34))
-                        .foregroundColor(colorScheme == .dark ? Color.white : Color.black)
+                        .font(.system(size: 20))
+                        .foregroundColor(colorScheme == .dark ? Color.blue : Color.blue)
                         .padding(.trailing, 10)
                 }
                 
@@ -38,7 +39,7 @@ struct OrderListView: View {
             
             
             List(oVM.orderList, id: \.orderId) { order in
-                NavigationLink(destination: OrderView(order: order)) {
+                NavigationLink(destination: OrderView(pVM: pVM, oVM: oVM, order: order)) {
 
                     HStack(alignment: .top) {
                         OrderCell(order: order)
@@ -55,7 +56,6 @@ struct OrderListView: View {
 
             do {
                 Task {
-                    try? await pVM.loadCurrentUser()
                     try await oVM.fetchSenderOrders(
                         senderId: pVM.currentUserId)
                 }
@@ -67,6 +67,7 @@ struct OrderListView: View {
 
 #Preview {
     NavigationStack {
-        OrderListView()
+        OrderListView(pVM: ProfileViewModel())
     }
+   
 }

@@ -8,8 +8,7 @@
 import SwiftUI
 
 struct MessageCell: View {
-
-    @EnvironmentObject var mVM: MessageViewModel
+    
     @State var message: Message
     @Environment(\.colorScheme) var colorScheme
 
@@ -125,6 +124,7 @@ struct MessageCell: View {
             }
         }
         .padding(.horizontal, 30)
+
     }
         
 }

@@ -9,8 +9,10 @@ import SwiftUI
 
 struct ProfileView: View {
 
-    @StateObject private var pVM = ProfileViewModel()
-    @StateObject var mVM = MessageViewModel()
+    @StateObject var pVM : ProfileViewModel
+    @StateObject var mVM : MessageViewModel
+    @StateObject var oVM = OrderViewModel()
+    
     @StateObject private var fonts = Fonts()
 
     @Binding var showSignInView: Bool
@@ -23,11 +25,21 @@ struct ProfileView: View {
         
         Spacer()
         
-        Text("Your Profile")
-            .font(.system(size: 34, weight: .bold))
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal)
-            .padding(.top, 10)
+        HStack {
+            Text("Your Profile")
+                .font(.system(size: 34, weight: .bold))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal)
+                .padding(.top, 10)
+            
+            NavigationLink(destination: SettingsView(showSignInView: $showSignInView)) {
+                    Image(systemName: "gear")
+                    .font(.system(size: 20))
+                    .padding(.horizontal, 20)
+            }
+        }
+        
+        
         
         VStack(alignment: .center) {
 //            Spacer()
@@ -37,12 +49,12 @@ struct ProfileView: View {
 
                     VStack(alignment: .center) {
                         VStack(alignment: .center) {
-
+                            
                             HStack {
                                 TextField(
                                     "First", text: $pVM.currentUserFirstName
                                 )
-//                                .focused($isFocused)
+                                //                                .focused($isFocused)
                                 .padding(.horizontal)
                                 .multilineTextAlignment(.center)
                                 .frame(
@@ -52,7 +64,7 @@ struct ProfileView: View {
                                 .background(Color.white)
                                 .foregroundColor(.black)
                                 .padding(.vertical, 2)
-
+                                
                                 TextField(
                                     "First", text: $pVM.currentUserLastName
                                 )
@@ -70,7 +82,7 @@ struct ProfileView: View {
                                 .font(.caption)
                                 .foregroundColor(.tmdText)
                                 .padding(.vertical, 2)
-
+                            
                             HStack {
                                 Text("First Door Opened: ")
                                     .font(.caption)
@@ -83,7 +95,7 @@ struct ProfileView: View {
                                 .foregroundColor(.tmdText)
                                 .padding(.vertical, 2)
                             }
-
+                            
                             TextField("email", text: $pVM.currentUserEmail)
                                 .textInputAutocapitalization(.never)
                                 .multilineTextAlignment(.center)
@@ -95,12 +107,12 @@ struct ProfileView: View {
                                 .background(Color.white)
                                 .foregroundColor(.black)
                                 .padding(.vertical, 2)
-
+                            
                         }
-
+                        
                         HStack {
                             Text("My Font:")
-
+                            
                             Picker(
                                 "",
                                 selection: $pVM.currentUserMyFont
@@ -114,7 +126,7 @@ struct ProfileView: View {
                         }
                         .frame(width: 350, height: 75)
                         .border(Color.blue)
-
+                        
                         ZStack {
                             Rectangle()
                                 .fill(Color.yellow)
@@ -129,15 +141,10 @@ struct ProfileView: View {
                                 .multilineTextAlignment(.center)
                                 .frame(height: 100)
                                 .padding(.horizontal)
-
+                            
                         }
                     }
-
-                    
-
                 }
-
-//            } // List
             
             
             VStack(alignment: .center) {
@@ -197,24 +204,7 @@ struct ProfileView: View {
             
         }
         .navigationTitle("Your Profile")
-        
-//        .toolbar {
-//            ToolbarItem(placement: .navigationBarTrailing) {
-//                NavigationLink {
-//                    SettingsView(showSignInView: $showSignInView)
-//                } label: {
-//                    Image(systemName: "gear")
-//                        .font(.headline)
-//                }
-//            }
-//        }
-        .task {
-            try? await pVM.loadCurrentUser()
-            try? await mVM.fetchSenderMessages(senderId: pVM.currentUserId)
-        }
-//        .frame(maxWidth: .infinity, alignment: .center)
-        
-        
+
         .alert(
             isPresented: $updateSuccessful,
             content: {
@@ -232,6 +222,7 @@ struct ProfileView: View {
             }
            
         }
+
     }
 
 }
@@ -239,9 +230,10 @@ struct ProfileView: View {
 #Preview {
     NavigationStack {
 
-        ProfileView(showSignInView: .constant(false))
+        ProfileView(pVM: ProfileViewModel(), mVM: MessageViewModel(), showSignInView: .constant(false))
 
     }
+
 
 }
 

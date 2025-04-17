@@ -8,7 +8,7 @@
 import Foundation
 
 @MainActor
-final class OrderViewModel: ObservableObject {
+class OrderViewModel: ObservableObject {
     
     var pVM = ProfileViewModel()
     
@@ -36,6 +36,8 @@ final class OrderViewModel: ObservableObject {
   
     
     @Published var updateOrderSuccessful: Bool = false
+    
+    init () {}
     
 //    func getSenderOrders(userId: String) async throws -> [Order] {
 //        return try await OrderManager.shared.getSenderOrders(userId: userId)
