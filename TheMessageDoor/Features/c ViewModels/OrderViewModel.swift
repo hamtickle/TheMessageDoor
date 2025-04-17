@@ -15,7 +15,6 @@ class OrderViewModel: ObservableObject {
     @Published var selectedReceiverEmail: String = ""
     
     @Published var receiverList: [String] = []
-    @Published var receiverData: [ReceiverModel] = []
     
     @Published var thisReceiverId: String = ""
     @Published var thisReceiverFirst: String = ""
@@ -38,10 +37,6 @@ class OrderViewModel: ObservableObject {
     @Published var updateOrderSuccessful: Bool = false
     
     init () {}
-    
-//    func getSenderOrders(userId: String) async throws -> [Order] {
-//        return try await OrderManager.shared.getSenderOrders(userId: userId)
-//    }
     
     
     func loadCurrentOrder(orderId: String) async throws {
@@ -82,21 +77,11 @@ class OrderViewModel: ObservableObject {
     }
     
     func getReceivers(senderId: String) async throws{
-        let (result, receiverData) = try await OrderManager.shared.getReceivers(senderId: senderId)
+        let result = try await OrderManager.shared.getReceivers(senderId: senderId)
         
         // remove duplicates from receiverlist
         receiverList = result.unique()
-        self.receiverData = receiverData
-    }
-    
-    func getReceiverProperties(receiverEmail: String) {
-        if let offset = receiverData.firstIndex(where: {$0.receiverEmail == receiverEmail})
-        {
-            let currentReceiverId = receiverData[offset].receiverId ?? ""
-            let currentReceiverFirstName = receiverData[offset].receiverFirstName ?? ""
-            let currentReceiverLastName = receiverData[offset].receiverLastName ?? ""
-        }
-        
+//        self.receiverData = receiverData
     }
     
     func fetchSenderOrders(senderId: String) async throws {

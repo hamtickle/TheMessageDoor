@@ -132,14 +132,18 @@ struct OrderView: View {
                         .font(.headline)
                         .foregroundColor(.red)
                         .padding(.top, 30)
-                        .padding(.bottom, 20)
+                        .padding(.bottom, 10)
                 } else {
                     Text("This order is active and will expire on 5/15/2025.")
                         .font(.headline)
                         .foregroundColor(.red)
-                        .padding(.bottom, 20)
+                        .padding(.bottom, 10)
                         .padding(.top, 30)
                 }
+                
+                Text("Order ID: \(order.orderId)")
+                    .font(.caption)
+                  
                 Spacer()
             }
 

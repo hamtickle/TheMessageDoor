@@ -10,7 +10,7 @@ import SwiftUI
 struct OrderCreate: View {
     
     @StateObject var pVM : ProfileViewModel
-    @StateObject var oVM : OrderViewModel
+    @StateObject var oVM = OrderViewModel()
 
     @State var receiverList: [String] = [""]
 

@@ -17,7 +17,7 @@ struct OrderListView: View {
 
     var body: some View {
 
-        VStack(alignment: .center) {
+        VStack(alignment: .leading) {
             HStack {
                 Text("\(pVM.currentUserFirstName)'s Orders")
                     .font(.system(size: 34, weight: .bold))
@@ -25,7 +25,7 @@ struct OrderListView: View {
                     .padding(.horizontal)
 
                 NavigationLink{
-                    OrderCreate(pVM: pVM, oVM: oVM)
+                    OrderCreate(pVM: pVM)
                 } label: {
                     Image(systemName: "cart")
                         .font(.system(size: 20))
