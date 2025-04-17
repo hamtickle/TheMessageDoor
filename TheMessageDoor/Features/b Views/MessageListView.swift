@@ -9,8 +9,9 @@ import SwiftUI
 
 struct MessageListView: View {
 
-    @StateObject private var mVM = MessageViewModel()
-    @StateObject private var pVM = ProfileViewModel()
+    @StateObject var pVM : ProfileViewModel
+    @StateObject var mVM = MessageViewModel()
+    @StateObject var oVM = OrderViewModel()
 
     @State private var messageFilter = 0
     @State var sender: Bool = true
@@ -23,6 +24,7 @@ struct MessageListView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal)
                 .padding(.top, 30)
+            Text("Total Messages: \(mVM.myTotalMessages)")
 
             Picker("Filter", selection: $messageFilter) {
                 Text("My Messages").tag(0)
@@ -34,11 +36,13 @@ struct MessageListView: View {
             // The List
 
             List(mVM.displayMessages) { message in
-                NavigationLink(destination: MessageDetail(message: message, sender: sender)) {
+                NavigationLink(
+                    destination: MessageDetail(pVM: pVM, mVM: mVM, message: message, sender: sender)
+                ) {
                     HStack {
                         MessageCell(message: message)
                             .frame(width: 300)
-//                            .padding(.vertical, 0)
+                            //                            .padding(.vertical, 0)
                             .padding(.horizontal, 20)
                     }
                 }
@@ -55,8 +59,9 @@ struct MessageListView: View {
                     }
                 } else {
                     do {
-                        Task {  try? await mVM.fetchReceiverMessages(
-                            receiverId: pVM.currentUserId)
+                        Task {
+                            try? await mVM.fetchReceiverMessages(
+                                receiverId: pVM.currentUserId)
                         }
                         sender = false
                     }
@@ -73,11 +78,15 @@ struct MessageListView: View {
                 }
 
             }
-
+     
         }
     }
 }
 
 #Preview {
-    MessageListView()
+    NavigationStack {
+
+        MessageListView(pVM: ProfileViewModel())
+    }
+  
 }

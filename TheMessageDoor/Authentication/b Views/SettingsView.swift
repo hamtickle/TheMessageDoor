@@ -13,6 +13,13 @@ struct SettingsView: View {
     @Binding var showSignInView: Bool
 
     var body: some View {
+        
+        Text("Settings")
+            .font(.system(size: 34, weight: .bold))
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal)
+            .padding(.top, 10)
+        
         List {
             Button("Sign Out") {
                 Task {

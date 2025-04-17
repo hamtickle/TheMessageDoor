@@ -6,9 +6,10 @@
 //
 
 import Foundation
-import FirebaseFirestore
+//import FirebaseFirestore
 
-struct Order: Codable {
+struct Order: Identifiable, Codable {
+     
     let orderId : String
     let senderId : String?
     let senderFirstName : String?
@@ -23,6 +24,7 @@ struct Order: Codable {
     let orderStatus : String?
     let orderDateCreated : Date?
     
+    var id: String {orderId}
       
     // initialize a Profile from individual values passed in
     init(

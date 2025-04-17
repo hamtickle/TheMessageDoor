@@ -30,6 +30,7 @@ class MessageViewModel: ObservableObject {
     @Published var mySentMessages: Int = 0
     @Published var myFavMessages: Int = 0
     @Published var receiverFavMessages: Int = 0
+
     
     @Published var displayMessages: [Message] = []
     @Published var specificMessage: Message? = nil
@@ -39,45 +40,13 @@ class MessageViewModel: ObservableObject {
     
     @Published var updateMessageSuccessful: Bool = false
     
-//    func updateMessage(
-//        messageId: String,
-//        from: String,
-//        senderId: String,
-//        to: String,
-//        receiverId: String,
-//        message: String,
-//        dateSent: Date,
-//        senderFavorite: Bool,
-//        isSent: Bool,
-//        messageFont: String,
-//        messageOpenedStatus: String,
-//        messageDateOpened: Date,
-//        receiverFavorite: Bool,
-//        receiverDeleted: Bool) {
-//   
-//   //     guard let message else { return }
-//        
-//        let updatedMessage = Message(
-//            messageId: messageId,
-//            from: from,
-//            senderId: senderId,
-//            to: to,
-//            receiverId: receiverId,
-//            message: message,
-//            dateSent: dateSent,
-//            senderFavorite: senderFavorite,
-//            isSent: isSent,
-//            messageFont: messageFont,
-//            messageOpenedStatus: messageOpenedStatus,
-//            messageDateOpened: messageDateOpened,
-//            receiverFavorite: receiverFavorite,
-//            receiverDeleted: receiverDeleted)
-//        Task {
-//            try await MessageManager.shared.updateMessage(message: updatedMessage)
-//    //        self.user = try await messageManager.shared.getMessage(messageId: message.messageId)
-//            updateMessageSuccessful.toggle()
+    init () {
+//        do {
+//            Task {
+//                await fetchSenderMessages(senderId: "")
+//            }
 //        }
-//    }
+    }
     
     func createMessage(
         messageId: String,
@@ -124,7 +93,7 @@ class MessageViewModel: ObservableObject {
         buildSenderStats()
     }
     
-    func fetchSenderMessages(senderId: String) async  {
+    func fetchSenderMessages(senderId: String) async {
         
         let displayMessges = try? await MessageManager.shared.getMessages(senderId: senderId)
    
@@ -132,6 +101,8 @@ class MessageViewModel: ObservableObject {
         sortMessagesByDate()
         
         buildSenderStats()
+        
+   
     }
     
     func sortMessagesByDate() {
@@ -150,6 +121,7 @@ class MessageViewModel: ObservableObject {
         self.myFavMessages = myFavMessages
         self.mySentMessages = mySentMessages
         self.receiverFavMessages = receiverFavMessages
+        
     }
     
     func getSpecificMessage(messageId: String) async throws {

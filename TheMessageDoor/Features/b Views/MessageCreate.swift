@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct MessageView: View {
-    @StateObject private var pVM = ProfileViewModel()
-    @StateObject private var oVM = OrderViewModel()
-    @StateObject private var mVM = MessageViewModel()
+    @StateObject var pVM : ProfileViewModel
+    @StateObject var mVM : MessageViewModel
+    @StateObject var oVM : OrderViewModel
+    
     @StateObject private var fonts = Fonts()
     @Environment(\.colorScheme) var colorScheme
     
@@ -20,15 +21,18 @@ struct MessageView: View {
     @State var receiverList: [String] = []
 
     var body: some View {
+        
+        Text("Create Message")
+            .font(.system(size: 34, weight: .bold))
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 10)
+            .padding(.top, 10)
+        
         ScrollView {
             VStack  {
                 Spacer()
 
-                Text("Create Message")
-                    .font(.system(size: 34, weight: .bold))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, -20)
-                    .padding(.top, 30)
+                
                 
                 HStack{
                     Text("Sender:")
@@ -176,7 +180,7 @@ struct MessageView: View {
         
         .onAppear {
             Task {
-                try? await pVM.loadCurrentUser()
+   //             try? await pVM.loadCurrentUser()
                 try? await oVM.getReceivers(senderId: pVM.currentUserId)
                 receiverList.removeAll()
                 receiverList.append(contentsOf: oVM.receiverList)
@@ -210,6 +214,8 @@ struct MessageView: View {
         }
 //        .padding(.bottom, 100)
         .navigationTitle(Text("Create Message"))
+        
+
     }
 }
 
@@ -222,7 +228,8 @@ extension View {
 #Preview {
 
     NavigationStack {
-        MessageView()
+        MessageView(pVM: ProfileViewModel(), mVM: MessageViewModel(), oVM: OrderViewModel())
     }
+    
 
 }

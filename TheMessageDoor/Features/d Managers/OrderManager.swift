@@ -10,7 +10,6 @@ import Foundation
 
 final class OrderManager {
 
-  
     static let shared = OrderManager()
     @Published var newUser: Bool = false
     private init() {}
@@ -49,45 +48,67 @@ final class OrderManager {
     }
 
     // find all the people Sender has already sent messages to from the orders.
-    func getReceivers(senderId: String) async throws -> ([String], [ReceiverModel]) {
+    func getReceivers(senderId: String) async throws -> (
+        [String], [ReceiverModel]
+    ) {
         var receiverOrders: [Order] = []
         var receiverData: [ReceiverModel] = []
         var thisReceiver: ReceiverModel
         let query = orderCollection.whereField("sender_id", isEqualTo: senderId)
-  
+
         do {
             let querySnapshot = try await query.getDocuments()
-            for document in querySnapshot.documents  {
+            for document in querySnapshot.documents {
                 let order = try document.data(as: Order.self, decoder: decoder)
                 receiverOrders.append(order)
             }
-            
+
             // create an array of recipient emails and an array of recipient details
-            
-                receiverList.removeAll()
-                for order in receiverOrders {
-                    receiverList.append(order.receiverEmail ?? "")
-                    
-                    // unpack optionals
-                    var thisReceiverId = order.receiverId ?? ""
-                    var thisReceiverFirstName = order.receiverFirstName ?? ""
-                    var thisReceiverLastName = order.receiverLastName ?? ""
-                    var thisReceiverEmail = order.receiverEmail ?? ""
-                    
-                    var thisReceiver = ReceiverModel(receiverId: thisReceiverId, receiverFirstName: thisReceiverFirstName, receiverLastName: thisReceiverLastName, receiverEmail: thisReceiverEmail)
-                    receiverData.append(thisReceiver)
-                }
-            
+
+            receiverList.removeAll()
+            for order in receiverOrders {
+                receiverList.append(order.receiverEmail ?? "")
+
+                // unpack optionals
+                let thisReceiverId = order.receiverId ?? ""
+                let thisReceiverFirstName = order.receiverFirstName ?? ""
+                let thisReceiverLastName = order.receiverLastName ?? ""
+                let thisReceiverEmail = order.receiverEmail ?? ""
+
+                let thisReceiver = ReceiverModel(
+                    receiverId: thisReceiverId,
+                    receiverFirstName: thisReceiverFirstName,
+                    receiverLastName: thisReceiverLastName,
+                    receiverEmail: thisReceiverEmail)
+                receiverData.append(thisReceiver)
+            }
+
         }
         return (receiverList, receiverData)
     }
-    
+
     func deleteSenderOrder(orderId: String) async throws {
-        
-        let querySnapshot = try await orderCollection.whereField("order_Id", isEqualTo: orderId).getDocuments()
+
+        let querySnapshot = try await orderCollection.whereField(
+            "order_Id", isEqualTo: orderId
+        ).getDocuments()
         for document in querySnapshot.documents {
             try await document.reference.delete()
         }
+    }
+
+    func getOrders(senderId: String) async throws -> [Order] {
+        var orderList: [Order] = []
+        let query = orderCollection.whereField("sender_id", isEqualTo: senderId)
+
+        do {
+            let querySnapshot = try await query.getDocuments()
+            for document in querySnapshot.documents {
+                let order = try document.data(as: Order.self, decoder: decoder)
+                orderList.append(order)
+            }
+        }
+        return orderList
     }
 
 }

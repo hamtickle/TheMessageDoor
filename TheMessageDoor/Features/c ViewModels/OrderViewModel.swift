@@ -8,7 +8,7 @@
 import Foundation
 
 @MainActor
-final class OrderViewModel: ObservableObject {
+class OrderViewModel: ObservableObject {
     
     var pVM = ProfileViewModel()
     
@@ -31,9 +31,13 @@ final class OrderViewModel: ObservableObject {
     @Published var currentOrderDateCreated: Date = Date()
     @Published var currentOrderStatus: String = ""
     @Published var currentOrderType: String = ""
+    
+    @Published var orderList: [Order] = []
   
     
     @Published var updateOrderSuccessful: Bool = false
+    
+    init () {}
     
 //    func getSenderOrders(userId: String) async throws -> [Order] {
 //        return try await OrderManager.shared.getSenderOrders(userId: userId)
@@ -93,6 +97,19 @@ final class OrderViewModel: ObservableObject {
             let currentReceiverLastName = receiverData[offset].receiverLastName ?? ""
         }
         
+    }
+    
+    func fetchSenderOrders(senderId: String) async throws {
+        let result = try await OrderManager.shared.getOrders(senderId: senderId)
+        self.orderList = result.map(\.self)
+        sortOrdersByRecipient()
+    }
+    
+    // Sort Orders
+    func sortOrdersByRecipient() {
+        orderList.sort { (lhs: Order, rhs: Order) -> Bool in
+            return lhs.receiverEmail! < rhs.receiverEmail!
+        }
     }
 
 }

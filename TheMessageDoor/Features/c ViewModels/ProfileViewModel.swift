@@ -8,7 +8,7 @@
 import Foundation
 
 @MainActor
-final class ProfileViewModel: ObservableObject {
+class ProfileViewModel: ObservableObject {
     
     @Published private(set) var user: Profile? = nil
     @Published var currentReceiver: Profile? = nil
@@ -29,6 +29,13 @@ final class ProfileViewModel: ObservableObject {
     
     @Published var updateSuccessful: Bool = false
     
+    init() {
+//        do {
+//            Task {
+//                try await loadCurrentUser()
+//            }
+//        } 
+    }
     
     func loadCurrentUser() async throws {
         let authDataResult = try AuthManager.shared.getAuthenticatedUser()

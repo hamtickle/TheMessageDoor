@@ -9,8 +9,10 @@ import SwiftUI
 
 struct MessageDetail: View {
 
-    @StateObject private var mVM = MessageViewModel()
-    @StateObject private var pVM = ProfileViewModel()
+    @StateObject var pVM : ProfileViewModel
+    @StateObject var mVM : MessageViewModel
+ 
+    
     @StateObject private var fonts = Fonts()
     @Environment(\.colorScheme) var colorScheme
 
@@ -19,15 +21,15 @@ struct MessageDetail: View {
     @State var sender: Bool
 
     var body: some View {
+        Text("View Message")
+            .font(.system(size: 34, weight: .bold))
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 10)
+            .padding(.top, 10)
 
+        ScrollView {
             VStack {
                 Spacer()
-
-                Text("View Message")
-                    .font(.system(size: 34, weight: .bold))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, -20)
-                    .padding(.top, 30)
 
                 HStack {
                     Text("Sender:")
@@ -47,25 +49,31 @@ struct MessageDetail: View {
                 Toggle(
                     "Make this a favorite?",
                     isOn: sender
-                        ? $mVM.currentSenderFavorite : $mVM.currentReceiverFavorite
+                        ? $mVM.currentSenderFavorite
+                        : $mVM.currentReceiverFavorite
                 )
                 .foregroundColor(.blue)
                 .padding(.bottom, 20)
 
                 if message.isSent {
-                    Text(sender ? "THIS MESSAGE HAS BEEN SENT" : "THIS MESSAGE WAS SENT TO YOU")
-                        .font(.headline)
-                        .foregroundColor(.red)
-                        .padding(.bottom, 20)
+                    Text(
+                        sender
+                            ? "THIS MESSAGE HAS BEEN SENT"
+                            : "THIS MESSAGE WAS SENT TO YOU"
+                    )
+                    .font(.headline)
+                    .foregroundColor(.red)
+                    .padding(.bottom, 20)
                 }
-       
+
                 //     ShowNote()
                 ZStack {
                     Rectangle()
                         .fill(Color(.yellow))
                         .frame(width: 350, height: 305)
                         .shadow(
-                            color: colorScheme == .dark ? Color.gray : Color.black,
+                            color: colorScheme == .dark
+                                ? Color.gray : Color.black,
                             radius: 10, x: 10, y: 10)
                     VStack(alignment: .trailing) {
                         Rectangle()
@@ -104,13 +112,14 @@ struct MessageDetail: View {
 
                 // Message Stats
                 if sender {
-                    VStack(alignment: .center) {
-                        Text("Message Stats")
-                            .font(.headline)
-                            .foregroundColor(
-                                colorScheme == .dark ? .white : .black
-                            )
-                        if message.isSent {
+
+                    if message.isSent {
+                        VStack(alignment: .center) {
+                            Text("Message Stats")
+                                .font(.headline)
+                                .foregroundColor(
+                                    colorScheme == .dark ? .white : .black
+                                )
                             HStack {
                                 Text("Sent:")
                                     .foregroundColor(
@@ -146,9 +155,6 @@ struct MessageDetail: View {
                                         colorScheme == .dark ? .white : .black
                                     )
                                     .font(.caption)
-                                //                            Text(message.messageDateOpened ?? "N/A",
-                                //                                 format: Date.FormatStyle(date: .numeric))
-                                //                                .foregroundColor(.black)
                             }
                             HStack {
                                 Text("Recipient Favorite?:")
@@ -163,11 +169,12 @@ struct MessageDetail: View {
                                 } else {
                                     Image(systemName: "heart")
                                         .foregroundColor(
-                                            colorScheme == .dark ? .white : .black)
+                                            colorScheme == .dark
+                                                ? .white : .black
+                                        )
                                         .font(.caption)
                                 }
 
-                            
                             }
                             HStack {
                                 Text("Recipient Deleted?:")
@@ -281,16 +288,12 @@ struct MessageDetail: View {
 
             }
             .padding(.horizontal, 40)
-        
-        
+        }
+
         .onAppear {
             Task {
-                //                try? await pVM.loadCurrentUser()
-                //                try? await mVM.getSpecificMessage(messageId: messageId)
                 fontList.removeAll()
                 fontList.append(contentsOf: fonts.fonts)
-                //        mVM.messageFont = mVM.currentMessageFont
-
             }
         }
         //        .onChange(of: oVM.selectedReceiverEmail) {
@@ -313,8 +316,9 @@ struct MessageDetail: View {
             }
         )
 
-        .padding(.bottom, 100)
+        .padding(.bottom, 10)
         .navigationTitle(Text(""))
+        
     }
 }
 
@@ -325,5 +329,6 @@ struct MessageDetail: View {
 //
 //        MessageDetail(message: message)
 //    }
+//    .environmentObject(ProfileViewModel())
 //
 //}
