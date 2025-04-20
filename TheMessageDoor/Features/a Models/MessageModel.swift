@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Message: Codable, Identifiable, Hashable, ObservableObject {
+struct Message: Codable, Identifiable, Hashable {
     static func == (lhs: Message, rhs: Message) -> Bool {
         lhs.messageId == rhs.messageId && lhs.from == rhs.from
             && lhs.to == rhs.to && lhs.message == rhs.message
@@ -39,11 +39,27 @@ class Message: Codable, Identifiable, Hashable, ObservableObject {
     var receiverFavorite: Bool
     var receiverDeleted: Bool
 
+    var id: String { messageId }
+
     init(
-        messageId: String, from: String, senderId: String, to: String, receiverId: String,
-        message: String, messageFont: String, senderFavorite: Bool, dateCreated: Date, isSent: Bool, dateSent: Date
+        messageId: String,
+        from: String,
+        senderId: String,
+        to: String,
+        receiverId: String,
+        message: String,
+        messageFont: String,
+        senderFavorite: Bool,
+        dateCreated: Date,
+        isSent: Bool,
+        dateSent: Date,
+        messageOpenedStatus: String,
+        messageDateOpened: Date?,
+        receiverFavorite: Bool,
+        receiverDeleted: Bool
+
     ) {
-        self.messageId = UUID().uuidString
+        self.messageId = messageId
         self.from = from
         self.senderId = senderId
         self.to = to
@@ -62,8 +78,24 @@ class Message: Codable, Identifiable, Hashable, ObservableObject {
 
     }
     
-    init(messageId: String)
-    {
+    init(
+        messageId: String
+//        from: String,
+//        senderId: String,
+//        to: String,
+//        receiverId: String,
+//        message: String,
+//        messageFont: String,
+//        senderFavorite: Bool,
+//        dateCreated: Date,
+//        isSent: Bool,
+//        dateSent: Date,
+//        messageOpenedStatus: String,
+//        messageDateOpened: Date?,
+//        receiverFavorite: Bool,
+//        receiverDeleted: Bool
+
+    ) {
         self.messageId = messageId
         self.from = ""
         self.senderId = ""
@@ -77,9 +109,143 @@ class Message: Codable, Identifiable, Hashable, ObservableObject {
         self.dateSent = Date()
 
         self.messageOpenedStatus = ""
-        self.messageDateOpened = Date()
+        self.messageDateOpened = nil
         self.receiverFavorite = false
         self.receiverDeleted = false
-        
+
     }
+
+    // Update  Sent status
+    func sendSavedMessage() -> Message {
+
+        return Message(
+            messageId: messageId,
+            from: from,
+            senderId: senderId,
+            to: to,
+            receiverId: receiverId,
+            message: message,
+            messageFont: messageFont,
+            senderFavorite: senderFavorite,
+            dateCreated: dateCreated,
+            isSent: true,
+            dateSent: Date(),
+            messageOpenedStatus: messageOpenedStatus,
+            messageDateOpened: messageDateOpened,
+            receiverFavorite: receiverFavorite,
+            receiverDeleted: receiverDeleted
+        )
+    }
+
+    // Update Sender Favorite status
+    func toggleSenderFavorite() -> Message {
+        let currentValue = senderFavorite
+
+        return Message(
+            messageId: messageId,
+            from: from,
+            senderId: senderId,
+            to: to,
+            receiverId: receiverId,
+            message: message,
+            messageFont: messageFont,
+            senderFavorite: !currentValue,
+            dateCreated: dateCreated,
+            isSent: isSent,
+            dateSent: dateSent,
+            messageOpenedStatus: messageOpenedStatus,
+            messageDateOpened: messageDateOpened,
+            receiverFavorite: receiverFavorite,
+            receiverDeleted: receiverDeleted
+        )
+    }
+
+    // Update Receiver Favorite status
+    func toggleReceiverFavorite() -> Message {
+        let currentValue = receiverFavorite
+
+        return Message(
+            messageId: messageId,
+            from: from,
+            senderId: senderId,
+            to: to,
+            receiverId: receiverId,
+            message: message,
+            messageFont: messageFont,
+            senderFavorite: senderFavorite,
+            dateCreated: dateCreated,
+            isSent: isSent,
+            dateSent: dateSent,
+            messageOpenedStatus: messageOpenedStatus,
+            messageDateOpened: messageDateOpened,
+            receiverFavorite: !currentValue,
+            receiverDeleted: receiverDeleted
+        )
+    }
+
+    // Update Opened Status
+    func updateOpenedStatus() -> Message {
+
+        return Message(
+            messageId: messageId,
+            from: from,
+            senderId: senderId,
+            to: to,
+            receiverId: receiverId,
+            message: message,
+            messageFont: messageFont,
+            senderFavorite: senderFavorite,
+            dateCreated: dateCreated,
+            isSent: isSent,
+            dateSent: dateSent,
+            messageOpenedStatus: "Opened",
+            messageDateOpened: Date(),
+            receiverFavorite: receiverFavorite,
+            receiverDeleted: receiverDeleted
+        )
+    }
+
+    func receiverDeleteMessage() -> Message {
+
+        return Message(
+            messageId: messageId,
+            from: from,
+            senderId: senderId,
+            to: to,
+            receiverId: receiverId,
+            message: message,
+            messageFont: messageFont,
+            senderFavorite: senderFavorite,
+            dateCreated: dateCreated,
+            isSent: isSent,
+            dateSent: dateSent,
+            messageOpenedStatus: messageOpenedStatus,
+            messageDateOpened: messageDateOpened,
+            receiverFavorite: receiverFavorite,
+            receiverDeleted: true
+        )
+    }
+
+    // Save message if already created
+    func saveMessage() -> Message {
+
+        return Message(
+            messageId: messageId,
+            from: from,
+            senderId: senderId,
+            to: to,
+            receiverId: receiverId,
+            message: message,
+            messageFont: messageFont,
+            senderFavorite: senderFavorite,
+            dateCreated: dateCreated,
+            isSent: isSent,
+            dateSent: dateSent,
+            messageOpenedStatus: messageOpenedStatus,
+            messageDateOpened: messageDateOpened,
+            receiverFavorite: receiverFavorite,
+            receiverDeleted: receiverDeleted
+        )
+    }
+
 }

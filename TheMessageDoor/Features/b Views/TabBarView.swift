@@ -14,9 +14,10 @@ struct TabBarView: View {
     @StateObject var oVM = OrderViewModel()
 
     @Binding var showSignInView: Bool
+    @State var tabSelection: Int = 0
 
     var body: some View {
-        TabView {
+        TabView(selection: $tabSelection) {
             NavigationStack {
                 MessageListView(pVM: pVM, mVM: mVM)
             }
@@ -24,17 +25,21 @@ struct TabBarView: View {
             .tabItem {
                 Image(systemName: "door.right.hand.closed")
                 Text("Your Door")
+          
             }
+            .tag(0)
 
             NavigationStack {
-                MessageView(pVM: pVM, mVM: mVM, oVM: oVM)
+                CreateMessageView(pVM: pVM, mVM: mVM, oVM: oVM, tabSelection: $tabSelection)
 
             }
 
             .tabItem {
                 Image(systemName: "paperplane")
                 Text("Message")
+                
             }
+            .tag(1)
 
             NavigationStack {
                 OrderListView(pVM: pVM)
@@ -44,7 +49,9 @@ struct TabBarView: View {
             .tabItem {
                 Image(systemName: "cart")
                 Text("Order")
+                   
             }
+            .tag(2)
 
             NavigationStack {
                 AchievementsView()
@@ -54,6 +61,7 @@ struct TabBarView: View {
                 Image(systemName: "trophy")
                 Text("Achievments")
             }
+            .tag(3)
 
             NavigationStack {
                 ProfileView(pVM: pVM, mVM: mVM, showSignInView: $showSignInView)
@@ -64,9 +72,9 @@ struct TabBarView: View {
                 Image(systemName: "person")
                 Text("Profile")
             }
+            .tag(4)
 
         }
-
     }
 }
 

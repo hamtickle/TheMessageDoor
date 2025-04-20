@@ -56,13 +56,18 @@ final class UserManager {
     func getUserWithEmail(email: String) async throws -> Profile? {
 
         let query = userCollection.whereField("email", isEqualTo: email)
+       
         
         do {
             let querySnapshot = try await query.getDocuments()
-
+            
             for document in querySnapshot.documents  {
                 let _currentReceiver = try document.data(as: Profile.self, decoder: decoder)
                 currentReceiver = _currentReceiver
+            }
+            if currentReceiver == nil {
+                newUser = true
+                print("No user found.  New user \(email) created.")
             }
         } catch {
             // no User with that email exists

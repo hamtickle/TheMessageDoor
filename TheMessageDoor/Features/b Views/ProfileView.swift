@@ -20,6 +20,7 @@ struct ProfileView: View {
     @FocusState private var isFocused: Bool
     
     @State var fontList: [String] = []
+    @State private var isPressed = false
 
     var body: some View {
         
@@ -166,6 +167,19 @@ struct ProfileView: View {
                 .padding()
                 .cornerRadius(10)
                 .padding(.vertical, 5)
+                
+                .opacity(isPressed ? 0.6 : 1.0)
+                .scaleEffect(isPressed ? 1.1 : 1.0)
+                .pressEvents {
+                    withAnimation(.easeIn(duration: 0.2)) {
+                        isPressed = true
+                    }
+                } onRelease: {
+                    withAnimation {
+                        isPressed = false
+                    }
+                }
+            
 
                 // Profile Stats
 
