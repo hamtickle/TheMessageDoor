@@ -9,56 +9,74 @@ import SwiftUI
 
 struct OrderCell: View {
 
-
     @State var order: Order
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
 
-        ZStack {
-//            Rectangle()
-//                .fill(
-//                    order.orderStatus!.contains("Active")
-//                        ? Color(
-//                            #colorLiteral(
-//                                red: 0.1764705926, green: 0.4980392158,
-//                                blue: 0.7568627596, alpha: 1)) : Color.black
-//                )
-//                .frame(width: 350, height: 50)
-//                .cornerRadius(10)
-            HStack {
+        VStack(alignment: .leading) {
 
-                VStack(alignment: .leading) {
+            HStack(alignment: .top) {
+                Text(order.receiverFirstName ?? "")
+                    .foregroundColor(
+                        order.orderStatus!.contains("Active")
+                            ? Color.blue : Color.gray
+                    )
+                    .font(.body)
+                    .fontWeight(.bold)
 
-                    HStack(alignment: .top) {
-                        Text(order.receiverEmail ?? "")
-                            .foregroundColor(order.orderStatus!.contains("Active") ?
-                                Color.blue : Color.gray
-                            )
-                            .font(.body)
-                            .lineLimit(1)
-                            .bold()
-                            .padding(.trailing, 20)
 
-                        Text(order.orderStatus ?? "")
-                            .font(.body)
-                            .foregroundColor(order.orderStatus!.contains("Active") ?
-                                Color.blue : Color.gray
-                            )
-                    }
-
-                    Text(order.orderId)
-                        .font(.caption)
-                        .foregroundColor(Color.gray)
-                }
-
-                .padding(.horizontal, -10)
-                .padding(.vertical, 0)
-                .frame(width: 400, height: 50)
-
+                Text(order.receiverLastName ?? "")
+                    .font(.body)
+                    .fontWeight(.bold)
+                    .foregroundColor(
+                        order.orderStatus!.contains("Active")
+                            ? Color.blue : Color.gray
+                    )
             }
-            .padding(.horizontal, 30)
+        
+
+            HStack(alignment: .top) {
+                Text(order.receiverEmail ?? "")
+                    .foregroundColor(
+                        order.orderStatus!.contains("Active")
+                            ? Color.gray : Color.gray
+                    )
+                    .font(.body)
+
+Spacer()
+
+                Text(order.orderStatus ?? "")
+                    .font(.body)
+                    .foregroundColor(
+                        order.orderStatus!.contains("Active")
+                            ? Color.green : Color.gray
+                    )
+            }
+            .padding(.horizontal, 10)
+         
+
+            HStack(alignment: .top) {
+                Text("Date Created: ")
+                    .font(.caption)
+                    .foregroundColor(Color.gray)
+
+                Text(
+                    order.orderDateCreated ?? Date(),
+                    format: Date.FormatStyle(date: .numeric)
+                )
+                .font(.caption)
+                .foregroundColor(Color.gray)
+            }
+            .padding(.horizontal, 10)
+     
+
         }
+
+  
+        .padding(.vertical, 0)
+        .frame(width: 300, height: 50, alignment: .leading)
+
 
 
     }
@@ -67,7 +85,7 @@ struct OrderCell: View {
 //#Preview {
 //    var order: Order!
 //    NavigationStack    {
-//        
+//
 //        OrderCell(order: .init())
 //    }
 //    .environmentObject(ProfileViewModel())

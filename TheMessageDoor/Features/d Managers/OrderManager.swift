@@ -48,12 +48,9 @@ final class OrderManager {
     }
 
     // find all the people Sender has already sent messages to from the orders.
-    func getReceivers(senderId: String) async throws -> (
-        [String], [ReceiverModel]
-    ) {
+    func getReceivers(senderId: String) async throws ->  [String]   {
         var receiverOrders: [Order] = []
-        var receiverData: [ReceiverModel] = []
-        var thisReceiver: ReceiverModel
+
         let query = orderCollection.whereField("sender_id", isEqualTo: senderId)
 
         do {
@@ -69,22 +66,10 @@ final class OrderManager {
             for order in receiverOrders {
                 receiverList.append(order.receiverEmail ?? "")
 
-                // unpack optionals
-                let thisReceiverId = order.receiverId ?? ""
-                let thisReceiverFirstName = order.receiverFirstName ?? ""
-                let thisReceiverLastName = order.receiverLastName ?? ""
-                let thisReceiverEmail = order.receiverEmail ?? ""
-
-                let thisReceiver = ReceiverModel(
-                    receiverId: thisReceiverId,
-                    receiverFirstName: thisReceiverFirstName,
-                    receiverLastName: thisReceiverLastName,
-                    receiverEmail: thisReceiverEmail)
-                receiverData.append(thisReceiver)
             }
 
         }
-        return (receiverList, receiverData)
+        return (receiverList)
     }
 
     func deleteSenderOrder(orderId: String) async throws {

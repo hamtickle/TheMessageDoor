@@ -79,12 +79,10 @@ final class MessageManager {
         return message
     }
     
-    func deleteSenderMessage(messageId: String) async throws {
+    func deleteMessage(messageId: String) async throws {
         
-        let querySnapshot = try await messageCollection.whereField("message_Id", isEqualTo: messageId).getDocuments()
-        for document in querySnapshot.documents {
-            try await document.reference.delete()
-        }
+        try await Firestore.firestore().collection("messages").document(messageId).delete()
+        
     }
     
 }

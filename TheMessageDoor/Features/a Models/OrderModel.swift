@@ -59,27 +59,3 @@ struct Order: Identifiable, Codable {
     
 }
 
-struct ReceiverModel: Codable {
-    
-    let receiverId : String?
-    let receiverFirstName : String?
-    let receiverLastName : String?
-    let receiverEmail: String?
-    
-    // initialize a Profile from individual values passed in
-    init(
-        
-        receiverId: String? = nil,
-        receiverFirstName: String? = nil,
-        receiverLastName: String? = nil,
-        receiverEmail: String? = nil
-        
-    ) {
-        
-        self.receiverId = receiverId
-        self.receiverFirstName = receiverFirstName
-        self.receiverLastName = receiverLastName
-        self.receiverEmail = receiverEmail
-        
-    }
-}

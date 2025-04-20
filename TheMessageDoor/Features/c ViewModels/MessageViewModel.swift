@@ -39,6 +39,8 @@ class MessageViewModel: ObservableObject {
     @Published var messageFont: String = ""
     
     @Published var updateMessageSuccessful: Bool = false
+    @Published var messageDeleted: Bool = false
+    @Published var savedSent: Bool = false
     
     init () {
 //        do {
@@ -58,7 +60,12 @@ class MessageViewModel: ObservableObject {
         dateSent: Date,
         senderFavorite: Bool,
         isSent: Bool,
-        messageFont: String)
+        messageFont: String,
+        messageOpenedStatus: String,
+        messageDateOpened: Date,
+        receiverDeleted: Bool,
+        receiverFavorite: Bool
+    )
     {
    
    //     guard let message else { return }
@@ -74,13 +81,20 @@ class MessageViewModel: ObservableObject {
             senderFavorite: senderFavorite,
             dateCreated: Date(),
             isSent: isSent,
-            dateSent: dateSent
+            dateSent: dateSent,
+            messageOpenedStatus: "",
+            messageDateOpened: Date(),
+            receiverFavorite: false,
+            receiverDeleted: false
+    
             )
         Task {
             try await MessageManager.shared.updateMessage(message: updatedMessage)
     //        self.user = try await messageManager.shared.getMessage(messageId: message.messageId)
             updateMessageSuccessful.toggle()
+            currentMessage = ""
         }
+        
     }
     
     func fetchReceiverMessages(receiverId: String) async  {
@@ -95,9 +109,9 @@ class MessageViewModel: ObservableObject {
     
     func fetchSenderMessages(senderId: String) async {
         
-        let displayMessges = try? await MessageManager.shared.getMessages(senderId: senderId)
+        let displayMessages = try? await MessageManager.shared.getMessages(senderId: senderId)
    
-        self.displayMessages = displayMessges ?? []
+        self.displayMessages = displayMessages ?? []
         sortMessagesByDate()
         
         buildSenderStats()
@@ -143,5 +157,88 @@ class MessageViewModel: ObservableObject {
         self.currentReceiverDeleted = specificMessage?.receiverDeleted ?? false
     }
     
+    func sendSavedMessage(message: Message) {
+        let updatedMessage = message.sendSavedMessage()
+        
+        Task {
+            do {
+                _ = try await MessageManager.shared.updateMessage(message: updatedMessage)
+                savedSent = true
+                await fetchSenderMessages(senderId: message.messageId)
+            } catch  {
+                print("Could not send message \(error.localizedDescription)")
+            }
+        }
+        
+      
+    }
+    
+    func toggleSenderFavorite(message: Message) {
+        let updatedMessage = message.toggleSenderFavorite()
+        
+        Task {
+            do {
+                _ = try await MessageManager.shared.updateMessage(message: updatedMessage)
+            } catch  {
+                print("Could not toggle favorite \(error.localizedDescription)")
+            }
+        }
+        
+    }
+    
+    func toggleReceiverFavorite(message: Message) {
+        let updatedMessage = message.toggleReceiverFavorite()
+        
+        Task {
+            do {
+                _ = try await MessageManager.shared.updateMessage(message: updatedMessage)
+            } catch  {
+                print("Could not toggle favorite \(error.localizedDescription)")
+            }
+        }
+        
+    }
+    
+    func receiverDeleteMessage(message: Message) {
+        let updatedMessage = message.receiverDeleteMessage()
+        
+        Task {
+            do {
+                    _ = try await MessageManager.shared.updateMessage(message: updatedMessage)
+            } catch  {
+                print("Could not delete message \(error.localizedDescription)")
+            }
+        }
+    
+    }
+    
+    func senderDeleteMessage(message: Message) {
+                
+        Task {
+            do {
+                let thisSender = message.senderId
+                try await MessageManager.shared.deleteMessage(messageId: message.messageId)
+                messageDeleted = true
+                await fetchSenderMessages(senderId: thisSender)
+            } catch  {
+                print("Could not delete message \(error.localizedDescription)")
+                messageDeleted = false
+            }
+        }
+    
+    }
+    
+    func saveMessage(message: Message) {
+        let updatedMessage = message.saveMessage()
+        
+        Task {
+            do {
+                    _ = try await MessageManager.shared.updateMessage(message: updatedMessage)
+            } catch  {
+                print("Could not delete message \(error.localizedDescription)")
+            }
+        }
+    
+    }
     
 }

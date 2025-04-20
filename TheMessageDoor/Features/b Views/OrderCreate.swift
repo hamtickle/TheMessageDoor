@@ -10,11 +10,12 @@ import SwiftUI
 struct OrderCreate: View {
     
     @StateObject var pVM : ProfileViewModel
-    @StateObject var oVM : OrderViewModel
+    @StateObject var oVM = OrderViewModel()
 
     @State var receiverList: [String] = [""]
 
     var newReceiver: Profile? = nil
+    @State private var isPressed = false
 
     var body: some View {
 
@@ -165,7 +166,7 @@ struct OrderCreate: View {
 
                    do {
                         Task {
-                            try await pVM.createReceiver(
+                     try await pVM.createReceiver(
                                 userId: receiverId,
                                 email: pVM.currentReceiverEmail,
                                 firstName: pVM.currentReceiverFirst,
@@ -175,11 +176,11 @@ struct OrderCreate: View {
 
                             )
                        }
-                    }
-                    
-              
+                   }  catch {
+                       
+                   }
 
-                }  // end if new receiver
+                }   //end if new receiver
 
                 oVM.createOrder(
                     senderId: pVM.currentUserId,
@@ -205,6 +206,18 @@ struct OrderCreate: View {
                     .cornerRadius(10)
                     .padding(.vertical, 5)
             }
+            .opacity(isPressed ? 0.6 : 1.0)
+            .scaleEffect(isPressed ? 1.1 : 1.0)
+            .pressEvents {
+                withAnimation(.easeIn(duration: 0.2)) {
+                    isPressed = true
+                }
+            } onRelease: {
+                withAnimation {
+                    isPressed = false
+                }
+            }
+            
             .padding(.top, 20)
             Spacer()
         }

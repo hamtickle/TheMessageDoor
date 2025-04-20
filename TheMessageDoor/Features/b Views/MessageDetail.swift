@@ -9,16 +9,19 @@ import SwiftUI
 
 struct MessageDetail: View {
 
-    @StateObject var pVM : ProfileViewModel
-    @StateObject var mVM : MessageViewModel
- 
-    
+    @StateObject var pVM: ProfileViewModel
+    @StateObject var mVM: MessageViewModel
+
     @StateObject private var fonts = Fonts()
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
 
     @State var message: Message
     @State var fontList: [String] = []
     @State var sender: Bool
+    @State private var isPressedSave = false
+    @State private var isPressedSend = false
+    @State private var isPressedDelete = false
 
     var body: some View {
         Text("View Message")
@@ -114,83 +117,7 @@ struct MessageDetail: View {
                 if sender {
 
                     if message.isSent {
-                        VStack(alignment: .center) {
-                            Text("Message Stats")
-                                .font(.headline)
-                                .foregroundColor(
-                                    colorScheme == .dark ? .white : .black
-                                )
-                            HStack {
-                                Text("Sent:")
-                                    .foregroundColor(
-                                        colorScheme == .dark ? .white : .black
-                                    )
-                                    .font(.caption)
-                                Text(
-                                    message.dateSent,
-                                    format: Date.FormatStyle(date: .numeric)
-                                )
-                                .foregroundColor(
-                                    colorScheme == .dark ? .white : .black
-                                )
-                                .font(.caption)
-                            }
-                            HStack {
-                                Text("Status:")
-                                    .foregroundColor(
-                                        colorScheme == .dark ? .white : .black
-                                    )
-                                    .font(.caption)
-                                Text(
-                                    message.messageOpenedStatus
-                                )
-                                .foregroundColor(
-                                    colorScheme == .dark ? .white : .black
-                                )
-                                .font(.caption)
-                            }
-                            HStack {
-                                Text("Date Opened:")
-                                    .foregroundColor(
-                                        colorScheme == .dark ? .white : .black
-                                    )
-                                    .font(.caption)
-                            }
-                            HStack {
-                                Text("Recipient Favorite?:")
-                                    .foregroundColor(
-                                        colorScheme == .dark ? .white : .black
-                                    )
-                                    .font(.caption)
-                                if message.receiverFavorite {
-                                    Image(systemName: "heart.fill")
-                                        .foregroundColor(.blue)
-                                        .font(.caption)
-                                } else {
-                                    Image(systemName: "heart")
-                                        .foregroundColor(
-                                            colorScheme == .dark
-                                                ? .white : .black
-                                        )
-                                        .font(.caption)
-                                }
-
-                            }
-                            HStack {
-                                Text("Recipient Deleted?:")
-                                    .foregroundColor(
-                                        colorScheme == .dark ? .white : .black
-                                    )
-                                    .font(.caption)
-                                Text(
-                                    message.receiverDeleted.description
-                                )
-                                .foregroundColor(
-                                    colorScheme == .dark ? .white : .black
-                                )
-                                .font(.caption)
-                            }
-                        }
+                        MessageStats(message: message)
 
                     }
                 }
@@ -220,17 +147,7 @@ struct MessageDetail: View {
                 if !message.isSent {
                     // Save/Update Message
                     Button(action: {
-                        //                    mVM.createMessage(
-                        //                        messageId: UUID().uuidString,
-                        //                        from: pVM.currentUserFirstName,
-                        //                        senderId: pVM.currentUserId,
-                        //                        to: pVM.currentReceiverEmail,
-                        //                        receiverId: pVM.currentReceiverId,
-                        //                        message: mVM.currentMessage,
-                        //                        dateSent: Date(),
-                        //                        senderFavorite: mVM.currentSenderFavorite,
-                        //                        isSent: false,
-                        //                        messageFont: mVM.messageFont)
+                        mVM.saveMessage(message: message)
 
                     }) {
                         Text("Save Message")
@@ -242,17 +159,29 @@ struct MessageDetail: View {
                             .padding(.vertical, 5)
 
                     }
+                    .opacity(isPressedSave ? 0.6 : 1.0)
+                    .scaleEffect(isPressedSave ? 1.1 : 1.0)
+                    .pressEvents {
+                        withAnimation(.easeIn(duration: 0.2)) {
+                            isPressedSave = true
+                        }
+                    } onRelease: {
+                        withAnimation {
+                            isPressedSave = false
+                        }
+                    }
                 }
+                    
 
                 // Send Message
                 if !message.isSent {
                     Button(action: {
-                        //                    mVM.updateMessage(
-                        //                        xid: mVM.selectMessage.id,
-                        //                        xmessage: mVM.selectMessage.message,
-                        //                        xisFavorite: mVM.selectMessage.isFavorite,
-                        //                        xisSent: true,
-                        //                        xmessageFont: mVM.selectMessage.messageFont)
+                        Task {
+                            mVM.sendSavedMessage(message: message)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                self.presentationMode.wrappedValue.dismiss()
+                            }
+                        }
 
                     }) {
                         Text("Send Message")
@@ -263,17 +192,27 @@ struct MessageDetail: View {
                             .cornerRadius(10)
                             .padding(.vertical, 5)
                     }
+                    .opacity(isPressedSend ? 0.6 : 1.0)
+                    .scaleEffect(isPressedSend ? 1.1 : 1.0)
+                    .pressEvents {
+                        withAnimation(.easeIn(duration: 0.2)) {
+                            isPressedSend = true
+                        }
+                    } onRelease: {
+                        withAnimation {
+                            isPressedSend = false
+                        }
+                    }
                 }
+                    
 
                 // Delete Message
                 Button(action: {
-                    //                    mVM.updateMessage(
-                    //                        xid: mVM.selectMessage.id,
-                    //                        xmessage: mVM.selectMessage.message,
-                    //                        xisFavorite: mVM.selectMessage.isFavorite,
-                    //                        xisSent: true,
-                    //                        xmessageFont: mVM.selectMessage.messageFont)
-
+                    mVM.senderDeleteMessage(message: message)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        self.presentationMode.wrappedValue.dismiss()
+                    }
+                   
                 }) {
                     Text("Delete Message")
                         .frame(width: 200, height: 40)
@@ -282,6 +221,17 @@ struct MessageDetail: View {
                         .padding(.horizontal)
                         .cornerRadius(10)
                         .padding(.vertical, 5)
+                }
+                .opacity(isPressedDelete ? 0.6 : 1.0)
+                .scaleEffect(isPressedDelete ? 1.1 : 1.0)
+                .pressEvents {
+                    withAnimation(.easeIn(duration: 0.2)) {
+                        isPressedDelete = true
+                    }
+                } onRelease: {
+                    withAnimation {
+                        isPressedDelete = false
+                    }
                 }
 
                 Spacer()
@@ -296,15 +246,9 @@ struct MessageDetail: View {
                 fontList.append(contentsOf: fonts.fonts)
             }
         }
-        //        .onChange(of: oVM.selectedReceiverEmail) {
-        //
-        //                do {
-        //                    Task {
-        //                        try await pVM.getReceiver(
-        //                            email: oVM.selectedReceiverEmail)
-        //                    }
-        //                }
-        //            }
+        .onChange(of: mVM.currentSenderFavorite) {
+            mVM.toggleSenderFavorite(message: message)
+        }
 
         .alert(
             isPresented: $mVM.updateMessageSuccessful,
@@ -315,20 +259,124 @@ struct MessageDetail: View {
                     dismissButton: .cancel(Text("OK")))
             }
         )
+        .alert(
+            isPresented: $mVM.messageDeleted,
+            content: {
+                Alert(
+                    title: Text("Message Deleted"),
+                    message: Text("Your messaged has been deleted."),
+                    dismissButton: .cancel(Text("OK"))
+                )
+            }
+        )
+        .alert(
+            isPresented: $mVM.savedSent,
+            content: {
+                Alert(
+                    title: Text("Message Sent"),
+                    message: Text("Your messaged has been sent."),
+                    dismissButton: .cancel(Text("OK"))
+                )
+            }
+        )
 
         .padding(.bottom, 10)
         .navigationTitle(Text(""))
-        
+
     }
 }
 
-//#Preview {
-//    NavigationStack {
-//
-//        var message: Message
-//
-//        MessageDetail(message: message)
-//    }
-//    .environmentObject(ProfileViewModel())
-//
-//}
+#Preview {
+    NavigationStack {
+        
+        var message: Message = .init(messageId: "")
+
+        MessageDetail(pVM: ProfileViewModel(), mVM: MessageViewModel(), message: message, sender: true)
+    }
+
+}
+
+struct MessageStats: View {
+    var message: Message
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        VStack(alignment: .center) {
+            Text("Message Stats")
+                .font(.headline)
+                .foregroundColor(
+                    colorScheme == .dark ? .white : .black
+                )
+            HStack {
+                Text("Sent:")
+                    .foregroundColor(
+                        colorScheme == .dark ? .white : .black
+                    )
+                    .font(.caption)
+                Text(
+                    message.dateSent,
+                    format: Date.FormatStyle(date: .numeric)
+                )
+                .foregroundColor(
+                    colorScheme == .dark ? .white : .black
+                )
+                .font(.caption)
+            }
+            HStack {
+                Text("Status:")
+                    .foregroundColor(
+                        colorScheme == .dark ? .white : .black
+                    )
+                    .font(.caption)
+                Text(
+                    message.messageOpenedStatus
+                )
+                .foregroundColor(
+                    colorScheme == .dark ? .white : .black
+                )
+                .font(.caption)
+            }
+            HStack {
+                Text("Date Opened:")
+                    .foregroundColor(
+                        colorScheme == .dark ? .white : .black
+                    )
+                    .font(.caption)
+            }
+            HStack {
+                Text("Recipient Favorite?:")
+                    .foregroundColor(
+                        colorScheme == .dark ? .white : .black
+                    )
+                    .font(.caption)
+                if message.receiverFavorite {
+                    Image(systemName: "heart.fill")
+                        .foregroundColor(.blue)
+                        .font(.caption)
+                } else {
+                    Image(systemName: "heart")
+                        .foregroundColor(
+                            colorScheme == .dark
+                                ? .white : .black
+                        )
+                        .font(.caption)
+                }
+
+            }
+            HStack {
+                Text("Recipient Deleted?:")
+                    .foregroundColor(
+                        colorScheme == .dark ? .white : .black
+                    )
+                    .font(.caption)
+                Text(
+                    message.receiverDeleted.description
+                )
+                .foregroundColor(
+                    colorScheme == .dark ? .white : .black
+                )
+                .font(.caption)
+            }
+        }
+    }
+}
