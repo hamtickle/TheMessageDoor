@@ -10,7 +10,7 @@ import SwiftUI
 struct MessageDetail: View {
 
     @StateObject var pVM: ProfileViewModel
-    @StateObject var mVM: MessageViewModel
+    @StateObject var vm: MessageDetailVM = MessageDetailVM()
 
     @StateObject private var fonts = Fonts()
     @Environment(\.colorScheme) var colorScheme
@@ -52,8 +52,8 @@ struct MessageDetail: View {
                 Toggle(
                     "Make this a favorite?",
                     isOn: sender
-                        ? $mVM.currentSenderFavorite
-                        : $mVM.currentReceiverFavorite
+                        ? $vm.currentSenderFavorite
+                        : $vm.currentReceiverFavorite
                 )
                 .foregroundColor(.blue)
                 .padding(.bottom, 20)
@@ -147,7 +147,7 @@ struct MessageDetail: View {
                 if !message.isSent {
                     // Save/Update Message
                     Button(action: {
-                        mVM.saveMessage(message: message)
+                        vm.saveMessage(message: message)
 
                     }) {
                         Text("Save Message")
@@ -177,7 +177,7 @@ struct MessageDetail: View {
                 if !message.isSent {
                     Button(action: {
                         Task {
-                            mVM.sendSavedMessage(message: message)
+                            vm.sendSavedMessage(message: message)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                                 self.presentationMode.wrappedValue.dismiss()
                             }
@@ -208,7 +208,7 @@ struct MessageDetail: View {
 
                 // Delete Message
                 Button(action: {
-                    mVM.senderDeleteMessage(message: message)
+                    vm.senderDeleteMessage(message: message)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                         self.presentationMode.wrappedValue.dismiss()
                     }
@@ -246,21 +246,24 @@ struct MessageDetail: View {
                 fontList.append(contentsOf: fonts.fonts)
             }
         }
-        .onChange(of: mVM.currentSenderFavorite) {
-            mVM.toggleSenderFavorite(message: message)
+        .onChange(of: vm.currentSenderFavorite) {
+            vm.toggleSenderFavorite(message: message)
+        }
+        .onChange(of: vm.currentReceiverFavorite) {
+            vm.toggleReceiverFavorite(message: message)
         }
 
         .alert(
-            isPresented: $mVM.updateMessageSuccessful,
+            isPresented: $vm.updateMessageSuccessful,
             content: {
                 Alert(
-                    title: Text("Message Created"),
+                    title: Text("Message Updated"),
                     message: Text("Your message has been saved. Thank You."),
                     dismissButton: .cancel(Text("OK")))
             }
         )
         .alert(
-            isPresented: $mVM.messageDeleted,
+            isPresented: $vm.messageDeleted,
             content: {
                 Alert(
                     title: Text("Message Deleted"),
@@ -270,7 +273,7 @@ struct MessageDetail: View {
             }
         )
         .alert(
-            isPresented: $mVM.savedSent,
+            isPresented: $vm.savedSent,
             content: {
                 Alert(
                     title: Text("Message Sent"),
@@ -291,7 +294,7 @@ struct MessageDetail: View {
         
         var message: Message = .init(messageId: "")
 
-        MessageDetail(pVM: ProfileViewModel(), mVM: MessageViewModel(), message: message, sender: true)
+        MessageDetail(pVM: ProfileViewModel(), message: message, sender: true)
     }
 
 }

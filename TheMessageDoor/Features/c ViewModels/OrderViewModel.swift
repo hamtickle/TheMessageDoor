@@ -99,12 +99,12 @@ class OrderViewModel: ObservableObject {
 
 }
 
-extension Array where Element: Equatable {
-    func unique() -> [Element] {
-        self.reduce([]) {result, element in
-            result.contains(element) ? result : result + [element]
-        }
-    }
-}
+//extension Array where Element: Equatable {
+//    func unique() -> [Element] {
+//        self.reduce([]) {result, element in
+//            result.contains(element) ? result : result + [element]
+//        }
+//    }
+//}
 
 

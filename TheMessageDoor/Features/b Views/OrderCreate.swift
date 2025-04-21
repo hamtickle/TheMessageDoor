@@ -10,7 +10,10 @@ import SwiftUI
 struct OrderCreate: View {
     
     @StateObject var pVM : ProfileViewModel
-    @StateObject var oVM = OrderViewModel()
+    @StateObject var vm = OrderCreateVM()
+    
+    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
 
     @State var receiverList: [String] = [""]
 
@@ -89,7 +92,7 @@ struct OrderCreate: View {
 
                             Picker(
                                 "",
-                                selection: $oVM.selectedReceiverEmail
+                                selection: $vm.selectedReceiverEmail
                             ) {
                                 ForEach(receiverList, id: \.self) {
                                     Text($0)
@@ -105,7 +108,7 @@ struct OrderCreate: View {
 
                         HStack {
                             TextField("",
-                                      text: $pVM.currentReceiverFirst,
+                                      text: $vm.currentReceiverFirst,
                                       prompt: Text("first name...").foregroundColor(.gray).font(.body)
                             )
                             .padding(.horizontal)
@@ -117,7 +120,7 @@ struct OrderCreate: View {
 
                             TextField(
                                 "recipient last:",
-                                text: $pVM.currentReceiverLast,
+                                text: $vm.currentReceiverLast,
                                 prompt: Text("last name...").foregroundColor(.gray).font(.body)
                             )
                             .padding(.horizontal)
@@ -132,7 +135,7 @@ struct OrderCreate: View {
                         }
 
                         TextField(
-                            "recipient email:", text: $pVM.currentReceiverEmail,
+                            "recipient email:", text: $vm.currentReceiverEmail,
                             prompt: Text("email...").foregroundColor(.gray).font(.body)
                         )
                         .textInputAutocapitalization(.never)
@@ -148,7 +151,7 @@ struct OrderCreate: View {
                     }
                     .padding(.horizontal, 10)
 
-                    Text("Recipient's ID: \(pVM.currentReceiverId)")
+                    Text("Recipient's ID: \(vm.currentReceiverId)")
                         .frame(maxWidth: .infinity, alignment: .center)
                         .font(.caption)
                         .foregroundColor(.black)
@@ -160,17 +163,17 @@ struct OrderCreate: View {
                 
                 
                 // Add Recipient
-                if oVM.selectedReceiverEmail == "New Recipient" {
+                if vm.selectedReceiverEmail == "New Recipient" {
                     let receiverId = UUID().uuidString
-                    pVM.currentReceiverId = receiverId
+                    vm.currentReceiverId = receiverId
 
                    do {
                         Task {
-                     try await pVM.createReceiver(
+                     try await vm.createReceiver(
                                 userId: receiverId,
-                                email: pVM.currentReceiverEmail,
-                                firstName: pVM.currentReceiverFirst,
-                                lastName: pVM.currentReceiverLast,
+                                email: vm.currentReceiverEmail,
+                                firstName: vm.currentReceiverFirst,
+                                lastName: vm.currentReceiverLast,
                                 myFont: "Arial",
                                 mySignature: "no signature on file"
 
@@ -182,20 +185,23 @@ struct OrderCreate: View {
 
                 }   //end if new receiver
 
-                oVM.createOrder(
+                vm.createOrder(
                     senderId: pVM.currentUserId,
                     senderFirstName: pVM.currentUserFirstName,
                     senderLastName: pVM.currentUserLastName,
 
-                    receiverId: pVM.currentReceiverId,
-                    receiverEmail: pVM.currentReceiverEmail,
-                    receiverFirstName: pVM.currentReceiverFirst,
-                    receiverLastName: pVM.currentReceiverLast
+                    receiverId: vm.currentReceiverId,
+                    receiverEmail: vm.currentReceiverEmail,
+                    receiverFirstName: vm.currentReceiverFirst,
+                    receiverLastName: vm.currentReceiverLast
                 )
 
                 // after creating order, reset the form
 
-                oVM.selectedReceiverEmail = "New Recipient"
+                vm.selectedReceiverEmail = "New Recipient"
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    self.presentationMode.wrappedValue.dismiss()
+                }
 
             }) {
                 Text("Create Order")
@@ -224,31 +230,31 @@ struct OrderCreate: View {
 
         .onAppear {
             Task {
-                try? await oVM.getReceivers(senderId: pVM.currentUserId)
+                try? await vm.getReceivers(senderId: pVM.currentUserId)
                 receiverList.removeAll()
                 receiverList.append("New Recipient")
-                receiverList.append(contentsOf: oVM.receiverList)
+                receiverList.append(contentsOf: vm.receiverList)
 
             }
         }
-        .onChange(of: oVM.selectedReceiverEmail) {
+        .onChange(of: vm.selectedReceiverEmail) {
 
-            if oVM.selectedReceiverEmail == "New Recipient" {
-                pVM.currentReceiverId = ""
-                pVM.currentReceiverFirst = ""
-                pVM.currentReceiverLast = ""
-                pVM.currentReceiverEmail = ""
+            if vm.selectedReceiverEmail == "New Recipient" {
+                vm.currentReceiverId = ""
+                vm.currentReceiverFirst = ""
+                vm.currentReceiverLast = ""
+                vm.currentReceiverEmail = ""
             } else {
                 do {
                     Task {
-                        try await pVM.getReceiver(
-                            email: oVM.selectedReceiverEmail)
+                        try await vm.getReceiver(
+                            email: vm.selectedReceiverEmail)
                     }
                 }
             }
         }
         .alert(
-            isPresented: $oVM.updateOrderSuccessful,
+            isPresented: $vm.updateOrderSuccessful,
             content: {
                 Alert(
                     title: Text("Order Created"),
@@ -267,7 +273,7 @@ struct OrderCreate: View {
 #Preview {
 
     NavigationStack {
-        OrderCreate(pVM: ProfileViewModel(), oVM: OrderViewModel())
+        OrderCreate(pVM: ProfileViewModel())
     }
 
 }

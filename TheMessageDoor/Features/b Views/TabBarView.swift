@@ -10,7 +10,9 @@ import SwiftUI
 struct TabBarView: View {
 
     @StateObject var pVM = ProfileViewModel()
-    @StateObject var mVM = MessageViewModel()
+    @StateObject var mVM = MessageCreateVM()
+    @StateObject var mVMy = MessageListVM()
+    @StateObject var mVMx = MessageViewModel()
     @StateObject var oVM = OrderViewModel()
 
     @Binding var showSignInView: Bool
@@ -19,7 +21,7 @@ struct TabBarView: View {
     var body: some View {
         TabView(selection: $tabSelection) {
             NavigationStack {
-                MessageListView(pVM: pVM, mVM: mVM)
+                MessageListView(pVM: pVM)
             }
 
             .tabItem {
@@ -30,7 +32,7 @@ struct TabBarView: View {
             .tag(0)
 
             NavigationStack {
-                CreateMessageView(pVM: pVM, mVM: mVM, oVM: oVM, tabSelection: $tabSelection)
+                CreateMessageView(pVM: pVM, vm: mVM, tabSelection: $tabSelection)
 
             }
 
@@ -64,7 +66,7 @@ struct TabBarView: View {
             .tag(3)
 
             NavigationStack {
-                ProfileView(pVM: pVM, mVM: mVM, showSignInView: $showSignInView)
+                ProfileView(pVM: pVM, mVM: mVMx, showSignInView: $showSignInView)
 
             }
 
