@@ -11,29 +11,15 @@ import Foundation
 class OrderCreateVM: ObservableObject {
     
     private var rm: ReceiverManager = ReceiverManager()
+  
     @Published var selectedReceiverEmail: String = ""
     
     @Published var receiverList: [String] = []
     
-    @Published var thisReceiverId: String = ""
-    @Published var thisReceiverFirst: String = ""
-    @Published var thisReceiverLast: String = ""
-    
     @Published private(set) var order: Order? = nil
     
     @Published var currentReceiver: Profile? = nil
-    
-    @Published var currentUserEmail: String = ""
-    @Published var currentUserFirstName: String = ""
-    @Published var currentUserLastName: String = ""
-    @Published var currentUserMyFont: String = ""
-    @Published var currentUserDateCreated: Date = Date()
-    @Published var currentUserPhotoUrl: String = ""
-    @Published var currentUserMySignature: String = ""
-    @Published var currentUserId: String = ""
     @Published var currentReceiverId: String = ""
-    @Published var currentReceiverFirst: String = ""
-    @Published var currentReceiverLast: String = ""
     @Published var currentReceiverEmail: String = ""
     @Published var currentReceiverFirstName: String = ""
     @Published var currentReceiverLastName: String = ""
@@ -43,12 +29,12 @@ class OrderCreateVM: ObservableObject {
     @Published var currentOrderType: String = ""
     
     @Published var orderList: [Order] = []
-    
+    @Published var activeOrders: [Order] = []
     
     @Published var updateOrderSuccessful: Bool = false
+    @Published var duplicateOrders: Bool = false
     
-    init () {}
-    
+    init () { }
     
     func loadCurrentOrder(orderId: String) async throws {
         self.order = try await OrderManager.shared.getOrder(orderId: orderId)
@@ -69,17 +55,7 @@ class OrderCreateVM: ObservableObject {
     func createOrder(senderId: String, senderFirstName: String, senderLastName: String, receiverId: String, receiverEmail: String, receiverFirstName: String, receiverLastName: String)
     
     {
-        let updatedOrder = Order(orderId: "",
-                                 senderId: senderId,
-                                 senderFirstName:senderFirstName ,
-                                 senderLastName: senderLastName,
-                                 receiverId: receiverId,
-                                 receiverFirstName: receiverFirstName,
-                                 receiverLastName: receiverLastName,
-                                 receiverEmail: receiverEmail,
-                                 orderType: "monthly",
-                                 orderStatus: "Active",
-                                 orderDateCreated: Date())
+        let updatedOrder = Order(orderId: "", senderId: senderId,senderFirstName:senderFirstName ,senderLastName: senderLastName,receiverId: receiverId,receiverFirstName: receiverFirstName,receiverLastName: receiverLastName,receiverEmail: receiverEmail,orderType: "monthly",orderStatus: "Active",orderDateCreated: Date())
         Task {
             try await OrderManager.shared.createNewOrder(order: updatedOrder)
             updateOrderSuccessful.toggle()
@@ -87,15 +63,8 @@ class OrderCreateVM: ObservableObject {
         
     }
     
-//    func getReceivers(senderId: String) async throws{
-//        let result = try await OrderManager.shared.getReceivers(senderId: senderId)
-//        
-//        // remove duplicates from receiverlist
-//        receiverList = result.unique()
-//    }
-    
     func getReceivers(senderId: String) async throws {
-        try await rm.getReceivers(senderId: senderId)
+        receiverList = try await rm.getReceivers(senderId: senderId)
     }
     
     func fetchSenderOrders(senderId: String) async throws {
@@ -117,8 +86,8 @@ class OrderCreateVM: ObservableObject {
                 email: email)
             
             currentReceiverId = self.currentReceiver?.userId ?? ""
-            currentReceiverFirst = self.currentReceiver?.firstName ?? ""
-            currentReceiverLast = self.currentReceiver?.lastName ?? ""
+            currentReceiverFirstName = self.currentReceiver?.firstName ?? ""
+            currentReceiverLastName = self.currentReceiver?.lastName ?? ""
             currentReceiverEmail = self.currentReceiver?.email ?? ""
         } catch {
             print("no receiver with email: \(email) found")
@@ -157,6 +126,24 @@ class OrderCreateVM: ObservableObject {
             }
         }
 
+    }
+    
+    func getReceiverInfo(email: String) {
+        var First: String = ""
+        var Last: String = ""
+        var Id: String = ""
+        (First, Last, Id) = rm.getReceiverInfo(email: email)
+        
+        currentReceiverId = Id
+        currentReceiverFirstName = First
+        currentReceiverLastName = Last
+        currentReceiverEmail = email
+    }
+    
+    func checkIfActiveOrderExists(email: String) {
+        duplicateOrders = false
+        duplicateOrders = rm.activeOrders.contains(where: { $0.receiverEmail == email })
+   
     }
 }
 

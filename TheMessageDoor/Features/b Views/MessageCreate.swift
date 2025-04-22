@@ -10,8 +10,8 @@ import SwiftUI
 struct CreateMessageView: View {
   
     @StateObject var pVM: ProfileViewModel
-    @StateObject var vm: MessageCreateVM
-//    @StateObject var mVM: MessageViewModel
+    @StateObject var vm: MessageCreateVM = MessageCreateVM()
+
     
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.presentationMode) var presentationMode:
@@ -172,9 +172,6 @@ struct CreateMessageView: View {
 
         .onAppear {
             Task {
-//                try? await vm.getReceivers(senderId: pVM.currentUserId)
-//                receiverList.removeAll()
-//                receiverList.append(contentsOf: vm.receiverList)
                 fontList.removeAll()
                 fontList.append(contentsOf: fonts.fonts)
                 vm.messageFont = pVM.currentUserMyFont
@@ -183,12 +180,8 @@ struct CreateMessageView: View {
         }
         .onChange(of: vm.selectedReceiverEmail) {
 
-            do {
-                Task {
-                    try await vm.getReceiver(
-                        email: vm.selectedReceiverEmail)
-                }
-            }
+            vm.getReceiverInfo(email: vm.selectedReceiverEmail)
+            
         }
         .alert(
             isPresented: $vm.updateMessageSuccessful,
@@ -385,13 +378,15 @@ struct RecipientPicker: View {
             }
         }
         .onChange(of: vm.selectedReceiverEmail) {
+            
+            vm.getReceiverInfo(email: vm.selectedReceiverEmail)
 
-            do {
-                Task {
-                    try await vm.getReceiver(
-                        email: vm.selectedReceiverEmail)
-                }
-            }
+//            do {
+//                Task {
+//                    try await vm.getReceiver(
+//                        email: vm.selectedReceiverEmail)
+//                }
+//            }
         }
     }
 }

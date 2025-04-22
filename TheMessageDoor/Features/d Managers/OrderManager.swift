@@ -48,7 +48,7 @@ final class OrderManager {
     }
 
     // find all the people Sender has already sent messages to from the orders.
-    func getReceivers(senderId: String) async throws ->  [String]   {
+    func getReceivers(senderId: String) async throws ->  ([String],[Order])   {
         var receiverOrders: [Order] = []
 
         let query = orderCollection.whereField("sender_id", isEqualTo: senderId)
@@ -69,7 +69,7 @@ final class OrderManager {
             }
 
         }
-        return (receiverList)
+        return (receiverList, receiverOrders)
     }
 
     func deleteSenderOrder(orderId: String) async throws {

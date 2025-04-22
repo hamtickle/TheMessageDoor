@@ -10,8 +10,6 @@ import SwiftUI
 struct ProfileView: View {
 
     @StateObject var pVM : ProfileViewModel
-    @StateObject var mVM : MessageViewModel
-    @StateObject var oVM = OrderViewModel()
     
     @StateObject private var fonts = Fonts()
 
@@ -187,26 +185,26 @@ struct ProfileView: View {
                     .font(.headline)
                     .foregroundColor(.tmdText)
                 HStack {
-                    Text("Total Messages: \(mVM.myTotalMessages)")
+                    Text("Total Messages: \(pVM.myTotalMessages)")
                         .font(.subheadline)
                         .foregroundColor(.tmdText)
                     Image(systemName: "sum")
                 }
                 HStack {
-                    Text("Messages Sent: \(mVM.mySentMessages)")
+                    Text("Messages Sent: \(pVM.mySentMessages)")
                         .font(.subheadline)
                         .foregroundColor(.tmdText)
                     Image(systemName: "paperplane")
                 }
                 HStack {
-                    Text("My Favorite Messages: \(mVM.myFavMessages)")
+                    Text("My Favorite Messages: \(pVM.myFavMessages)")
                         .font(.subheadline)
                         .foregroundColor(.tmdText)
                     Image(systemName: "heart.fill")
                         .foregroundColor(.red)
                 }
                 HStack {
-                    Text("Recipient's Favorite Messages: \(mVM.receiverFavMessages)")
+                    Text("Recipient's Favorite Messages: \(pVM.receiverFavMessages)")
                         .font(.subheadline)
                         .foregroundColor(.tmdText)
                     Image(systemName: "heart.fill")
@@ -243,12 +241,8 @@ struct ProfileView: View {
 
 #Preview {
     NavigationStack {
-
-        ProfileView(pVM: ProfileViewModel(), mVM: MessageViewModel(), showSignInView: .constant(false))
-
+        ProfileView(pVM: ProfileViewModel(), showSignInView: .constant(false))
     }
-
-
 }
 
 

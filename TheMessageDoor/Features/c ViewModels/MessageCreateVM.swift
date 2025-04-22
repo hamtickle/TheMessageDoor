@@ -13,39 +13,19 @@ class MessageCreateVM: ObservableObject {
     @Published private(set) var message: Message? = nil
     private var mVM: MessageListVM = MessageListVM()
     private var rm: ReceiverManager = ReceiverManager()
-    @Published var currentReceiver: Profile? = nil
     
+    @Published var currentReceiver: Profile? = nil
     @Published var receiverList: [String] = []
     @Published var selectedReceiverEmail: String = ""
-    
-    @Published var currentFrom: String = ""
-    @Published var currentTo: String = ""
-    @Published var currentMessage: String = ""
-    @Published var currentDateCreated: Date = Date.now
-    @Published var currentDateSent: Date = Date.now
-    @Published var currentDateOpened: Date = Date.now
-    @Published var currentSenderFavorite: Bool = false
-    @Published var currentReceiverFavorite: Bool = false
-    @Published var currentIsSent : Bool = false
-    @Published var currentMessageFont: String = ""
-    @Published var currentOpenedStatus: String = ""
-    @Published var currentReceiverDeleted: Bool = false
     @Published var currentReceiverId: String = ""
-    @Published var currentReceiverFirst: String = ""
-    @Published var currentReceiverLast: String = ""
     @Published var currentReceiverEmail: String = ""
+    @Published var currentReceiverFirstName: String = ""
+    @Published var currentReceiverLastName: String = ""
     
-    @Published var isNewMessage: Bool = false
-    @Published var myTotalMessages: Int = 0
-    @Published var mySentMessages: Int = 0
-    @Published var myFavMessages: Int = 0
-    @Published var receiverFavMessages: Int = 0
-
+    @Published var currentMessage: String = ""
+    @Published var currentSenderFavorite: Bool = false
     
     @Published var displayMessages: [Message] = []
-    @Published var specificMessage: Message? = nil
-    @Published var selectMessage: Message? = nil
-    
     @Published var messageFont: String = ""
     
     @Published var updateMessageSuccessful: Bool = false
@@ -56,49 +36,17 @@ class MessageCreateVM: ObservableObject {
     }
     
     func createMessage(
-        messageId: String,
-        from: String,
-        senderId: String,
-        to: String,
-        receiverId: String,
-        message: String,
-        dateSent: Date,
-        senderFavorite: Bool,
-        isSent: Bool,
-        messageFont: String,
-        messageOpenedStatus: String,
-        messageDateOpened: Date,
-        receiverDeleted: Bool,
-        receiverFavorite: Bool
+        messageId: String, from: String, senderId: String, to: String, receiverId: String, message: String, dateSent: Date, senderFavorite: Bool, isSent: Bool, messageFont: String, messageOpenedStatus: String, messageDateOpened: Date, receiverDeleted: Bool, receiverFavorite: Bool
     )
-    {
-   
-   //     guard let message else { return }
-        
+    {  //     guard let message else { return }
         let updatedMessage = Message(
-            messageId: UUID().uuidString,
-            from: from,
-            senderId: senderId,
-            to: to,
-            receiverId: receiverId,
-            message: message,
-            messageFont: messageFont,
-            senderFavorite: senderFavorite,
-            dateCreated: Date(),
-            isSent: isSent,
-            dateSent: dateSent,
-            messageOpenedStatus: "",
-            messageDateOpened: Date(),
-            receiverFavorite: false,
-            receiverDeleted: false
-    
+            messageId: UUID().uuidString,from: from,senderId: senderId,to: to,receiverId: receiverId,message: message,messageFont: messageFont,senderFavorite: senderFavorite,dateCreated: Date(),isSent: isSent,dateSent: dateSent,messageOpenedStatus: "",messageDateOpened: Date(),receiverFavorite: false,receiverDeleted: false
             )
         Task {
             try await MessageManager.shared.updateMessage(message: updatedMessage)
             updateMessageSuccessful.toggle()
             currentMessage = ""
         }
-        
     }
     
     func fetchSenderMessages(senderId: String) async {
@@ -125,7 +73,6 @@ class MessageCreateVM: ObservableObject {
             }
         }
         
-      
     }
     
     func toggleSenderFavorite(message: Message) {
@@ -197,38 +144,22 @@ class MessageCreateVM: ObservableObject {
     
     }
     
-//    func getReceivers(senderId: String) async throws{
-//        let result = try await OrderManager.shared.getReceivers(senderId: senderId)
-//        
-//        // remove duplicates from receiverlist
-//        receiverList = result.unique()
-//        sortReceivers()
-//        print (receiverList)
-//    }
-//    
-//    func sortReceivers() {
-//        receiverList.sort { (email1, email2) -> Bool in
-//            return email1 < email2
-//        }
-//    }
     
     func getReceivers(senderId: String) async throws {
-        try await rm.getReceivers(senderId: senderId)
+        receiverList = try await rm.getReceivers(senderId: senderId)
     }
     
-    func getReceiver(email: String) async throws {
-        do {
-            currentReceiver = try await UserManager.shared.getUserWithEmail(
-                email: email)
-
-            currentReceiverId = self.currentReceiver?.userId ?? ""
-            currentReceiverFirst = self.currentReceiver?.firstName ?? ""
-            currentReceiverLast = self.currentReceiver?.lastName ?? ""
-            currentReceiverEmail = self.currentReceiver?.email ?? ""
-        } catch {
-            print("no receiver with email: \(email) found")
-
-        }
+    
+    func getReceiverInfo(email: String) {
+        var First: String = ""
+        var Last: String = ""
+        var Id: String = ""
+        (First, Last, Id) = rm.getReceiverInfo(email: email)
+        
+        currentReceiverId = Id
+        currentReceiverFirstName = First
+        currentReceiverLastName = Last
+        currentReceiverEmail = email
     }
     
 }

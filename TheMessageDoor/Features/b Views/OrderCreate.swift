@@ -108,7 +108,7 @@ struct OrderCreate: View {
 
                         HStack {
                             TextField("",
-                                      text: $vm.currentReceiverFirst,
+                                      text: $vm.currentReceiverFirstName,
                                       prompt: Text("first name...").foregroundColor(.gray).font(.body)
                             )
                             .padding(.horizontal)
@@ -120,7 +120,7 @@ struct OrderCreate: View {
 
                             TextField(
                                 "recipient last:",
-                                text: $vm.currentReceiverLast,
+                                text: $vm.currentReceiverLastName,
                                 prompt: Text("last name...").foregroundColor(.gray).font(.body)
                             )
                             .padding(.horizontal)
@@ -172,36 +172,41 @@ struct OrderCreate: View {
                      try await vm.createReceiver(
                                 userId: receiverId,
                                 email: vm.currentReceiverEmail,
-                                firstName: vm.currentReceiverFirst,
-                                lastName: vm.currentReceiverLast,
+                                firstName: vm.currentReceiverFirstName,
+                                lastName: vm.currentReceiverLastName,
                                 myFont: "Arial",
                                 mySignature: "no signature on file"
 
                             )
                        }
-                   }  catch {
-                       
-                   }
+                   }  
 
                 }   //end if new receiver
 
-                vm.createOrder(
-                    senderId: pVM.currentUserId,
-                    senderFirstName: pVM.currentUserFirstName,
-                    senderLastName: pVM.currentUserLastName,
+                //check for duplicate orders
+                vm.checkIfActiveOrderExists(email: vm.currentReceiverEmail)
+                
+                if vm.duplicateOrders
+                    {
+                    print("order already exists")
+                } else {
+                    vm.createOrder(
+                        senderId: pVM.currentUserId,
+                        senderFirstName: pVM.currentUserFirstName,
+                        senderLastName: pVM.currentUserLastName,
 
-                    receiverId: vm.currentReceiverId,
-                    receiverEmail: vm.currentReceiverEmail,
-                    receiverFirstName: vm.currentReceiverFirst,
-                    receiverLastName: vm.currentReceiverLast
-                )
-
-                // after creating order, reset the form
-
-                vm.selectedReceiverEmail = "New Recipient"
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                    self.presentationMode.wrappedValue.dismiss()
+                        receiverId: vm.currentReceiverId,
+                        receiverEmail: vm.currentReceiverEmail,
+                        receiverFirstName: vm.currentReceiverFirstName,
+                        receiverLastName: vm.currentReceiverLastName
+                    )
+                    
+                    vm.selectedReceiverEmail = "New Recipient"
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        self.presentationMode.wrappedValue.dismiss()
+                    }
                 }
+                
 
             }) {
                 Text("Create Order")
@@ -241,16 +246,12 @@ struct OrderCreate: View {
 
             if vm.selectedReceiverEmail == "New Recipient" {
                 vm.currentReceiverId = ""
-                vm.currentReceiverFirst = ""
-                vm.currentReceiverLast = ""
+                vm.currentReceiverFirstName = ""
+                vm.currentReceiverLastName = ""
                 vm.currentReceiverEmail = ""
             } else {
-                do {
-                    Task {
-                        try await vm.getReceiver(
-                            email: vm.selectedReceiverEmail)
-                    }
-                }
+
+                vm.getReceiverInfo(email: vm.selectedReceiverEmail)
             }
         }
         .alert(
@@ -258,7 +259,16 @@ struct OrderCreate: View {
             content: {
                 Alert(
                     title: Text("Order Created"),
-                    message: Text("Your order has been created. Thank You."),
+                    message: Text("Your order has been created. \n Thank You."),
+                    dismissButton: .cancel(Text("OK")))
+            }
+        )
+        .alert(
+            isPresented: $vm.duplicateOrders,
+            content: {
+                Alert(
+                    title: Text("Active Order Exists"),
+                    message: Text("You have an active order for \n \(vm.selectedReceiverEmail). \n Please complete existing order first."),
                     dismissButton: .cancel(Text("OK")))
             }
         )
