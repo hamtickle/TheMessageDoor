@@ -137,6 +137,8 @@ class MessageCreateVM: ObservableObject {
         Task {
             do {
                     _ = try await MessageManager.shared.updateMessage(message: updatedMessage)
+   //             user.?.incrementTotalMessagesCreated()
+                
             } catch  {
                 print("Could not delete message \(error.localizedDescription)")
             }
@@ -161,5 +163,10 @@ class MessageCreateVM: ObservableObject {
         currentReceiverLastName = Last
         currentReceiverEmail = email
     }
+    
+    
+     
+        
+    
     
 }
