@@ -10,8 +10,7 @@ import SwiftUI
 struct MessageListView: View {
 
     @StateObject var pVM : ProfileViewModel
-    @StateObject var mVM = MessageViewModel()
-    @StateObject var oVM = OrderViewModel()
+    @StateObject var vm : MessageListVM = MessageListVM()
 
     @State private var messageFilter = 0
     @State var sender: Bool = true
@@ -24,7 +23,7 @@ struct MessageListView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal)
                 .padding(.top, 30)
-            Text("Total Messages: \(mVM.myTotalMessages)")
+            Text("Total Messages: \(vm.myTotalMessages)")
 
             Picker("Filter", selection: $messageFilter) {
                 Text("My Messages").tag(0)
@@ -35,9 +34,9 @@ struct MessageListView: View {
 
             // The List
 
-            List(mVM.displayMessages) { message in
+            List(vm.displayMessages) { message in
                 NavigationLink(
-                    destination: MessageDetail(pVM: pVM, mVM: mVM, message: message, sender: sender)
+                    destination: MessageDetail(pVM: pVM, message: message, sender: sender)
                 ) {
                     HStack {
                         MessageCell(message: message)
@@ -52,7 +51,7 @@ struct MessageListView: View {
                 if newValue == 0 {
                     do {
                         Task {
-                            try? await mVM.fetchSenderMessages(
+                            await vm.fetchSenderMessages(
                                 senderId: pVM.currentUserId)
                         }
                         sender = true
@@ -60,19 +59,26 @@ struct MessageListView: View {
                 } else {
                     do {
                         Task {
-                            try? await mVM.fetchReceiverMessages(
+                            await vm.fetchReceiverMessages(
                                 receiverId: pVM.currentUserId)
                         }
                         sender = false
                     }
                 }
             }
+            .onChange(of: vm.reloadList) {
+                Task {
+                    await vm.fetchSenderMessages(
+                       senderId: pVM.currentUserId)
+                }
+               
+            }
             .onAppear {
 
                 do {
                     Task {
                         try? await pVM.loadCurrentUser()
-                        try await mVM.fetchSenderMessages(
+                         await vm.fetchSenderMessages(
                             senderId: pVM.currentUserId)
                     }
                 }

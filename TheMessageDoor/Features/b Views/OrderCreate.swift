@@ -10,7 +10,10 @@ import SwiftUI
 struct OrderCreate: View {
     
     @StateObject var pVM : ProfileViewModel
-    @StateObject var oVM = OrderViewModel()
+    @StateObject var vm = OrderCreateVM()
+    
+    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
 
     @State var receiverList: [String] = [""]
 
@@ -89,7 +92,7 @@ struct OrderCreate: View {
 
                             Picker(
                                 "",
-                                selection: $oVM.selectedReceiverEmail
+                                selection: $vm.selectedReceiverEmail
                             ) {
                                 ForEach(receiverList, id: \.self) {
                                     Text($0)
@@ -105,7 +108,7 @@ struct OrderCreate: View {
 
                         HStack {
                             TextField("",
-                                      text: $pVM.currentReceiverFirst,
+                                      text: $vm.currentReceiverFirstName,
                                       prompt: Text("first name...").foregroundColor(.gray).font(.body)
                             )
                             .padding(.horizontal)
@@ -117,7 +120,7 @@ struct OrderCreate: View {
 
                             TextField(
                                 "recipient last:",
-                                text: $pVM.currentReceiverLast,
+                                text: $vm.currentReceiverLastName,
                                 prompt: Text("last name...").foregroundColor(.gray).font(.body)
                             )
                             .padding(.horizontal)
@@ -132,7 +135,7 @@ struct OrderCreate: View {
                         }
 
                         TextField(
-                            "recipient email:", text: $pVM.currentReceiverEmail,
+                            "recipient email:", text: $vm.currentReceiverEmail,
                             prompt: Text("email...").foregroundColor(.gray).font(.body)
                         )
                         .textInputAutocapitalization(.never)
@@ -148,7 +151,7 @@ struct OrderCreate: View {
                     }
                     .padding(.horizontal, 10)
 
-                    Text("Recipient's ID: \(pVM.currentReceiverId)")
+                    Text("Recipient's ID: \(vm.currentReceiverId)")
                         .frame(maxWidth: .infinity, alignment: .center)
                         .font(.caption)
                         .foregroundColor(.black)
@@ -160,42 +163,50 @@ struct OrderCreate: View {
                 
                 
                 // Add Recipient
-                if oVM.selectedReceiverEmail == "New Recipient" {
+                if vm.selectedReceiverEmail == "New Recipient" {
                     let receiverId = UUID().uuidString
-                    pVM.currentReceiverId = receiverId
+                    vm.currentReceiverId = receiverId
 
                    do {
                         Task {
-                     try await pVM.createReceiver(
+                     try await vm.createReceiver(
                                 userId: receiverId,
-                                email: pVM.currentReceiverEmail,
-                                firstName: pVM.currentReceiverFirst,
-                                lastName: pVM.currentReceiverLast,
+                                email: vm.currentReceiverEmail,
+                                firstName: vm.currentReceiverFirstName,
+                                lastName: vm.currentReceiverLastName,
                                 myFont: "Arial",
                                 mySignature: "no signature on file"
 
                             )
                        }
-                   }  catch {
-                       
-                   }
+                   }  
 
                 }   //end if new receiver
 
-                oVM.createOrder(
-                    senderId: pVM.currentUserId,
-                    senderFirstName: pVM.currentUserFirstName,
-                    senderLastName: pVM.currentUserLastName,
+                //check for duplicate orders
+                vm.checkIfActiveOrderExists(email: vm.currentReceiverEmail)
+                
+                if vm.duplicateOrders
+                    {
+                    print("order already exists")
+                } else {
+                    vm.createOrder(
+                        senderId: pVM.currentUserId,
+                        senderFirstName: pVM.currentUserFirstName,
+                        senderLastName: pVM.currentUserLastName,
 
-                    receiverId: pVM.currentReceiverId,
-                    receiverEmail: pVM.currentReceiverEmail,
-                    receiverFirstName: pVM.currentReceiverFirst,
-                    receiverLastName: pVM.currentReceiverLast
-                )
-
-                // after creating order, reset the form
-
-                oVM.selectedReceiverEmail = "New Recipient"
+                        receiverId: vm.currentReceiverId,
+                        receiverEmail: vm.currentReceiverEmail,
+                        receiverFirstName: vm.currentReceiverFirstName,
+                        receiverLastName: vm.currentReceiverLastName
+                    )
+                    
+                    vm.selectedReceiverEmail = "New Recipient"
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        self.presentationMode.wrappedValue.dismiss()
+                    }
+                }
+                
 
             }) {
                 Text("Create Order")
@@ -224,35 +235,40 @@ struct OrderCreate: View {
 
         .onAppear {
             Task {
-                try? await oVM.getReceivers(senderId: pVM.currentUserId)
+                try? await vm.getReceivers(senderId: pVM.currentUserId)
                 receiverList.removeAll()
                 receiverList.append("New Recipient")
-                receiverList.append(contentsOf: oVM.receiverList)
+                receiverList.append(contentsOf: vm.receiverList)
 
             }
         }
-        .onChange(of: oVM.selectedReceiverEmail) {
+        .onChange(of: vm.selectedReceiverEmail) {
 
-            if oVM.selectedReceiverEmail == "New Recipient" {
-                pVM.currentReceiverId = ""
-                pVM.currentReceiverFirst = ""
-                pVM.currentReceiverLast = ""
-                pVM.currentReceiverEmail = ""
+            if vm.selectedReceiverEmail == "New Recipient" {
+                vm.currentReceiverId = ""
+                vm.currentReceiverFirstName = ""
+                vm.currentReceiverLastName = ""
+                vm.currentReceiverEmail = ""
             } else {
-                do {
-                    Task {
-                        try await pVM.getReceiver(
-                            email: oVM.selectedReceiverEmail)
-                    }
-                }
+
+                vm.getReceiverInfo(email: vm.selectedReceiverEmail)
             }
         }
         .alert(
-            isPresented: $oVM.updateOrderSuccessful,
+            isPresented: $vm.updateOrderSuccessful,
             content: {
                 Alert(
                     title: Text("Order Created"),
-                    message: Text("Your order has been created. Thank You."),
+                    message: Text("Your order has been created. \n Thank You."),
+                    dismissButton: .cancel(Text("OK")))
+            }
+        )
+        .alert(
+            isPresented: $vm.duplicateOrders,
+            content: {
+                Alert(
+                    title: Text("Active Order Exists"),
+                    message: Text("You have an active order for \n \(vm.selectedReceiverEmail). \n Please complete existing order first."),
                     dismissButton: .cancel(Text("OK")))
             }
         )
@@ -267,7 +283,7 @@ struct OrderCreate: View {
 #Preview {
 
     NavigationStack {
-        OrderCreate(pVM: ProfileViewModel(), oVM: OrderViewModel())
+        OrderCreate(pVM: ProfileViewModel())
     }
 
 }

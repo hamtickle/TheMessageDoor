@@ -26,6 +26,11 @@ class ProfileViewModel: ObservableObject {
     @Published var currentReceiverFirst: String = ""
     @Published var currentReceiverLast: String = ""
     @Published var currentReceiverEmail: String = ""
+    
+    @Published var myTotalMessages: Int = 0
+    @Published var mySentMessages: Int = 0
+    @Published var myFavMessages: Int = 0
+    @Published var receiverFavMessages: Int = 0
 
     @Published var updateSuccessful: Bool = false
 
@@ -121,4 +126,5 @@ class ProfileViewModel: ObservableObject {
             updateSuccessful.toggle()
         }
     }
+    
 }

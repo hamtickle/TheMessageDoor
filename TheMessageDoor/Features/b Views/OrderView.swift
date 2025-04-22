@@ -10,7 +10,6 @@ import SwiftUI
 struct OrderView: View {
     
     @StateObject var pVM : ProfileViewModel
-    @StateObject var oVM : OrderViewModel
 
     var order: Order
 
@@ -147,16 +146,6 @@ struct OrderView: View {
                 Spacer()
             }
 
-        
-            .alert(
-                isPresented: $oVM.updateOrderSuccessful,
-                content: {
-                    Alert(
-                        title: Text("Order Created"),
-                        message: Text("Your order has been created. Thank You."),
-                        dismissButton: .cancel(Text("OK")))
-                }
-            )
 
 
     }
@@ -164,10 +153,9 @@ struct OrderView: View {
 
 //#Preview {
 //    var order: Order
-//    
+//
 //    NavigationStack {
-//        OrderView(order: order)
+//        OrderView(pVM: ProfileViewModel(), order: order)
 //    }
-//    .environmentObject(ProfileViewModel())
 //
 //}

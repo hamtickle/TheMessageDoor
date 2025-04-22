@@ -27,7 +27,7 @@ struct MessageCell: View {
             ZStack {
                 Rectangle()
                     .fill(!message.isSent ? Color(#colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1)) : Color.white)
-                    .frame(width: 280, height: 110)
+                    .frame(width: 280, height: 100)
                     .shadow(color: message.isSent ? Color.white : Color.gray, radius: 5, x: 5, y: 5)
                 HStack {
 
@@ -92,7 +92,7 @@ struct MessageCell: View {
                         } else {
                             Image(systemName: "heart")
                             .font(.caption)
-                            .foregroundColor(colorScheme == .dark ? Color.white : Color.black)
+                            .foregroundColor(message.isSent ? Color.gray : Color.white)
                             .padding(.bottom, 5)
                         }
                           
@@ -105,7 +105,7 @@ struct MessageCell: View {
                         } else {
                             Image(systemName: "heart")
                             .font(.caption)
-                            .foregroundColor(colorScheme == .dark ? Color.white : Color.black)
+                            .foregroundColor(message.isSent ? Color.gray : Color.white)
                             .padding(.bottom, 5)
                         }
                         

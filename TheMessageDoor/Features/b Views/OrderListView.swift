@@ -10,7 +10,7 @@ import SwiftUI
 struct OrderListView: View {
 
     @StateObject var pVM : ProfileViewModel
-    @StateObject var oVM = OrderViewModel()
+    @StateObject var vm = OrderListVM()
    
 
     @Environment(\.colorScheme) var colorScheme
@@ -38,8 +38,8 @@ struct OrderListView: View {
             .padding(.top, 30)
             
             
-            List(oVM.orderList, id: \.orderId) { order in
-                NavigationLink(destination: OrderView(pVM: pVM, oVM: oVM, order: order)) {
+            List(vm.orderList, id: \.orderId) { order in
+                NavigationLink(destination: OrderView(pVM: pVM, order: order)) {
 
                     HStack(alignment: .top) {
                         OrderCell(order: order)
@@ -56,7 +56,7 @@ struct OrderListView: View {
 
             do {
                 Task {
-                    try await oVM.fetchSenderOrders(
+                    try await vm.fetchSenderOrders(
                         senderId: pVM.currentUserId)
                 }
             }

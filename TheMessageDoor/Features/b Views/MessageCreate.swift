@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct CreateMessageView: View {
+  
     @StateObject var pVM: ProfileViewModel
-    @StateObject var mVM: MessageViewModel
-    @StateObject var oVM: OrderViewModel
+    @StateObject var vm: MessageCreateVM = MessageCreateVM()
+
     
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.presentationMode) var presentationMode:
@@ -43,21 +44,21 @@ struct CreateMessageView: View {
                 }
                 .foregroundColor(.tmdText)
 
-                RecipientPicker(pVM: pVM, oVM: oVM, receiverList: receiverList)
+                RecipientPicker(pVM: pVM, vm: vm, receiverList: receiverList)
 
-                Toggle("Favorite?", isOn: $mVM.currentSenderFavorite)
+                Toggle("Favorite?", isOn: $vm.currentSenderFavorite)
                     .foregroundColor(.blue)
                     .padding(.bottom, 10)
 
                 //     ShowNote()
-                ShowNote(mVM: mVM)
+                ShowNote(vm: vm)
 
                 HStack {
                     Text("Font:")
                         .foregroundColor(.black)
                     Picker(
                         "",
-                        selection: $mVM.messageFont
+                        selection: $vm.messageFont
                     ) {
                         Text("").tag("")
                         ForEach(fontList, id: \.self) {
@@ -77,17 +78,17 @@ struct CreateMessageView: View {
 
                 
                 Button(action: {
-                    mVM.createMessage(
+                    vm.createMessage(
                         messageId: UUID().uuidString,
                         from: pVM.currentUserFirstName,
                         senderId: pVM.currentUserId,
-                        to: pVM.currentReceiverEmail,
-                        receiverId: pVM.currentReceiverId,
-                        message: mVM.currentMessage,
+                        to: vm.currentReceiverEmail,
+                        receiverId: vm.currentReceiverId,
+                        message: vm.currentMessage,
                         dateSent: Date(),
-                        senderFavorite: mVM.currentSenderFavorite,
+                        senderFavorite: vm.currentSenderFavorite,
                         isSent: false,
-                        messageFont: mVM.messageFont,
+                        messageFont: vm.messageFont,
                         messageOpenedStatus: "Unopened",
                         messageDateOpened: Date(),
                         receiverDeleted: false,
@@ -123,17 +124,17 @@ struct CreateMessageView: View {
                 // Send Message
 
                 Button(action: {
-                    mVM.createMessage(
+                    vm.createMessage(
                         messageId: UUID().uuidString,
                         from: pVM.currentUserFirstName,
                         senderId: pVM.currentUserId,
-                        to: pVM.currentReceiverEmail,
-                        receiverId: pVM.currentReceiverId,
-                        message: mVM.currentMessage,
+                        to: vm.currentReceiverEmail,
+                        receiverId: vm.currentReceiverId,
+                        message: vm.currentMessage,
                         dateSent: Date(),
-                        senderFavorite: mVM.currentSenderFavorite,
+                        senderFavorite: vm.currentSenderFavorite,
                         isSent: true,
-                        messageFont: mVM.messageFont,
+                        messageFont: vm.messageFont,
                         messageOpenedStatus: "Unopened",
                         messageDateOpened: Date(),
                         receiverDeleted: false,
@@ -171,26 +172,19 @@ struct CreateMessageView: View {
 
         .onAppear {
             Task {
-                try? await oVM.getReceivers(senderId: pVM.currentUserId)
-                receiverList.removeAll()
-                receiverList.append(contentsOf: oVM.receiverList)
                 fontList.removeAll()
                 fontList.append(contentsOf: fonts.fonts)
-                mVM.messageFont = pVM.currentUserMyFont
+                vm.messageFont = pVM.currentUserMyFont
 
             }
         }
-        .onChange(of: oVM.selectedReceiverEmail) {
+        .onChange(of: vm.selectedReceiverEmail) {
 
-            do {
-                Task {
-                    try await pVM.getReceiver(
-                        email: oVM.selectedReceiverEmail)
-                }
-            }
+            vm.getReceiverInfo(email: vm.selectedReceiverEmail)
+            
         }
         .alert(
-            isPresented: $mVM.updateMessageSuccessful,
+            isPresented: $vm.updateMessageSuccessful,
             content: {
                 Alert(
                     title: Text("Message Created"),
@@ -217,15 +211,16 @@ extension View {
 
     NavigationStack {
         CreateMessageView(
-            pVM: ProfileViewModel(), mVM: MessageViewModel(),
-            oVM: OrderViewModel(), tabSelection: .constant(1))
+            pVM: ProfileViewModel(),
+            vm: MessageCreateVM(),
+            tabSelection: .constant(1))
     }
 
 }
 
 struct ShowNote: View {
 
-    @StateObject var mVM: MessageViewModel
+    @StateObject var vm: MessageCreateVM
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
@@ -243,8 +238,8 @@ struct ShowNote: View {
                     .fill(Color(.yellow))
                     .frame(width: 350, height: 20)
                 //                    Text("message")
-                TextEditor(text: $mVM.currentMessage)
-                    .font(.custom(mVM.messageFont, size: 25))
+                TextEditor(text: $vm.currentMessage)
+                    .font(.custom(vm.messageFont, size: 25))
                     .foregroundColor(.black)
                     .padding(.horizontal, 10)
                     .multilineTextAlignment(.center)
@@ -265,7 +260,7 @@ struct ShowNote: View {
 
 struct CreateMessageButtonsView: View {
     @StateObject var pVM: ProfileViewModel
-    @StateObject var mVM: MessageViewModel
+    @StateObject var vm: MessageCreateVM
 
     @State var updateMessageSent: Bool
     
@@ -276,17 +271,17 @@ struct CreateMessageButtonsView: View {
 
     var body: some View {
         Button(action: {
-            mVM.createMessage(
+            vm.createMessage(
                 messageId: UUID().uuidString,
                 from: pVM.currentUserFirstName,
                 senderId: pVM.currentUserId,
                 to: pVM.currentReceiverEmail,
                 receiverId: pVM.currentReceiverId,
-                message: mVM.currentMessage,
+                message: vm.currentMessage,
                 dateSent: Date(),
-                senderFavorite: mVM.currentSenderFavorite,
+                senderFavorite: vm.currentSenderFavorite,
                 isSent: false,
-                messageFont: mVM.messageFont,
+                messageFont: vm.messageFont,
                 messageOpenedStatus: "Unopened",
                 messageDateOpened: Date(),
                 receiverDeleted: false,
@@ -309,17 +304,17 @@ struct CreateMessageButtonsView: View {
         // Send Message
 
         Button(action: {
-            mVM.createMessage(
+            vm.createMessage(
                 messageId: UUID().uuidString,
                 from: pVM.currentUserFirstName,
                 senderId: pVM.currentUserId,
                 to: pVM.currentReceiverEmail,
                 receiverId: pVM.currentReceiverId,
-                message: mVM.currentMessage,
+                message: vm.currentMessage,
                 dateSent: Date(),
-                senderFavorite: mVM.currentSenderFavorite,
+                senderFavorite: vm.currentSenderFavorite,
                 isSent: true,
-                messageFont: mVM.messageFont,
+                messageFont: vm.messageFont,
                 messageOpenedStatus: "Unopened",
                 messageDateOpened: Date(),
                 receiverDeleted: false,
@@ -343,7 +338,7 @@ struct CreateMessageButtonsView: View {
 struct RecipientPicker: View {
     
     @StateObject var pVM: ProfileViewModel
-    @StateObject var oVM: OrderViewModel
+    @StateObject var vm: MessageCreateVM
     
     
     @Environment(\.colorScheme) var colorScheme
@@ -360,7 +355,7 @@ struct RecipientPicker: View {
             
             Picker(
                 "",
-                selection: $oVM.selectedReceiverEmail
+                selection: $vm.selectedReceiverEmail
             ) {
                 Text("").tag("")
                 ForEach(receiverList, id: \.self) {
@@ -377,10 +372,21 @@ struct RecipientPicker: View {
         .border(Color.blue, width: 2)
         .onAppear {
             Task {
-                try? await oVM.getReceivers(senderId: pVM.currentUserId)
+                try? await vm.getReceivers(senderId: pVM.currentUserId)
                 receiverList.removeAll()
-                receiverList.append(contentsOf: oVM.receiverList)
+                receiverList.append(contentsOf: vm.receiverList)
             }
+        }
+        .onChange(of: vm.selectedReceiverEmail) {
+            
+            vm.getReceiverInfo(email: vm.selectedReceiverEmail)
+
+//            do {
+//                Task {
+//                    try await vm.getReceiver(
+//                        email: vm.selectedReceiverEmail)
+//                }
+//            }
         }
     }
 }
