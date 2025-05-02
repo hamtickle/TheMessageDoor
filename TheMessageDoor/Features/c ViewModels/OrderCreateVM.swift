@@ -11,6 +11,8 @@ import Foundation
 class OrderCreateVM: ObservableObject {
     
     private var rm: ReceiverManager = ReceiverManager()
+    private var checkEmail: CheckUserWithEmail = CheckUserWithEmail()
+    private var k: Constants = Constants()
   
     @Published var selectedReceiverEmail: String = ""
     
@@ -36,21 +38,68 @@ class OrderCreateVM: ObservableObject {
     
     init () { }
     
-    func loadCurrentOrder(orderId: String) async throws {
-        self.order = try await OrderManager.shared.getOrder(orderId: orderId)
-        unwrapOrder()
-    }
+//    func loadCurrentOrder(orderId: String) async throws {
+//        self.order = try await OrderManager.shared.getOrder(orderId: orderId)
+//        unwrapOrder()
+//    }
     
-    func unwrapOrder() {
-        currentReceiverId = self.order?.receiverId ?? ""
-        currentReceiverEmail = self.order?.receiverEmail ?? ""
-        currentReceiverFirstName = self.order?.receiverFirstName ?? ""
-        currentReceiverLastName = self.order?.receiverLastName ?? ""
+//    func unwrapOrder() {
+//        currentReceiverId = self.order?.receiverId ?? ""
+//        currentReceiverEmail = self.order?.receiverEmail ?? ""
+//        currentReceiverFirstName = self.order?.receiverFirstName ?? ""
+//        currentReceiverLastName = self.order?.receiverLastName ?? ""
+//        
+//        currentOrderDateCreated = self.order?.orderDateCreated ?? Date()
+//        currentOrderType = self.order?.orderType ?? ""
+//        currentOrderStatus = self.order?.orderStatus ?? ""
+//    }
+    
+    func createOrderButtonTapped(user: Person, first: String, last: String, email: String, key: String) {
         
-        currentOrderDateCreated = self.order?.orderDateCreated ?? Date()
-        currentOrderType = self.order?.orderType ?? ""
-        currentOrderStatus = self.order?.orderStatus ?? ""
-    }
+        // New Recipient - Add Recipient to Firestore
+        if selectedReceiverEmail == "New Recipient" {
+            // New Recipient
+            
+            let receiverId = UUID().uuidString
+            currentReceiverId = receiverId
+
+           do {
+                Task {
+             try await createReceiver(
+                userId: receiverId, email: email, firstName: first, lastName: last, myFont: k.appFont, mySignature: k.appSignature,
+                        receiverKey: receiverId
+                    )
+               }
+           }
+
+        }   //end if new receiver record created
+
+        //check for duplicate orders
+        checkIfActiveOrderExists(email: email)
+        
+        if duplicateOrders
+            {
+            print("order already exists")
+        } else {
+            createOrder(
+                senderId: user.userId,
+                senderFirstName: user.firstName,
+                senderLastName: user.lastName,
+
+                receiverId: currentReceiverId,
+                receiverEmail: email,
+                receiverFirstName: first,
+                receiverLastName: last
+                
+            )
+            
+            selectedReceiverEmail = "New Recipient"
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+//                self.presentationMode.wrappedValue.dismiss()
+            }
+        }
+    
+    
     
     func createOrder(senderId: String, senderFirstName: String, senderLastName: String, receiverId: String, receiverEmail: String, receiverFirstName: String, receiverLastName: String)
     
@@ -81,23 +130,13 @@ class OrderCreateVM: ObservableObject {
     }
     
     func getReceiver(email: String) async throws {
-        do {
-            currentReceiver = try await UserManager.shared.getUserWithEmail(
-                email: email)
-            
-            currentReceiverId = self.currentReceiver?.userId ?? ""
-            currentReceiverFirstName = self.currentReceiver?.firstName ?? ""
-            currentReceiverLastName = self.currentReceiver?.lastName ?? ""
-            currentReceiverEmail = self.currentReceiver?.email ?? ""
-        } catch {
-            print("no receiver with email: \(email) found")
-            
-        }
+        var receiver = try await checkEmail.fetchUserWithEmail(email: email)
     }
+    
     
     func createReceiver(
         userId: String, email: String, firstName: String, lastName: String,
-        myFont: String, mySignature: String
+        myFont: String, mySignature: String, receiverKey: String
     ) async throws {
 
         // check receiver is not already registered
@@ -110,9 +149,9 @@ class OrderCreateVM: ObservableObject {
 
         if UserManager.shared.newUser {
             let receiverUser = Profile(
-                userId: userId, email: email, photoUrl: "no photo on file",
+                userId: userId, email: email, photoUrl: k.appProfileURL,
                 dateCreated: Date(), firstName: firstName, lastName: lastName,
-                myFont: myFont, mySignature: mySignature)
+                myFont: myFont, mySignature: mySignature, receiverKey: receiverKey)
 
             Task {
                 do {

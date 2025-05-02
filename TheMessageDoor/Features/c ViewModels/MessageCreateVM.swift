@@ -31,16 +31,17 @@ class MessageCreateVM: ObservableObject {
     @Published var updateMessageSuccessful: Bool = false
     @Published var messageDeleted: Bool = false
     @Published var savedSent: Bool = false
+    @Published var noOrders: Bool = false
     
     init () {
     }
     
     func createMessage(
-        messageId: String, from: String, senderId: String, to: String, receiverId: String, message: String, dateSent: Date, senderFavorite: Bool, isSent: Bool, messageFont: String, messageOpenedStatus: String, messageDateOpened: Date, receiverDeleted: Bool, receiverFavorite: Bool
+        messageId: String, from: String, senderId: String, to: String, receiverId: String, message: String, dateSent: Date, senderFavorite: Bool, isSent: Bool, messageFont: String, messageStatus: String, messageDateOpened: Date, receiverDeleted: Bool, receiverFavorite: Bool
     )
     {  //     guard let message else { return }
         let updatedMessage = Message(
-            messageId: UUID().uuidString,from: from,senderId: senderId,to: to,receiverId: receiverId,message: message,messageFont: messageFont,senderFavorite: senderFavorite,dateCreated: Date(),isSent: isSent,dateSent: dateSent,messageOpenedStatus: "",messageDateOpened: Date(),receiverFavorite: false,receiverDeleted: false
+            messageId: UUID().uuidString,from: from,senderId: senderId,to: to,receiverId: receiverId,message: message,messageFont: messageFont,senderFavorite: senderFavorite,dateCreated: Date(),isSent: isSent,dateSent: dateSent,messageStatus: "",messageDateOpened: Date(),receiverFavorite: false,receiverDeleted: false
             )
         Task {
             try await MessageManager.shared.updateMessage(message: updatedMessage)
@@ -149,6 +150,9 @@ class MessageCreateVM: ObservableObject {
     
     func getReceivers(senderId: String) async throws {
         receiverList = try await rm.getReceivers(senderId: senderId)
+        if receiverList.isEmpty {
+            noOrders = true
+        }
     }
     
     

@@ -19,6 +19,8 @@ import Foundation
 class OrderListVM: ObservableObject {
     
     var pVM = ProfileViewModel()
+    private var k: Constants = Constants()
+    @Published var noOrders: Bool = false
     
     @Published var selectedReceiverEmail: String = ""
     
@@ -50,6 +52,11 @@ class OrderListVM: ObservableObject {
         let result = try await OrderManager.shared.getOrders(senderId: senderId)
         self.orderList = result.map(\.self)
         sortOrdersByRecipient()
+        
+        var activeOrders = orderList.filter({ $0.orderStatus == k.statusActive }).count
+        if activeOrders == 0 {
+            noOrders = true
+        }
     }
     
     // Sort Orders

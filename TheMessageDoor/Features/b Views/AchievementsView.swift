@@ -8,6 +8,10 @@
 import SwiftUI
 
 struct AchievementsView: View {
+    
+    @EnvironmentObject var pVM: ProfileViewModel
+//    @StateObject var vm: AchievementsVM = AchievementsVM()
+    
     var body: some View {
         ZStack (alignment: .top) {
             LinearGradient(gradient: Gradient(colors: [.blue, .black]), startPoint: .top, endPoint: .bottom)

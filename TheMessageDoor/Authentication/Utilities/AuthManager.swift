@@ -78,6 +78,10 @@ extension AuthManager {
     {
         let authDataResult = try await Auth.auth().createUser(
             withEmail: email, password: password)
+        // Store UserId in UserDefaults
+        if let encodedData = try? JSONEncoder().encode(authDataResult.user.uid) {
+            UserDefaults.standard.set(encodedData, forKey: "userId")
+        }
         return AuthDataResultModel(user: authDataResult.user)
 
     }

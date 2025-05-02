@@ -9,7 +9,8 @@ import SwiftUI
 
 struct MessageDetail: View {
 
-    @StateObject var pVM: ProfileViewModel
+    @State var user: Person
+    @EnvironmentObject var pVM: ProfileViewModel
     @StateObject var vm: MessageDetailVM = MessageDetailVM()
 
     @StateObject private var fonts = Fonts()
@@ -294,7 +295,7 @@ struct MessageDetail: View {
         
         var message: Message = .init(messageId: "")
 
-        MessageDetail(pVM: ProfileViewModel(), message: message, sender: true)
+        MessageDetail(user: Person(userId: ""), message: message, sender: true)
     }
 
 }
@@ -332,7 +333,7 @@ struct MessageStats: View {
                     )
                     .font(.caption)
                 Text(
-                    message.messageOpenedStatus
+                    message.messageStatus
                 )
                 .foregroundColor(
                     colorScheme == .dark ? .white : .black

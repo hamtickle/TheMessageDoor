@@ -9,12 +9,17 @@ import SwiftUI
 
 struct ProfileView: View {
 
-    @StateObject var pVM : ProfileViewModel
+    @State var user: Person
+    @EnvironmentObject var vm : ProfileViewModel
+//    @State var currentUser = GetCurrentUser.shared
+  
     
     @StateObject private var fonts = Fonts()
 
     @Binding var showSignInView: Bool
     @State var updateSuccessful: Bool = false
+    @State var incompleteProfile: Bool = false
+
     @FocusState private var isFocused: Bool
     
     @State var fontList: [String] = []
@@ -44,16 +49,16 @@ struct ProfileView: View {
 //            Spacer()
             
 //            List {
-                if let user = pVM.user {
+//            if let _ = vm.user {
 
                     VStack(alignment: .center) {
                         VStack(alignment: .center) {
                             
                             HStack {
                                 TextField(
-                                    "First", text: $pVM.currentUserFirstName
+                                    "First", text: $vm.currentUser.firstName
                                 )
-                                //                                .focused($isFocused)
+                                .focused($isFocused)
                                 .padding(.horizontal)
                                 .multilineTextAlignment(.center)
                                 .frame(
@@ -65,7 +70,7 @@ struct ProfileView: View {
                                 .padding(.vertical, 2)
                                 
                                 TextField(
-                                    "First", text: $pVM.currentUserLastName
+                                    "Last", text: $vm.currentUser.lastName
                                 )
                                 .padding(.horizontal)
                                 .multilineTextAlignment(.center)
@@ -77,10 +82,11 @@ struct ProfileView: View {
                                 .foregroundColor(.black)
                                 .padding(.vertical, 2)
                             }
-                            Text("UserID: \(pVM.currentUserId)")
+                            Text("UserID: \(vm.currentUser.userId)")
                                 .font(.caption)
                                 .foregroundColor(.tmdText)
                                 .padding(.vertical, 2)
+
                             
                             HStack {
                                 Text("First Door Opened: ")
@@ -88,14 +94,14 @@ struct ProfileView: View {
                                     .foregroundColor(.tmdText)
                                     .padding(.vertical, 2)
                                 Text(
-                                    "\(pVM.currentUserDateCreated.formatted(date: .numeric, time: .standard))"
+                                    "\(vm.currentUser.dateCreated.formatted(date: .numeric, time: .standard))"
                                 )
                                 .font(.caption)
                                 .foregroundColor(.tmdText)
                                 .padding(.vertical, 2)
                             }
                             
-                            TextField("email", text: $pVM.currentUserEmail)
+                            TextField("email", text: $vm.currentUser.email)
                                 .textInputAutocapitalization(.never)
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal)
@@ -114,7 +120,7 @@ struct ProfileView: View {
                             
                             Picker(
                                 "",
-                                selection: $pVM.currentUserMyFont
+                                selection: $vm.currentUser.myFont
                             ) {
                                 ForEach(fontList, id: \.self) {
                                     Text($0)
@@ -136,25 +142,25 @@ struct ProfileView: View {
                                 )
                             Text("Choose the font you want for your messages.")
                                 .foregroundColor(.black)
-                                .font(.custom(pVM.currentUserMyFont, size: (pVM.currentUserMyFont == "Zapfino") ? 15 : 25))
+                                .font(.custom(vm.currentUser.myFont, size: (vm.currentUser.myFont == "Zapfino") ? 15 : 25))
                                 .multilineTextAlignment(.center)
                                 .frame(height: 100)
                                 .padding(.horizontal)
                             
                         }
                     }
-                }
+//                }
             
             
             VStack(alignment: .center) {
 
                 // Button to update User data here
                 Button {
-                    pVM.updateUser(
-                        email: pVM.currentUserEmail,
-                        firstName: pVM.currentUserFirstName,
-                        lastName: pVM.currentUserLastName,
-                        myFont: pVM.currentUserMyFont, mySignature: "")
+                    vm.updateUser(
+                        email: vm.currentUser.email,
+                        firstName: vm.currentUser.firstName,
+                        lastName: vm.currentUser.lastName,
+                        myFont: vm.currentUser.myFont, mySignature: "")
                     updateSuccessful.toggle()
                 } label: {
                     Text("Update Profile")
@@ -185,31 +191,41 @@ struct ProfileView: View {
                     .font(.headline)
                     .foregroundColor(.tmdText)
                 HStack {
-                    Text("Total Messages: \(pVM.myTotalMessages)")
+                    Text("Total Messages: \(vm.currentUser.totalMessagesCreated)")
                         .font(.subheadline)
                         .foregroundColor(.tmdText)
                     Image(systemName: "sum")
                 }
                 HStack {
-                    Text("Messages Sent: \(pVM.mySentMessages)")
+                    Text("Messages Sent: \(vm.currentUser.totalMessagesSent)")
                         .font(.subheadline)
                         .foregroundColor(.tmdText)
                     Image(systemName: "paperplane")
                 }
                 HStack {
-                    Text("My Favorite Messages: \(pVM.myFavMessages)")
+                    Text("My Favorite Messages: \(vm.currentUser.totalMyFavorites)")
                         .font(.subheadline)
                         .foregroundColor(.tmdText)
                     Image(systemName: "heart.fill")
                         .foregroundColor(.red)
                 }
                 HStack {
-                    Text("Recipient's Favorite Messages: \(pVM.receiverFavMessages)")
+                    Text("Recipient's Favorite Messages: \(vm.currentUser.totalReceiverFavorites)")
                         .font(.subheadline)
                         .foregroundColor(.tmdText)
                     Image(systemName: "heart.fill")
                         .foregroundColor(.blue)
                 }
+                
+                Text("myFont: \(vm.currentUser.myFont)")
+                    .font(.caption)
+                Text("mySignature: \(vm.currentUser.mySignature)")
+                    .font(.caption)
+                Text("URL: \(vm.currentUser.photoUrl)")
+                    .font(.caption)
+                Text("rKey: \(vm.currentUser.receiverKey)")
+                    .font(.caption)
+                
             }
             .padding(.horizontal)
             Spacer()
@@ -226,13 +242,24 @@ struct ProfileView: View {
                     dismissButton: .cancel(Text("OK")))
             }
         )
+        .alert(
+            isPresented: $incompleteProfile,
+            content: {
+                Alert(
+                    title: Text("Incomplete Profile"),
+                    message: Text("Your profile is incomplete. \n Please complete it before continuing."),
+                    dismissButton: .cancel(Text("OK"))
+                )
+            }
+        )
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.isFocused = true
                 fontList.removeAll()
                 fontList.append(contentsOf: fonts.fonts)
             }
-           
+            // Current User Data from User Defaults
+                vm.fetchUserDefaults()
         }
 
     }
@@ -241,7 +268,7 @@ struct ProfileView: View {
 
 #Preview {
     NavigationStack {
-        ProfileView(pVM: ProfileViewModel(), showSignInView: .constant(false))
+        ProfileView(user: Person(userId: ""), showSignInView: .constant(false))
     }
 }
 

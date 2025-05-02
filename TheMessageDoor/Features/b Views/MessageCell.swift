@@ -109,7 +109,7 @@ struct MessageCell: View {
                             .padding(.bottom, 5)
                         }
                         
-                        Text(message.isSent ? message.messageOpenedStatus : "")
+                        Text(message.isSent ? message.messageStatus : "")
                             .font(.caption)
                             .foregroundColor(Color.black)
                         

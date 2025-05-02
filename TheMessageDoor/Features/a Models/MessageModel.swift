@@ -13,6 +13,8 @@ struct Message: Codable, Identifiable, Hashable {
             && lhs.to == rhs.to && lhs.message == rhs.message
             && lhs.dateSent == rhs.dateSent
     }
+    
+//    private var k: Constants = Constants()
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(messageId)
@@ -34,7 +36,7 @@ struct Message: Codable, Identifiable, Hashable {
     var isSent: Bool
     var dateSent: Date
 
-    var messageOpenedStatus: String
+    var messageStatus: String
     var messageDateOpened: Date?
     var receiverFavorite: Bool
     var receiverDeleted: Bool
@@ -53,7 +55,7 @@ struct Message: Codable, Identifiable, Hashable {
         dateCreated: Date,
         isSent: Bool,
         dateSent: Date,
-        messageOpenedStatus: String,
+        messageStatus: String,
         messageDateOpened: Date?,
         receiverFavorite: Bool,
         receiverDeleted: Bool
@@ -71,7 +73,7 @@ struct Message: Codable, Identifiable, Hashable {
         self.isSent = isSent
         self.dateSent = dateSent
 
-        self.messageOpenedStatus = ""
+        self.messageStatus = ""
         self.messageDateOpened = nil
         self.receiverFavorite = false
         self.receiverDeleted = false
@@ -108,7 +110,7 @@ struct Message: Codable, Identifiable, Hashable {
         self.isSent = false
         self.dateSent = Date()
 
-        self.messageOpenedStatus = ""
+        self.messageStatus = ""
         self.messageDateOpened = nil
         self.receiverFavorite = false
         self.receiverDeleted = false
@@ -130,7 +132,7 @@ struct Message: Codable, Identifiable, Hashable {
             dateCreated: dateCreated,
             isSent: true,
             dateSent: Date(),
-            messageOpenedStatus: messageOpenedStatus,
+            messageStatus: messageStatus,
             messageDateOpened: messageDateOpened,
             receiverFavorite: receiverFavorite,
             receiverDeleted: receiverDeleted
@@ -153,7 +155,7 @@ struct Message: Codable, Identifiable, Hashable {
             dateCreated: dateCreated,
             isSent: isSent,
             dateSent: dateSent,
-            messageOpenedStatus: messageOpenedStatus,
+            messageStatus: messageStatus,
             messageDateOpened: messageDateOpened,
             receiverFavorite: receiverFavorite,
             receiverDeleted: receiverDeleted
@@ -176,7 +178,7 @@ struct Message: Codable, Identifiable, Hashable {
             dateCreated: dateCreated,
             isSent: isSent,
             dateSent: dateSent,
-            messageOpenedStatus: messageOpenedStatus,
+            messageStatus: messageStatus,
             messageDateOpened: messageDateOpened,
             receiverFavorite: !currentValue,
             receiverDeleted: receiverDeleted
@@ -198,7 +200,7 @@ struct Message: Codable, Identifiable, Hashable {
             dateCreated: dateCreated,
             isSent: isSent,
             dateSent: dateSent,
-            messageOpenedStatus: "Opened",
+            messageStatus: "Read",
             messageDateOpened: Date(),
             receiverFavorite: receiverFavorite,
             receiverDeleted: receiverDeleted
@@ -219,7 +221,7 @@ struct Message: Codable, Identifiable, Hashable {
             dateCreated: dateCreated,
             isSent: isSent,
             dateSent: dateSent,
-            messageOpenedStatus: messageOpenedStatus,
+            messageStatus: messageStatus,
             messageDateOpened: messageDateOpened,
             receiverFavorite: receiverFavorite,
             receiverDeleted: true
@@ -241,7 +243,7 @@ struct Message: Codable, Identifiable, Hashable {
             dateCreated: dateCreated,
             isSent: isSent,
             dateSent: dateSent,
-            messageOpenedStatus: messageOpenedStatus,
+            messageStatus: messageStatus,
             messageDateOpened: messageDateOpened,
             receiverFavorite: receiverFavorite,
             receiverDeleted: receiverDeleted

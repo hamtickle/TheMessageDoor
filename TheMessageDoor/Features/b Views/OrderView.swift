@@ -9,7 +9,8 @@ import SwiftUI
 
 struct OrderView: View {
     
-    @StateObject var pVM : ProfileViewModel
+    @State var user: Person
+    @EnvironmentObject var pVM : ProfileViewModel
 
     var order: Order
 
@@ -54,7 +55,7 @@ struct OrderView: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .center)
 
-                        Text("Sender's ID: \(pVM.currentUserId)")
+                        Text("Sender's ID: \(user.userId)")
                             .frame(maxWidth: .infinity, alignment: .center)
                             .font(.caption)
                             .foregroundColor(.primary)
@@ -155,7 +156,7 @@ struct OrderView: View {
 //    var order: Order
 //
 //    NavigationStack {
-//        OrderView(pVM: ProfileViewModel(), order: order)
+//        OrderView(user: Person(userId: ""), order: order)
 //    }
 //
 //}

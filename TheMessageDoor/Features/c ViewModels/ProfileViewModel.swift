@@ -10,57 +10,80 @@ import Foundation
 @MainActor
 class ProfileViewModel: ObservableObject {
 
+    private var k: Constants = Constants()
+ //   @Published var thisUserId: String = ""
+    @Published var currentUser: Person = Person(userId: "")
+    
     @Published private(set) var user: Profile? = nil
     @Published var currentReceiver: Profile? = nil
-
-    @Published var currentUserEmail: String = ""
-    @Published var currentUserFirstName: String = ""
-    @Published var currentUserLastName: String = ""
-    @Published var currentUserMyFont: String = ""
-    @Published var currentUserDateCreated: Date = Date()
-    @Published var currentUserPhotoUrl: String = ""
-    @Published var currentUserMySignature: String = ""
-    @Published var currentUserId: String = ""
 
     @Published var currentReceiverId: String = ""
     @Published var currentReceiverFirst: String = ""
     @Published var currentReceiverLast: String = ""
     @Published var currentReceiverEmail: String = ""
-    
-    @Published var myTotalMessages: Int = 0
-    @Published var mySentMessages: Int = 0
-    @Published var myFavMessages: Int = 0
-    @Published var receiverFavMessages: Int = 0
 
     @Published var updateSuccessful: Bool = false
+    @Published var incompleteProfile: Bool = false
 
     init() {
-        //        do {
-        //            Task {
-        //                try await loadCurrentUser()
-        //            }
-        //        }
+    }
+    
+//
+//  User Defaults functions
+//
+    
+    func fetchUserDefaults() {
+        
+        // retrieve from UserDefaults
+        guard
+         let result = UserDefaults.standard.data(forKey: k.user),
+         let currentUser = try? JSONDecoder().decode(Person.self, from: result)
+        else { return }
+        
+        self.currentUser = currentUser
+        
+        print("vm: \(self.currentUser)" )
+        if self.currentUser.firstName == "" {
+            incompleteProfile = true
+        }
     }
 
-    func loadCurrentUser() async throws {
-        let authDataResult = try AuthManager.shared.getAuthenticatedUser()
-        self.user = try await UserManager.shared.getUser(
-            userId: authDataResult!.uid)
-        unwrapUser()
+    func updateUserDefaults(person: Person) {
+        
+        if let encoded = try? JSONEncoder().encode(person) {
+            UserDefaults.standard.set(encoded, forKey: k.user)
+        }
+    }
+    
+    func updateUser(
+        email: String, firstName: String, lastName: String, myFont: String,
+        mySignature: String
+    ) {
+//        guard let user else { return }
+        
+        // check if ReceiverKey has been created
+        if currentUser.receiverKey == "" {
+            currentUser.receiverKey = UUID().uuidString
+        }
+
+        let updatedUser = Profile(
+            userId: currentUser.userId, email: currentUser.email, photoUrl: currentUser.photoUrl,
+            firstName: currentUser.firstName, lastName: currentUser.lastName, myFont: currentUser.myFont,
+            mySignature: k.appSignature, receiverKey: currentUser.receiverKey)
+        Task {
+            try await UserManager.shared.updateUser(user: updatedUser)
+            self.user = try await UserManager.shared.getUser(
+                userId: currentUser.userId)
+            updateSuccessful.toggle()
+        }
+        
+        updateUserDefaults(person: currentUser)
+        print("Updated CurrentUserDefaults: \(currentUser)")
     }
 
-    func unwrapUser() {
-        currentUserId = self.user?.userId ?? ""
-        currentUserEmail = self.user?.email ?? ""
-        currentUserFirstName = self.user?.firstName ?? ""
-        currentUserLastName = self.user?.lastName ?? ""
-        currentUserMyFont = self.user?.myFont ?? ""
-        currentUserDateCreated = self.user?.dateCreated ?? Date()
-        currentUserPhotoUrl = self.user?.photoUrl ?? ""
-        currentUserMySignature = self.user?.mySignature ?? ""
-
-    }
-
+//  ******************
+//  Receiver Functions
+    
     func getReceiver(email: String) async throws {
         do {
             currentReceiver = try await UserManager.shared.getUserWithEmail(
@@ -103,28 +126,8 @@ class ProfileViewModel: ObservableObject {
                     print("error creating receiver: \(error)")
                     throw error
                 }
-
             }
         }
-
     }
 
-    func updateUser(
-        email: String, firstName: String, lastName: String, myFont: String,
-        mySignature: String
-    ) {
-        guard let user else { return }
-
-        let updatedUser = Profile(
-            userId: user.userId, email: email, photoUrl: user.photoUrl,
-            firstName: firstName, lastName: lastName, myFont: myFont,
-            mySignature: "")
-        Task {
-            try await UserManager.shared.updateUser(user: updatedUser)
-            self.user = try await UserManager.shared.getUser(
-                userId: user.userId)
-            updateSuccessful.toggle()
-        }
-    }
-    
 }

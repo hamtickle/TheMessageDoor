@@ -10,21 +10,20 @@ import Foundation
 @MainActor
 class MessageListVM: ObservableObject {
     
+
     @Published private(set) var message: Message? = nil
     
     @Published var reloadList: Bool = false
 
-    @Published var myTotalMessages: Int = 0
-    @Published var mySentMessages: Int = 0
-    @Published var myFavMessages: Int = 0
-    @Published var receiverFavMessages: Int = 0
+//    @Published var myTotalMessages: Int = 0
+//    @Published var mySentMessages: Int = 0
+//    @Published var myFavMessages: Int = 0
+//    @Published var receiverFavMessages: Int = 0
 
     @Published var displayMessages: [Message] = []
 
     init () {
     }
-    
-
     
     func fetchReceiverMessages(receiverId: String) async  {
         
@@ -33,7 +32,7 @@ class MessageListVM: ObservableObject {
         self.displayMessages = displayMessges ?? []
         sortMessagesByDate()
         
-        buildSenderStats()
+//        buildSenderStats()
     }
     
     func fetchSenderMessages(senderId: String) async {
@@ -43,7 +42,7 @@ class MessageListVM: ObservableObject {
         self.displayMessages = displayMessages ?? []
         sortMessagesByDate()
         
-        buildSenderStats()
+//        buildSenderStats()
         
    
     }
@@ -54,18 +53,24 @@ class MessageListVM: ObservableObject {
         }
     }
     
-    func buildSenderStats() {
-        myTotalMessages = displayMessages.count
-        mySentMessages = displayMessages.filter({ $0.isSent == true }).count
-        myFavMessages = displayMessages.filter({ $0.senderFavorite == true }).count
-        receiverFavMessages = displayMessages.filter({ $0.receiverFavorite == true }).count
-        
-        self.myTotalMessages = myTotalMessages
-        self.myFavMessages = myFavMessages
-        self.mySentMessages = mySentMessages
-        self.receiverFavMessages = receiverFavMessages
-        
+//    func buildSenderStats() {
+//        currentUser.totalMessagesCreated = displayMessages.count
+//        mySentMessages = displayMessages.filter({ $0.isSent == true }).count
+//        myFavMessages = displayMessages.filter({ $0.senderFavorite == true }).count
+//        receiverFavMessages = displayMessages.filter({ $0.receiverFavorite == true }).count
+//        
+//        self.myTotalMessages = myTotalMessages
+//        self.myFavMessages = myFavMessages
+//        self.mySentMessages = mySentMessages
+//        self.receiverFavMessages = receiverFavMessages
+//        
+//    }
+    
+    func getUserID() -> String {
+        guard
+            let data = UserDefaults.standard.data(forKey: "userId"),
+            case var userId = try? JSONDecoder().decode(String.self, from: data)
+        else { return ""}
+        return userId!
     }
-    
-    
 }
