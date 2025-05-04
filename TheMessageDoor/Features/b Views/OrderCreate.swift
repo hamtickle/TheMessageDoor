@@ -10,7 +10,7 @@ import SwiftUI
 struct OrderCreate: View {
     
     @State var currentUser: Person
-    @EnvironmentObject var pVM : ProfileViewModel
+    @EnvironmentObject var pVM : ProfileVM
     @StateObject var vm = OrderCreateVM()
     
     @Environment(\.colorScheme) var colorScheme

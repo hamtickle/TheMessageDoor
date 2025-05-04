@@ -10,7 +10,7 @@ import SwiftUI
 struct ProfileView: View {
 
     @State var user: Person
-    @EnvironmentObject var vm : ProfileViewModel
+    @EnvironmentObject var vm : ProfileVM
 //    @State var currentUser = GetCurrentUser.shared
   
     
@@ -217,12 +217,13 @@ struct ProfileView: View {
                         .foregroundColor(.blue)
                 }
                 
-                Text("myFont: \(vm.currentUser.myFont)")
+                Text("\n myFont: \(vm.currentUser.myFont)")
                     .font(.caption)
                 Text("mySignature: \(vm.currentUser.mySignature)")
                     .font(.caption)
                 Text("URL: \(vm.currentUser.photoUrl)")
                     .font(.caption)
+                   
                 Text("rKey: \(vm.currentUser.receiverKey)")
                     .font(.caption)
                 
@@ -252,7 +253,7 @@ struct ProfileView: View {
                 )
             }
         )
-        .onAppear {
+        .task {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.isFocused = true
                 fontList.removeAll()

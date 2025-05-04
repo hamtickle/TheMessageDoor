@@ -9,9 +9,9 @@ import SwiftUI
 
 struct MessageListView: View {
 
-//    @StateObject var pVM : ProfileViewModel
+//    @StateObject var pVM : ProfileVM
     @State var user: Person
-    @EnvironmentObject var pVM : ProfileViewModel
+    @EnvironmentObject var pVM : ProfileVM
     @StateObject var vm : MessageListVM = MessageListVM()
 
     @State private var messageFilter = 0
@@ -52,7 +52,7 @@ struct MessageListView: View {
                 }
             }
             .listStyle(.plain)
-            .onChange(of: messageFilter) { newValue in
+            .onChange(of: messageFilter) {oldValue, newValue in
                 if newValue == 0 {
                     do {
                         Task {
@@ -91,14 +91,14 @@ struct MessageListView: View {
                 }
 
             }
-            .alert(isPresented: $noMessages,
-                   content: {
-                Alert(
-                    title: Text("No Messages"),
-                    message: Text("You have not created any messages yet."),
-                    dismissButton: .cancel(Text("OK"))
-                )
-            })
+//            .alert(isPresented: $noMessages,
+//                   content: {
+//                Alert(
+//                    title: Text("No Messages"),
+//                    message: Text("You have not created any messages yet."),
+//                    dismissButton: .cancel(Text("OK"))
+//                )
+//            })
         }
     }
 }

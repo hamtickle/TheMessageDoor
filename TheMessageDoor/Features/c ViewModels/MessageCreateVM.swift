@@ -11,8 +11,10 @@ import Foundation
 class MessageCreateVM: ObservableObject {
     
     @Published private(set) var message: Message? = nil
+    var pVM: ProfileVM = ProfileVM()
     private var mVM: MessageListVM = MessageListVM()
     private var rm: ReceiverManager = ReceiverManager()
+    private var k: Constants = Constants()
     
     @Published var currentReceiver: Profile? = nil
     @Published var receiverList: [String] = []
@@ -41,14 +43,22 @@ class MessageCreateVM: ObservableObject {
     )
     {  //     guard let message else { return }
         let updatedMessage = Message(
-            messageId: UUID().uuidString,from: from,senderId: senderId,to: to,receiverId: receiverId,message: message,messageFont: messageFont,senderFavorite: senderFavorite,dateCreated: Date(),isSent: isSent,dateSent: dateSent,messageStatus: "",messageDateOpened: Date(),receiverFavorite: false,receiverDeleted: false
+            messageId: UUID().uuidString,from: from,senderId: senderId,to: to,receiverId: receiverId,message: message,messageFont: messageFont,senderFavorite: senderFavorite,dateCreated: Date(),isSent: isSent,dateSent: dateSent, messageStatus: messageStatus, messageDateOpened: Date(),receiverFavorite: false,receiverDeleted: false
             )
         Task {
             try await MessageManager.shared.updateMessage(message: updatedMessage)
             updateMessageSuccessful.toggle()
+        // update UserDefaults
+            pVM.updateSentMessageCount()
+            pVM.updateTotalMessageCount()
+            if senderFavorite {
+                pVM.updateMyFavoritesCount()
+            }
+            
             currentMessage = ""
         }
     }
+    
     
     func fetchSenderMessages(senderId: String) async {
         await mVM.fetchSenderMessages(senderId: senderId)

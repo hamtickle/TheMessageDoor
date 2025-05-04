@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AchievementsView: View {
     
-    @EnvironmentObject var pVM: ProfileViewModel
+    @EnvironmentObject var pVM: ProfileVM
 //    @StateObject var vm: AchievementsVM = AchievementsVM()
     
     var body: some View {

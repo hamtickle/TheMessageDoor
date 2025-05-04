@@ -10,7 +10,7 @@ import SwiftUI
 struct OrderView: View {
     
     @State var user: Person
-    @EnvironmentObject var pVM : ProfileViewModel
+    @EnvironmentObject var pVM : ProfileVM
 
     var order: Order
 
@@ -119,7 +119,7 @@ struct OrderView: View {
                         }
                         .padding(.horizontal, 10)
 
-                        Text("Recipient's ID: \(order.receiverId)")
+                        Text("Recipient's ID: \(String(describing: order.receiverId))")
                             .frame(maxWidth: .infinity, alignment: .center)
                             .font(.caption)
                             .foregroundColor(.black)

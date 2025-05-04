@@ -66,13 +66,13 @@ final class MessageManager {
     }
     
     func fetchSpecificMessage(messageId: String) async throws -> Message {
-        var message: Message = .init(messageId: messageId)
+        let message: Message = .init(messageId: messageId)
         let query = messageCollection.whereField("message_id", isEqualTo: messageId)
         
         do {
             let querySnapshot = try await query.getDocuments()
             for document in querySnapshot.documents  {
-                let message = try document.data(as: Message.self, decoder: decoder)
+                _ = try document.data(as: Message.self, decoder: decoder)
      
             }
         }

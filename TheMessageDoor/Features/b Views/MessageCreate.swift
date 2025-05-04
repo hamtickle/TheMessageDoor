@@ -9,10 +9,10 @@ import SwiftUI
 
 struct CreateMessageView: View {
      
-    @EnvironmentObject var pVM: ProfileViewModel
+    @EnvironmentObject var pVM: ProfileVM
     @StateObject var vm: MessageCreateVM = MessageCreateVM()
-    private var k: Constants = Constants()
-    @StateObject private var fonts = Fonts()
+    var k: Constants = Constants()
+    var fonts = Fonts()
 
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.presentationMode) var presentationMode:
@@ -22,7 +22,6 @@ struct CreateMessageView: View {
     @State var fontList: [String] = []
     @State var receiverList: [String] = []
     @State var isPressed: Bool = false
-    @State var noOrders: Bool = true
     
 //    @State var user: Person
     @Binding var tabSelection: Int
@@ -194,7 +193,7 @@ struct CreateMessageView: View {
                     dismissButton: .cancel(Text("OK")))
             }
         )
-        .alert(isPresented: $noOrders,
+        .alert(isPresented: $vm.noOrders,
                content: {
             Alert(
                 title: Text("No Active Orders"),
@@ -270,7 +269,7 @@ struct ShowNote: View {
 
 struct CreateMessageButtonsView: View {
  
-    @EnvironmentObject var pVM: ProfileViewModel
+    @EnvironmentObject var pVM: ProfileVM
     @StateObject var vm: MessageCreateVM
     private var k: Constants = Constants()
 
@@ -350,7 +349,7 @@ struct CreateMessageButtonsView: View {
 
 struct RecipientPicker: View {
     
-    @EnvironmentObject var pVM: ProfileViewModel
+    @EnvironmentObject var pVM: ProfileVM
     @StateObject var vm: MessageCreateVM
 
     @Environment(\.colorScheme) var colorScheme

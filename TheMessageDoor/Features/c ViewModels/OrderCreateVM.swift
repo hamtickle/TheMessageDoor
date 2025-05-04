@@ -130,7 +130,7 @@ class OrderCreateVM: ObservableObject {
     }
     
     func getReceiver(email: String) async throws {
-        var receiver = try await checkEmail.fetchUserWithEmail(email: email)
+        _ = try await checkEmail.fetchUserWithEmail(email: email)
     }
     
     

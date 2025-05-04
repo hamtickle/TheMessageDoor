@@ -60,8 +60,8 @@ final class AuthenticationVM: ObservableObject {
         
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
-        var unwrappedDate = user.dateCreated ?? Date()
-        var stringDate = df.string(from: unwrappedDate)
+        let unwrappedDate = user.dateCreated ?? Date()
+        let stringDate = df.string(from: unwrappedDate)
         return stringDate
     }
 }

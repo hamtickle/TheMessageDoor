@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RootView: View {
 
-    @StateObject var pVM = ProfileViewModel()
+    @StateObject var pVM = ProfileVM()
    
     
     @State private var showSignInView: Bool = false

@@ -10,7 +10,7 @@ import SwiftUI
 struct MessageDetail: View {
 
     @State var user: Person
-    @EnvironmentObject var pVM: ProfileViewModel
+    @EnvironmentObject var pVM: ProfileVM
     @StateObject var vm: MessageDetailVM = MessageDetailVM()
 
     @StateObject private var fonts = Fonts()

@@ -26,7 +26,7 @@ class MessageListVM: ObservableObject {
     }
     
     func fetchReceiverMessages(receiverId: String) async  {
-        
+        print("\n getting received messages for \(receiverId) \n")
         let displayMessges = try? await MessageManager.shared.getReceiverMessages(receiverId: receiverId)
    
         self.displayMessages = displayMessges ?? []
@@ -36,7 +36,7 @@ class MessageListVM: ObservableObject {
     }
     
     func fetchSenderMessages(senderId: String) async {
-        
+        print("\n getting sender's messages for \(senderId) \n")
         let displayMessages = try? await MessageManager.shared.getMessages(senderId: senderId)
    
         self.displayMessages = displayMessages ?? []
@@ -69,7 +69,7 @@ class MessageListVM: ObservableObject {
     func getUserID() -> String {
         guard
             let data = UserDefaults.standard.data(forKey: "userId"),
-            case var userId = try? JSONDecoder().decode(String.self, from: data)
+            case let userId = try? JSONDecoder().decode(String.self, from: data)
         else { return ""}
         return userId!
     }

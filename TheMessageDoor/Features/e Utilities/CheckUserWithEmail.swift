@@ -14,7 +14,7 @@ class CheckUserWithEmail: ObservableObject {
         
     func fetchUserWithEmail(email: String) async throws -> Person {
         do {
-            var result = try await UserManager.shared.getUserWithEmail(
+            let result = try await UserManager.shared.getUserWithEmail(
                 email: email)
 
             if let result {

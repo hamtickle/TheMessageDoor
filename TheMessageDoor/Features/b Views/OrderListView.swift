@@ -10,10 +10,8 @@ import SwiftUI
 struct OrderListView: View {
 
     @State var user: Person
-    @EnvironmentObject var pVM : ProfileViewModel
+    @EnvironmentObject var pVM : ProfileVM
     @StateObject var vm = OrderListVM()
-    @State var noOrders: Bool = true
-   
 
     @Environment(\.colorScheme) var colorScheme
 
@@ -54,24 +52,22 @@ struct OrderListView: View {
         }
         .listStyle(.grouped)
         .navigationTitle(Text("Your Orders"))
-        .onAppear {
-
+        .task {
             do {
-                Task {
+                let fetchSenderOrders = Task {
                     try await vm.fetchSenderOrders(
                         senderId: pVM.currentUser.userId)
                 }
             }
-
         }
-        .alert(isPresented: $noOrders,
-               content: {
-            Alert(
-                title: Text("No Active Orders"),
-                message: Text("You do not have any ACTIVE orders.  \n Please create an order so you can send messages."),
-                dismissButton: .cancel(Text("OK"))
-            )
-        })
+//        .alert(isPresented: $vm.noOrders,
+//               content: {
+//            Alert(
+//                title: Text("No Active Orders"),
+//                message: Text("You do not have any ACTIVE orders.  \n Please create an order so you can send messages."),
+//                dismissButton: .cancel(Text("OK"))
+//            )
+//        })
         .environmentObject(pVM)
     }
 }
