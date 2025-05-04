@@ -9,9 +9,9 @@ import SwiftUI
 
 struct OrderListView: View {
 
-    @StateObject var pVM : ProfileViewModel
+    @State var user: Person
+    @EnvironmentObject var pVM : ProfileVM
     @StateObject var vm = OrderListVM()
-   
 
     @Environment(\.colorScheme) var colorScheme
 
@@ -19,13 +19,13 @@ struct OrderListView: View {
 
         VStack(alignment: .leading) {
             HStack {
-                Text("\(pVM.currentUserFirstName)'s Orders")
+                Text("\(pVM.currentUser.firstName)'s Orders")
                     .font(.system(size: 34, weight: .bold))
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal)
 
                 NavigationLink{
-                    OrderCreate(pVM: pVM)
+                    OrderCreate(currentUser: pVM.currentUser)
                 } label: {
                     Image(systemName: "cart")
                         .font(.system(size: 20))
@@ -39,7 +39,7 @@ struct OrderListView: View {
             
             
             List(vm.orderList, id: \.orderId) { order in
-                NavigationLink(destination: OrderView(pVM: pVM, order: order)) {
+                NavigationLink(destination: OrderView(user: user, order: order)) {
 
                     HStack(alignment: .top) {
                         OrderCell(order: order)
@@ -52,22 +52,29 @@ struct OrderListView: View {
         }
         .listStyle(.grouped)
         .navigationTitle(Text("Your Orders"))
-        .onAppear {
-
+        .task {
             do {
-                Task {
+                let fetchSenderOrders = Task {
                     try await vm.fetchSenderOrders(
-                        senderId: pVM.currentUserId)
+                        senderId: pVM.currentUser.userId)
                 }
             }
-
         }
+//        .alert(isPresented: $vm.noOrders,
+//               content: {
+//            Alert(
+//                title: Text("No Active Orders"),
+//                message: Text("You do not have any ACTIVE orders.  \n Please create an order so you can send messages."),
+//                dismissButton: .cancel(Text("OK"))
+//            )
+//        })
+        .environmentObject(pVM)
     }
 }
 
 #Preview {
     NavigationStack {
-        OrderListView(pVM: ProfileViewModel())
+        OrderListView(user: Person(userId: ""))
     }
    
 }

@@ -83,6 +83,7 @@ final class OrderManager {
     }
 
     func getOrders(senderId: String) async throws -> [Order] {
+        print("\n getting order list for \(senderId) \n")
         var orderList: [Order] = []
         let query = orderCollection.whereField("sender_id", isEqualTo: senderId)
 
@@ -92,6 +93,8 @@ final class OrderManager {
                 let order = try document.data(as: Order.self, decoder: decoder)
                 orderList.append(order)
             }
+        } catch {
+            print("\n Error getting documents: \(error) \n")
         }
         return orderList
     }

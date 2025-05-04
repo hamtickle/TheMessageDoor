@@ -9,7 +9,8 @@ import SwiftUI
 
 struct OrderCreate: View {
     
-    @StateObject var pVM : ProfileViewModel
+    @State var currentUser: Person
+    @EnvironmentObject var pVM : ProfileVM
     @StateObject var vm = OrderCreateVM()
     
     @Environment(\.colorScheme) var colorScheme
@@ -43,7 +44,7 @@ struct OrderCreate: View {
 
                     HStack {
 
-                        Text(pVM.currentUserFirstName)
+                        Text(currentUser.firstName)
                             .padding(.horizontal)
                             .frame(width: 170, height: 50)
                             .background(Color.gray.opacity(0.2))
@@ -51,7 +52,7 @@ struct OrderCreate: View {
                             .cornerRadius(10)
                             .padding(.vertical, 2)
 
-                        Text(pVM.currentUserLastName)
+                        Text(currentUser.lastName)
                             .padding(.horizontal)
                             .frame(width: 170, height: 50)
                             .background(Color.gray.opacity(0.2))
@@ -61,7 +62,7 @@ struct OrderCreate: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .center)
 
-                    Text("Sender's ID: \(pVM.currentUserId)")
+                    Text("Sender's ID: \(currentUser.userId)")
                         .frame(maxWidth: .infinity, alignment: .center)
                         .font(.caption)
                         .foregroundColor(.primary)
@@ -161,50 +162,51 @@ struct OrderCreate: View {
 
             Button(action: {
                 
+                vm.createOrderButtonTapped(user: currentUser, first: vm.currentReceiverFirstName, last: vm.currentReceiverLastName, email: vm.currentReceiverEmail, key: vm.currentReceiverId)
                 
-                // Add Recipient
-                if vm.selectedReceiverEmail == "New Recipient" {
-                    let receiverId = UUID().uuidString
-                    vm.currentReceiverId = receiverId
-
-                   do {
-                        Task {
-                     try await vm.createReceiver(
-                                userId: receiverId,
-                                email: vm.currentReceiverEmail,
-                                firstName: vm.currentReceiverFirstName,
-                                lastName: vm.currentReceiverLastName,
-                                myFont: "Arial",
-                                mySignature: "no signature on file"
-
-                            )
-                       }
-                   }  
-
-                }   //end if new receiver
-
-                //check for duplicate orders
-                vm.checkIfActiveOrderExists(email: vm.currentReceiverEmail)
+//                // Add Recipient
+//                if vm.selectedReceiverEmail == "New Recipient" {
+//                    let receiverId = UUID().uuidString
+//                    vm.currentReceiverId = receiverId
+//
+//                   do {
+//                        Task {
+//                     try await vm.createReceiver(
+//                                userId: receiverId,
+//                                email: vm.currentReceiverEmail,
+//                                firstName: vm.currentReceiverFirstName,
+//                                lastName: vm.currentReceiverLastName,
+//                                myFont: "Arial",
+//                                mySignature: "no signature on file"
+//
+//                            )
+//                       }
+//                   }  
+//
+//                }   //end if new receiver
+//
+//                //check for duplicate orders
+//                vm.checkIfActiveOrderExists(email: vm.currentReceiverEmail)
                 
-                if vm.duplicateOrders
-                    {
-                    print("order already exists")
-                } else {
-                    vm.createOrder(
-                        senderId: pVM.currentUserId,
-                        senderFirstName: pVM.currentUserFirstName,
-                        senderLastName: pVM.currentUserLastName,
-
-                        receiverId: vm.currentReceiverId,
-                        receiverEmail: vm.currentReceiverEmail,
-                        receiverFirstName: vm.currentReceiverFirstName,
-                        receiverLastName: vm.currentReceiverLastName
-                    )
+//                if vm.duplicateOrders
+//                    {
+//                    print("order already exists")
+//                } else {
+//                    vm.createOrder(
+//                        senderId: pVM.currentUserId,
+//                        senderFirstName: pVM.currentUserFirstName,
+//                        senderLastName: pVM.currentUserLastName,
+//
+//                        receiverId: vm.currentReceiverId,
+//                        receiverEmail: vm.currentReceiverEmail,
+//                        receiverFirstName: vm.currentReceiverFirstName,
+//                        receiverLastName: vm.currentReceiverLastName
+//                    )
                     
-                    vm.selectedReceiverEmail = "New Recipient"
+//                    vm.selectedReceiverEmail = "New Recipient"
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                         self.presentationMode.wrappedValue.dismiss()
-                    }
+//                    }
                 }
                 
 
@@ -235,7 +237,7 @@ struct OrderCreate: View {
 
         .onAppear {
             Task {
-                try? await vm.getReceivers(senderId: pVM.currentUserId)
+                try? await vm.getReceivers(senderId: currentUser.userId)
                 receiverList.removeAll()
                 receiverList.append("New Recipient")
                 receiverList.append(contentsOf: vm.receiverList)
@@ -283,7 +285,7 @@ struct OrderCreate: View {
 #Preview {
 
     NavigationStack {
-        OrderCreate(pVM: ProfileViewModel())
+        OrderCreate(currentUser: Person(userId: ""))
     }
 
 }

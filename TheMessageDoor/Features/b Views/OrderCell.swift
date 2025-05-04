@@ -88,5 +88,5 @@ Spacer()
 //
 //        OrderCell(order: .init())
 //    }
-//    .environmentObject(ProfileViewModel())
+//    .environmentObject(ProfileVM())
 //}

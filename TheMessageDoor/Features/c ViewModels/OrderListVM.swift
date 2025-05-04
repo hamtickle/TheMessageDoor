@@ -18,7 +18,9 @@ import Foundation
 @MainActor
 class OrderListVM: ObservableObject {
     
-    var pVM = ProfileViewModel()
+    var pVM = ProfileVM()
+    private var k: Constants = Constants()
+    @Published var noOrders: Bool = false
     
     @Published var selectedReceiverEmail: String = ""
     
@@ -47,9 +49,24 @@ class OrderListVM: ObservableObject {
     init () {}
     
     func fetchSenderOrders(senderId: String) async throws {
-        let result = try await OrderManager.shared.getOrders(senderId: senderId)
-        self.orderList = result.map(\.self)
-        sortOrdersByRecipient()
+        do {
+            let result = try await OrderManager.shared.getOrders(senderId: senderId)
+            self.orderList = result.map(\.self)
+            sortOrdersByRecipient()
+            
+        } catch {
+            print("issue with retrieving orders for \(senderId): \(error)")
+        }
+//        let result = try await OrderManager.shared.getOrders(senderId: senderId)
+//        self.orderList = result.map(\.self)
+//        sortOrdersByRecipient()
+        
+        let activeOrders = orderList.filter({ $0.orderStatus == k.statusActive }).count
+        if activeOrders == 0 {
+            noOrders = true
+        } else {
+            noOrders = false
+        }
     }
     
     // Sort Orders

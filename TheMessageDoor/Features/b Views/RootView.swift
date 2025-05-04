@@ -9,7 +9,8 @@ import SwiftUI
 
 struct RootView: View {
 
-    @StateObject var pVM = ProfileViewModel()
+    @StateObject var pVM = ProfileVM()
+   
     
     @State private var showSignInView: Bool = false
 
@@ -17,7 +18,8 @@ struct RootView: View {
     var body: some View {
         ZStack {
             if !showSignInView {
-                    TabBarView(showSignInView: $showSignInView)
+
+                TabBarView(showSignInView: $showSignInView)
             }
         }
         .onAppear {
@@ -30,7 +32,7 @@ struct RootView: View {
                 AuthenticationView(showSignInView: $showSignInView)
             }
         }
-        
+        .environmentObject(pVM)
     }
 }
 

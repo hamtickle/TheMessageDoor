@@ -11,7 +11,9 @@ import Foundation
 class ReceiverManager: ObservableObject {
     
     @Published var receiverList: [String] = []
+    @Published var receiverCount: Int = 0
     @Published var orderList: [Order] = []
+    @Published var activeOrderCount: Int = 0
     @Published var activeOrders: [Order] = []
  
     func getReceivers(senderId: String) async throws -> [String] {
@@ -19,6 +21,7 @@ class ReceiverManager: ObservableObject {
         
         // remove duplicates from receiverlist
         receiverList = result.unique()
+        receiverCount = receiverList.count
         self.orderList = orderList
         sortReceivers()
         getActiveOrders()
@@ -28,6 +31,7 @@ class ReceiverManager: ObservableObject {
     
     func getActiveOrders() {
         activeOrders = orderList.filter { $0.orderStatus == "Active" }
+        activeOrderCount = activeOrders.count
     }
     
     func sortReceivers() {

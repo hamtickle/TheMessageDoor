@@ -29,6 +29,7 @@ struct MessageCell: View {
                     .fill(!message.isSent ? Color(#colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1)) : Color.white)
                     .frame(width: 280, height: 100)
                     .shadow(color: message.isSent ? Color.white : Color.gray, radius: 5, x: 5, y: 5)
+                    .border(Color.gray, width: 1)
                 HStack {
 
                     VStack(alignment: .leading) {
@@ -109,7 +110,7 @@ struct MessageCell: View {
                             .padding(.bottom, 5)
                         }
                         
-                        Text(message.isSent ? message.messageOpenedStatus : "")
+                        Text(message.isSent ? message.messageStatus : "")
                             .font(.caption)
                             .foregroundColor(Color.black)
                         
