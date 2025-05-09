@@ -9,8 +9,8 @@ import SwiftUI
 
 struct CreateMessageView: View {
      
-    @EnvironmentObject var pVM: ProfileVM
-    @StateObject var vm: MessageCreateVM = MessageCreateVM()
+    @StateObject var user: GetCurrentUser
+    @StateObject var vm: MessageCreateVM
     var k: Constants = Constants()
     var fonts = Fonts()
 
@@ -23,8 +23,13 @@ struct CreateMessageView: View {
     @State var receiverList: [String] = []
     @State var isPressed: Bool = false
     
-//    @State var user: Person
     @Binding var tabSelection: Int
+    
+    init(tabSelection: Binding<Int>) {
+        _user = StateObject(wrappedValue: GetCurrentUser(initialLoad: false))
+        _vm = StateObject(wrappedValue: MessageCreateVM())
+        _tabSelection = tabSelection
+    }
 
     var body: some View {
 
@@ -41,11 +46,11 @@ struct CreateMessageView: View {
                 HStack {
                     Text("Sender:")
                         .foregroundColor(.blue)
-                    Text(pVM.currentUser.firstName)
+                    Text(user.currentUser.firstName)
                 }
                 .foregroundColor(.tmdText)
 
-                RecipientPicker(vm: vm, user: pVM.currentUser,  receiverList: receiverList)
+                RecipientPicker()
 
                 Toggle("Favorite?", isOn: $vm.currentSenderFavorite)
                     .foregroundColor(.blue)
@@ -81,8 +86,8 @@ struct CreateMessageView: View {
                 Button(action: {
                     vm.createMessage(
                         messageId: UUID().uuidString,
-                        from: pVM.currentUser.firstName,
-                        senderId: pVM.currentUser.userId,
+                        from: user.currentUser.firstName,
+                        senderId: user.currentUser.userId,
                         to: vm.currentReceiverEmail,
                         receiverId: vm.currentReceiverId,
                         message: vm.currentMessage,
@@ -127,8 +132,8 @@ struct CreateMessageView: View {
                 Button(action: {
                     vm.createMessage(
                         messageId: UUID().uuidString,
-                        from: pVM.currentUser.firstName,
-                        senderId: pVM.currentUser.userId,
+                        from: user.currentUser.firstName,
+                        senderId: user.currentUser.userId,
                         to: vm.currentReceiverEmail,
                         receiverId: vm.currentReceiverId,
                         message: vm.currentMessage,
@@ -175,7 +180,7 @@ struct CreateMessageView: View {
             Task {
                 fontList.removeAll()
                 fontList.append(contentsOf: fonts.fonts)
-                vm.messageFont = pVM.currentUser.myFont
+                vm.messageFont = user.currentUser.myFont
 
             }
         }
@@ -227,173 +232,4 @@ extension View {
 //
 //}
 
-struct ShowNote: View {
 
-    @StateObject var vm: MessageCreateVM
-    @Environment(\.colorScheme) var colorScheme
-
-    var body: some View {
-        ZStack {
-
-            Rectangle()
-                .fill(Color(.yellow))
-                .frame(width: 350, height: 305)
-                .shadow(
-                    color: colorScheme == .dark ? Color.gray : Color.black,
-                    radius: 10, x: 10, y: 10)
-
-            VStack(alignment: .trailing) {
-                Rectangle()
-                    .fill(Color(.yellow))
-                    .frame(width: 350, height: 20)
-                //                    Text("message")
-                TextEditor(text: $vm.currentMessage)
-                    .font(.custom(vm.messageFont, size: 25))
-                    .foregroundColor(.black)
-                    .padding(.horizontal, 10)
-                    .multilineTextAlignment(.center)
-                    .scrollContentBackground(.hidden)
-                    .frame(width: 350, height: 190)
-                    .background(Color(.yellow))
-                Image(_: "signature no background")
-                    .resizable()
-                    .frame(width: 100, height: 80)
-                    .scaledToFit()
-                    .frame(alignment: .bottomTrailing)
-            }
-
-        }
-        .padding(.bottom, 20)
-    }
-}
-
-struct CreateMessageButtonsView: View {
- 
-    @EnvironmentObject var pVM: ProfileVM
-    @StateObject var vm: MessageCreateVM
-    private var k: Constants = Constants()
-
-    @Environment(\.colorScheme) var colorScheme
-    @Environment(\.presentationMode) var presentationMode:
-        Binding<PresentationMode>
-    
-    @State var user: Person
-    @State var updateMessageSent: Bool
-   
-
-    var body: some View {
-        Button(action: {
-            vm.createMessage(
-                messageId: UUID().uuidString,
-                from: user.firstName,
-                senderId: user.userId,
-                to: vm.currentReceiverEmail,
-                receiverId: vm.currentReceiverId,
-                message: vm.currentMessage,
-                dateSent: Date(),
-                senderFavorite: vm.currentSenderFavorite,
-                isSent: false,
-                messageFont: vm.messageFont,
-                messageStatus: k.statusSaved,
-                messageDateOpened: Date(),
-                receiverDeleted: false,
-                receiverFavorite: false
-
-            )
-            updateMessageSent = true
-
-        }) {
-            Text("Save Message")
-                .frame(width: 200, height: 40)
-                .background(Color.white)
-                .foregroundColor(.black)
-                .border(Color.blue, width: 2)
-                .padding(.horizontal)
-                .cornerRadius(10)
-                .padding(.vertical, 5)
-
-        }
-        // Send Message
-
-        Button(action: {
-            vm.createMessage(
-                messageId: UUID().uuidString,
-                from: user.firstName,
-                senderId: user.userId,
-                to: vm.currentReceiverEmail,
-                receiverId: vm.currentReceiverId,
-                message: vm.currentMessage,
-                dateSent: Date(),
-                senderFavorite: vm.currentSenderFavorite,
-                isSent: true,
-                messageFont: vm.messageFont,
-                messageStatus: k.statusSent,
-                messageDateOpened: Date(),
-                receiverDeleted: false,
-                receiverFavorite: false
-            )
-            updateMessageSent = true
-
-        }) {
-            Text("Send Message")
-                .frame(width: 200, height: 40)
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .padding(.horizontal)
-                .cornerRadius(10)
-                .padding(.vertical, 5)
-        }
-
-    }
-}
-
-struct RecipientPicker: View {
-    
-    @EnvironmentObject var pVM: ProfileVM
-    @StateObject var vm: MessageCreateVM
-
-    @Environment(\.colorScheme) var colorScheme
-    @Environment(\.presentationMode) var presentationMode:
-    Binding<PresentationMode>
-    
-    @State var user: Person
-    @State var receiverList: [String]
-    
-    
-    var body: some View {
-        HStack {
-            Text("My Recipients:")
-                .foregroundColor(.black)
-            
-            Picker(
-                "",
-                selection: $vm.selectedReceiverEmail
-            ) {
-                Text("").tag("")
-                ForEach(receiverList, id: \.self) {
-                    Text($0)
-                }
-       //         .onAppear{oVM.selectedReceiverEmail = receiverList[0]}
-            }.pickerStyle(.menu)
-                .frame(width: 225, height: 60)
-                .padding(.vertical, -15)
-                .padding(.horizontal, -10)
-        }
-        .frame(width: 350, height: 75)
-        .background(Color.white)
-        .border(Color.blue, width: 2)
-        .onAppear {
-            Task {
-                try? await vm.getReceivers(senderId: pVM.currentUser.userId)
-                receiverList.removeAll()
-                receiverList.append(contentsOf: vm.receiverList)
-            }
-        }
-        .onChange(of: vm.selectedReceiverEmail) {
-            
-            vm.getReceiverInfo(email: vm.selectedReceiverEmail)
-
-        }
-        
-    }
-}

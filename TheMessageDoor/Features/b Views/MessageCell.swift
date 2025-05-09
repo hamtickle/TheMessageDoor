@@ -26,7 +26,7 @@ struct MessageCell: View {
             // Rectangle
             ZStack {
                 Rectangle()
-                    .fill(!message.isSent ? Color(#colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1)) : Color.white)
+                    .fill(!message.isSent ? Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)) : Color.white)
                     .frame(width: 280, height: 100)
                     .shadow(color: message.isSent ? Color.white : Color.gray, radius: 5, x: 5, y: 5)
                     .border(Color.gray, width: 1)
@@ -41,29 +41,29 @@ struct MessageCell: View {
 
                         Text(message.to)
                             .font(.body)
-                            .foregroundColor(Color.black)
+                            .foregroundColor(!message.isSent ? Color.white :Color.black)
 
                         HStack {
                             Text("Saved:")
                                 .font(.caption)
-                                .foregroundColor(Color.black)
+                                .foregroundColor(!message.isSent ? Color.white :Color.black)
                             
                             Text(
                                 message.dateCreated,
                                 format: Date.FormatStyle(date: .numeric)
                                 )
                                 .font(.caption)
-                                .foregroundColor(Color.black)
+                                .foregroundColor(!message.isSent ? Color.white :Color.black)
                         }
                         
                         
                         HStack {
                             Text("Status:")
                                 .font(.caption)
-                                .foregroundColor(Color.black)
+                                .foregroundColor(!message.isSent ? Color.white :Color.black)
                             Text(message.isSent ? "Sent" : "Saved")
                                 .font(.caption)
-                                .foregroundColor(Color.black)
+                                .foregroundColor(!message.isSent ? Color.yellow :Color.black)
                             if message.isSent {
                                 Text(message.dateSent,
                                 format: Date.FormatStyle(date: .numeric))

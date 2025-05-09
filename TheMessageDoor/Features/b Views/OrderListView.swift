@@ -9,23 +9,28 @@ import SwiftUI
 
 struct OrderListView: View {
 
-    @State var user: Person
-    @EnvironmentObject var pVM : ProfileVM
-    @StateObject var vm = OrderListVM()
+    
+    @StateObject var user: GetCurrentUser
+    @StateObject var vm : OrderListVM
 
     @Environment(\.colorScheme) var colorScheme
+    
+    init() {
+        _user = StateObject(wrappedValue: GetCurrentUser(initialLoad: false))
+        _vm = StateObject(wrappedValue: OrderListVM())
+    }
 
     var body: some View {
 
         VStack(alignment: .leading) {
             HStack {
-                Text("\(pVM.currentUser.firstName)'s Orders")
+                Text("\(user.currentUser.firstName)'s Orders")
                     .font(.system(size: 34, weight: .bold))
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal)
 
                 NavigationLink{
-                    OrderCreate(currentUser: pVM.currentUser)
+                    OrderCreate(currentUser: user.currentUser)
                 } label: {
                     Image(systemName: "cart")
                         .font(.system(size: 20))
@@ -39,7 +44,7 @@ struct OrderListView: View {
             
             
             List(vm.orderList, id: \.orderId) { order in
-                NavigationLink(destination: OrderView(user: user, order: order)) {
+                NavigationLink(destination: OrderView(user: user.currentUser, order: order)) {
 
                     HStack(alignment: .top) {
                         OrderCell(order: order)
@@ -53,13 +58,16 @@ struct OrderListView: View {
         .listStyle(.grouped)
         .navigationTitle(Text("Your Orders"))
         .task {
-            do {
-                let fetchSenderOrders = Task {
-                    try await vm.fetchSenderOrders(
-                        senderId: pVM.currentUser.userId)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                let appUser = user.currentUser
+                print("appUser: \(appUser)")
+                do {
+                    Task {
+                        try await vm.fetchSenderOrders(
+                            senderId: appUser.userId)
+                    }
                 }
-            }
-        }
+            }}
 //        .alert(isPresented: $vm.noOrders,
 //               content: {
 //            Alert(
@@ -68,13 +76,12 @@ struct OrderListView: View {
 //                dismissButton: .cancel(Text("OK"))
 //            )
 //        })
-        .environmentObject(pVM)
     }
 }
 
 #Preview {
     NavigationStack {
-        OrderListView(user: Person(userId: ""))
+        OrderListView()
     }
    
 }
