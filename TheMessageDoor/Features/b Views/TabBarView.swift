@@ -9,17 +9,19 @@ import SwiftUI
 
 struct TabBarView: View {
 
-    @StateObject var pVM = ProfileVM()
-  
-    @State var currentUser: Person = Person(userId: "")
+   
+    @StateObject var user: GetCurrentUser
    
     @State var refreshView = false
     @State var tabSelection: Int = 0
-    
-    
+        
     @Binding var showSignInView: Bool
-//    @Binding var showLoadingScreen: Bool
-//    @Binding var incompleteProfile: Bool
+
+    
+    init(showSignInView: Binding<Bool>) {
+        _user = StateObject(wrappedValue: GetCurrentUser(initialLoad: false))
+        _showSignInView = showSignInView
+    }
     
 
     var body: some View {
@@ -73,7 +75,7 @@ struct TabBarView: View {
             .tag(3)
 
             NavigationStack {
-                ProfileView(user: currentUser, showSignInView: $showSignInView)
+                ProfileView(showSignInView: $showSignInView)
 
             }
 

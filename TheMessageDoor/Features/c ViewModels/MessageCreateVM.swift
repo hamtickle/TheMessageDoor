@@ -16,7 +16,7 @@ class MessageCreateVM: ObservableObject {
     private var rm: ReceiverManager = ReceiverManager()
     private var k: Constants = Constants()
     
-    @Published var currentReceiver: Profile? = nil
+//    @Published var currentReceiver: Profile? = nil
     @Published var receiverList: [String] = []
     @Published var selectedReceiverEmail: String = ""
     @Published var currentReceiverId: String = ""
@@ -43,7 +43,7 @@ class MessageCreateVM: ObservableObject {
     )
     {  //     guard let message else { return }
         let updatedMessage = Message(
-            messageId: UUID().uuidString,from: from,senderId: senderId,to: to,receiverId: receiverId,message: message,messageFont: messageFont,senderFavorite: senderFavorite,dateCreated: Date(),isSent: isSent,dateSent: dateSent, messageStatus: messageStatus, messageDateOpened: Date(),receiverFavorite: false,receiverDeleted: false
+            messageId: UUID().uuidString,from: from,senderId: senderId,to: to, receiverId: receiverId, message: message,messageFont: messageFont,senderFavorite: senderFavorite,dateCreated: Date(),isSent: isSent,dateSent: dateSent, messageStatus: messageStatus, messageDateOpened: Date(),receiverFavorite: false,receiverDeleted: false
             )
         Task {
             try await MessageManager.shared.updateMessage(message: updatedMessage)
@@ -160,8 +160,11 @@ class MessageCreateVM: ObservableObject {
     
     func getReceivers(senderId: String) async throws {
         receiverList = try await rm.getReceivers(senderId: senderId)
+        
         if receiverList.isEmpty {
             noOrders = true
+        } else {
+            getReceiverInfo(email: receiverList[0])
         }
     }
     
@@ -172,10 +175,10 @@ class MessageCreateVM: ObservableObject {
         var Id: String = ""
         (First, Last, Id) = rm.getReceiverInfo(email: email)
         
-        currentReceiverId = Id
-        currentReceiverFirstName = First
-        currentReceiverLastName = Last
-        currentReceiverEmail = email
+        self.currentReceiverId = Id
+        self.currentReceiverFirstName = First
+        self.currentReceiverLastName = Last
+        self.currentReceiverEmail = email
     }
     
     

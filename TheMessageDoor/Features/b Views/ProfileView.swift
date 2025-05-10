@@ -9,10 +9,8 @@ import SwiftUI
 
 struct ProfileView: View {
 
-    @State var user: Person
-    @EnvironmentObject var vm : ProfileVM
-//    @State var currentUser = GetCurrentUser.shared
-  
+    @StateObject var user: GetCurrentUser
+    @StateObject var vm : ProfileVM
     
     @StateObject private var fonts = Fonts()
 
@@ -24,6 +22,12 @@ struct ProfileView: View {
     
     @State var fontList: [String] = []
     @State private var isPressed = false
+    
+    init(showSignInView: Binding<Bool>) {
+        _user = StateObject(wrappedValue: GetCurrentUser(initialLoad: false))
+        _vm = StateObject(wrappedValue: ProfileVM())
+        _showSignInView = showSignInView
+    }
 
     var body: some View {
         
@@ -269,7 +273,7 @@ struct ProfileView: View {
 
 #Preview {
     NavigationStack {
-        ProfileView(user: Person(userId: ""), showSignInView: .constant(false))
+        ProfileView(showSignInView: .constant(true))
     }
 }
 

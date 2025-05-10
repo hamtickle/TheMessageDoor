@@ -29,6 +29,7 @@ struct ShowNote: View {
                 TextEditor(text: $vm.currentMessage)
                     .font(.custom(vm.messageFont, size: 25))
                     .foregroundColor(.black)
+                    .autocapitalization(.none)
                     .padding(.horizontal, 10)
                     .multilineTextAlignment(.center)
                     .scrollContentBackground(.hidden)

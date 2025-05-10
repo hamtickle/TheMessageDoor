@@ -22,6 +22,7 @@ struct CreateMessageView: View {
     @State var fontList: [String] = []
     @State var receiverList: [String] = []
     @State var isPressed: Bool = false
+    @State var myFavorite: Bool = false
     
     @Binding var tabSelection: Int
     
@@ -50,12 +51,27 @@ struct CreateMessageView: View {
                 }
                 .foregroundColor(.tmdText)
 
-                RecipientPicker()
+                RecipientPicker(vm: vm)
 
-                Toggle("Favorite?", isOn: $vm.currentSenderFavorite)
-                    .foregroundColor(.blue)
-                    .padding(.bottom, 10)
 
+                HStack  {
+                    Text("Favorite?")
+                        .foregroundColor(.blue)
+                        .padding(.bottom, 10)
+                    
+                    myFavorite ?
+                    Image(systemName: "heart.fill")
+                            .foregroundColor(.red)
+                            .padding(.bottom, 10):
+                    Image(systemName: "heart")
+                            .foregroundColor(.gray)
+                            .padding(.bottom, 10)
+                }
+                .onTapGesture {myFavorite.toggle()}
+                .padding(.bottom, 10)
+                .padding(.top, 10)
+                .font(.title)
+               
                 //     ShowNote()
                 ShowNote(vm: vm)
 
@@ -134,7 +150,7 @@ struct CreateMessageView: View {
                         messageId: UUID().uuidString,
                         from: user.currentUser.firstName,
                         senderId: user.currentUser.userId,
-                        to: vm.currentReceiverEmail,
+                        to: vm.selectedReceiverEmail,
                         receiverId: vm.currentReceiverId,
                         message: vm.currentMessage,
                         dateSent: Date(),
@@ -221,15 +237,13 @@ extension View {
     }
 }
 
-//#Preview {
-//
-//    NavigationStack {
-//        CreateMessageView(
-//            user: Person(userId: ""),
-//            vm: MessageCreateVM(),
-//            tabSelection: .constant(1))
-//    }
-//
-//}
+#Preview {
+
+    NavigationStack {
+        CreateMessageView(
+            tabSelection: .constant(1))
+    }
+
+}
 
 

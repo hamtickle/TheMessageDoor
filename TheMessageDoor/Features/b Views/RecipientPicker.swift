@@ -10,6 +10,10 @@ struct RecipientPicker: View {
     
     @StateObject var user: GetCurrentUser
     @StateObject var vm: MessageCreateVM
+    
+//    @Binding var currentReceiverId: String
+//    @State var currentReceiverEmail: String
+//    @State var to: String
 
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.presentationMode) var presentationMode:
@@ -17,10 +21,10 @@ struct RecipientPicker: View {
  
     @State var receiverList: [String] = []
     
-    init() {
+    init(vm: MessageCreateVM) {
         _user = StateObject(wrappedValue: GetCurrentUser(initialLoad: false))
-        _vm = StateObject(wrappedValue: MessageCreateVM())
-       
+//        _vm = StateObject(wrappedValue: MessageCreateVM())
+        _vm = StateObject(wrappedValue: vm)
     }
 
    
@@ -58,6 +62,8 @@ struct RecipientPicker: View {
                     receiverList.append(contentsOf: vm.receiverList)
                     print(receiverList.count)
                     vm.selectedReceiverEmail = receiverList.first ?? ""
+                    
+                    vm.getReceiverInfo(email: vm.selectedReceiverEmail)
                 }
             }
         }

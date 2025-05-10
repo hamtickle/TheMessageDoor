@@ -73,7 +73,7 @@ struct Message: Codable, Identifiable, Hashable {
         self.isSent = isSent
         self.dateSent = dateSent
 
-        self.messageStatus = ""
+        self.messageStatus = messageStatus
         self.messageDateOpened = nil
         self.receiverFavorite = false
         self.receiverDeleted = false
