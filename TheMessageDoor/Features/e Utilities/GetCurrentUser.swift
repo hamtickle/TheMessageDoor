@@ -32,7 +32,7 @@ final class GetCurrentUser: ObservableObject {
                 // Put UserData into User Defaults
                 postToUserDefaults(appUser: appUser)
             } else {
-                currentUser = fetchUserDefaults()
+                self.currentUser = fetchUserDefaults()
                 self.initialLoad = false
             }
             
@@ -83,5 +83,7 @@ final class GetCurrentUser: ObservableObject {
         return self.currentUser
     }
     
-    
+    func getUserDefaults()  {
+        _ = fetchUserDefaults()
+    }
 }

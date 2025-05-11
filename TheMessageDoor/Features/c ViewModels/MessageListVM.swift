@@ -15,17 +15,13 @@ class MessageListVM: ObservableObject {
     
     @Published var reloadList: Bool = false
 
-//    @Published var myTotalMessages: Int = 0
-//    @Published var mySentMessages: Int = 0
-//    @Published var myFavMessages: Int = 0
-//    @Published var receiverFavMessages: Int = 0
-
     @Published var displayMessages: [Message] = []
 
     init () {
 //        _currentUser = StateObject(wrappedValue: GetCurrentUser())
 //                }
     }
+    
     
     func fetchSenderMessages(senderId: String) async {
         print("\n getting sender's messages for \(senderId) \n")

@@ -43,17 +43,17 @@ class MessageCreateVM: ObservableObject {
     )
     {  //     guard let message else { return }
         let updatedMessage = Message(
-            messageId: UUID().uuidString,from: from,senderId: senderId,to: to, receiverId: receiverId, message: message,messageFont: messageFont,senderFavorite: senderFavorite,dateCreated: Date(),isSent: isSent,dateSent: dateSent, messageStatus: messageStatus, messageDateOpened: Date(),receiverFavorite: false,receiverDeleted: false
+            messageId: UUID().uuidString,from: from,senderId: senderId,to: to, receiverId: receiverId, message: message,messageFont: messageFont,senderFavorite: senderFavorite,dateCreated: Date(),isSent: isSent,dateSent: dateSent, messageStatus: messageStatus, messageDateOpened: Date(),receiverFavorite: false,receiverDeleted: false, lastUpdated: Date()
             )
         Task {
             try await MessageManager.shared.updateMessage(message: updatedMessage)
             updateMessageSuccessful.toggle()
         // update UserDefaults
-            pVM.updateSentMessageCount()
-            pVM.updateTotalMessageCount()
-            if senderFavorite {
-                pVM.updateMyFavoritesCount()
-            }
+//            pVM.updateSentMessageCount()
+//            pVM.updateTotalMessageCount()
+//            if senderFavorite {
+//                pVM.updateMyFavoritesCount()
+//            }
             
             currentMessage = ""
         }

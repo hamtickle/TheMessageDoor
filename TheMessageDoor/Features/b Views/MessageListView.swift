@@ -10,12 +10,14 @@ import SwiftUI
 struct MessageListView: View {
 
     @StateObject var user: GetCurrentUser
-    @StateObject var vm : MessageListVM
+    @StateObject var vm: MessageListVM
 
     @State private var messageFilter = 0
-    @State var sender: Bool = true
+    @State var isSender: Bool = true
     @State var noMessages: Bool = false
-    
+    @State var reload: Bool = false
+    @State var loading: Bool = false
+
     init() {
         _user = StateObject(wrappedValue: GetCurrentUser(initialLoad: false))
         _vm = StateObject(wrappedValue: MessageListVM())
@@ -44,7 +46,9 @@ struct MessageListView: View {
 
             List(vm.displayMessages) { message in
                 NavigationLink(
-                    destination: MessageDetail(user: user.currentUser, message: message, sender: sender)
+                    destination: MessageDetail(
+                        user: user.currentUser, message: message,
+                        isSender: isSender, mlVM: MessageListVM())
                 ) {
                     HStack {
                         MessageCell(message: message)
@@ -55,14 +59,14 @@ struct MessageListView: View {
                 }
             }
             .listStyle(.plain)
-            .onChange(of: messageFilter) {oldValue, newValue in
+            .onChange(of: messageFilter) { oldValue, newValue in
                 if newValue == 0 {
                     do {
                         Task {
                             await vm.fetchSenderMessages(
                                 senderId: user.currentUser.userId)
                         }
-                        sender = true
+                        isSender = true
                     }
                 } else {
                     do {
@@ -70,7 +74,7 @@ struct MessageListView: View {
                             await vm.fetchReceiverMessages(
                                 receiverId: user.currentUser.receiverKey)
                         }
-                        sender = false
+                        isSender = false
                     }
                 }
             }
@@ -79,35 +83,48 @@ struct MessageListView: View {
                     await vm.fetchSenderMessages(
                         senderId: user.currentUser.userId)
                 }
-               
+
             }
             .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                // looks like this is triggered when returning from navlink- so why isn't the list being rebuilt and shown on the view.  Investigate observalbe/state object pairs.
+                loading = true
+//                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+
                     let appUser = user.currentUser
-                    print("appUser: \(appUser)")
-                    
+                    print("onAppear - now")
+
+                    if appUser.firstName == "" {
+                        user.getUserDefaults()
+                    }
+
                     if appUser.totalMessagesCreated == 0 {
                         noMessages = true
                     }
+                
                     do {
                         Task {
 
-                             await vm.fetchSenderMessages(
+                            await vm.fetchSenderMessages(
                                 senderId: appUser.userId)
+                            loading = false
                         }
                     }
-                }
-         
+//                }
 
             }
-//            .alert(isPresented: $noMessages,
-//                   content: {
-//                Alert(
-//                    title: Text("No Messages"),
-//                    message: Text("You have not created any messages yet."),
-//                    dismissButton: .cancel(Text("OK"))
-//                )
-//            })
+            .overlay {
+                if loading {
+                    ProgressView()
+                }
+            }
+            //            .alert(isPresented: $noMessages,
+            //                   content: {
+            //                Alert(
+            //                    title: Text("No Messages"),
+            //                    message: Text("You have not created any messages yet."),
+            //                    dismissButton: .cancel(Text("OK"))
+            //                )
+            //            })
         }
     }
 }
@@ -117,5 +134,5 @@ struct MessageListView: View {
 
         MessageListView()
     }
-  
+
 }

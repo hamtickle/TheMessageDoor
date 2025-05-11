@@ -24,7 +24,7 @@ struct MessageCell: View {
                     .resizable()
                     .frame(width: 50, height: 90)
             } else {
-                Image("LogoSmallLight")
+                Image("LogoDraftv2")
                     .resizable()
                     .frame(width: 50, height: 50)
             }
@@ -68,9 +68,10 @@ struct MessageCell: View {
                             Text("Status:")
                                 .font(.caption)
                                 .foregroundColor(!message.isSent ? Color.black :Color.black)
-                            Text(message.isSent ? "Sent" : "Saved")
+                            Text(message.isSent ? "Sent" : "UNSENT")
                                 .font(.caption)
-                                .foregroundColor(!message.isSent ? Color.black :Color.black)
+                                .fontWeight(message.isSent ? .regular: .bold)
+                                .foregroundColor(message.isSent ? Color.black :Color.red)
                             if message.isSent {
                                 Text(message.dateSent,
                                 format: Date.FormatStyle(date: .numeric))

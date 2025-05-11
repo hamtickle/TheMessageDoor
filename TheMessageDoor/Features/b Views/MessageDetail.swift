@@ -10,19 +10,34 @@ import SwiftUI
 struct MessageDetail: View {
 
     @State var user: Person
-    @EnvironmentObject var pVM: ProfileVM
-    @StateObject var vm: MessageDetailVM = MessageDetailVM()
+
+    @StateObject var vm: MessageDetailVM
+    @StateObject var mlVM: MessageListVM
 
     @StateObject private var fonts = Fonts()
     @Environment(\.colorScheme) var colorScheme
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @Environment(\.presentationMode) var presentationMode:
+        Binding<PresentationMode>
 
     @State var message: Message
     @State var fontList: [String] = []
-    @State var sender: Bool
+    @State var isSender: Bool
+    //    @Binding var reload: Bool
+    @State var isFavorite: Bool = false
+
     @State private var isPressedSave = false
     @State private var isPressedSend = false
     @State private var isPressedDelete = false
+
+    init(user: Person, message: Message, isSender: Bool, mlVM: MessageListVM) {
+
+        _vm = StateObject(wrappedValue: MessageDetailVM())
+        
+        _user = State(wrappedValue: user)
+        _message = State(wrappedValue: message)
+        _isSender = State(wrappedValue: isSender)
+        _mlVM = StateObject(wrappedValue: mlVM)
+    }
 
     var body: some View {
         Text("View Message")
@@ -50,18 +65,34 @@ struct MessageDetail: View {
                 .background(Color.white)
                 .border(Color.blue, width: 2)
 
-                Toggle(
-                    "Make this a favorite?",
-                    isOn: sender
-                        ? $vm.currentSenderFavorite
-                        : $vm.currentReceiverFavorite
-                )
-                .foregroundColor(.blue)
-                .padding(.bottom, 20)
+                HStack {
+                    Text("Favorite?")
+                        .foregroundColor(.blue)
+                        .padding(.bottom, 10)
+
+                    isFavorite
+                        ? Image(systemName: "heart.fill")
+                            .foregroundColor(.red)
+                            .padding(.bottom, 10)
+                        : Image(systemName: "heart")
+                            .foregroundColor(.gray)
+                            .padding(.bottom, 10)
+                }
+                .onTapGesture {
+                    isFavorite.toggle()
+                    //                    message.senderFavorite = self.isFavorite
+                    // Bug - database is not getting updated with correct Favorite on repeated tap gestures
+                    //                    DB is being updated, but the value for the Favorite is not changing other than the first time.
+                    vm.toggleSenderFavorite(message: message)
+                    mlVM.reloadList = true
+                }
+                .padding(.bottom, 10)
+                .padding(.top, 10)
+                .font(.title)
 
                 if message.isSent {
                     Text(
-                        sender
+                        isSender
                             ? "THIS MESSAGE HAS BEEN SENT"
                             : "THIS MESSAGE WAS SENT TO YOU"
                     )
@@ -115,7 +146,7 @@ struct MessageDetail: View {
                 .padding(.bottom, 20)
 
                 // Message Stats
-                if sender {
+                if isSender {
 
                     if message.isSent {
                         MessageStats(message: message)
@@ -149,6 +180,7 @@ struct MessageDetail: View {
                     // Save/Update Message
                     Button(action: {
                         vm.saveMessage(message: message)
+                        mlVM.reloadList = true
 
                     }) {
                         Text("Save Message")
@@ -172,14 +204,16 @@ struct MessageDetail: View {
                         }
                     }
                 }
-                    
 
                 // Send Message
                 if !message.isSent {
                     Button(action: {
                         Task {
                             vm.sendSavedMessage(message: message)
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                            mlVM.reloadList = true
+                            DispatchQueue.main.asyncAfter(
+                                deadline: .now() + 1.0
+                            ) {
                                 self.presentationMode.wrappedValue.dismiss()
                             }
                         }
@@ -205,15 +239,15 @@ struct MessageDetail: View {
                         }
                     }
                 }
-                    
 
                 // Delete Message
                 Button(action: {
                     vm.senderDeleteMessage(message: message)
+                    mlVM.reloadList = true
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                         self.presentationMode.wrappedValue.dismiss()
                     }
-                   
+
                 }) {
                     Text("Delete Message")
                         .frame(width: 200, height: 40)
@@ -246,12 +280,7 @@ struct MessageDetail: View {
                 fontList.removeAll()
                 fontList.append(contentsOf: fonts.fonts)
             }
-        }
-        .onChange(of: vm.currentSenderFavorite) {
-            vm.toggleSenderFavorite(message: message)
-        }
-        .onChange(of: vm.currentReceiverFavorite) {
-            vm.toggleReceiverFavorite(message: message)
+            isFavorite = message.senderFavorite
         }
 
         .alert(
@@ -292,11 +321,12 @@ struct MessageDetail: View {
 
 #Preview {
     NavigationStack {
-        
+
         var message: Message = .init(messageId: "")
 
-        MessageDetail(user: Person(userId: ""), message: message, sender: true)
+        MessageDetail(
+            user: Person(userId: ""), message: message, isSender: true,
+            mlVM: MessageListVM())
     }
 
 }
-

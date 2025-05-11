@@ -40,6 +40,8 @@ struct Message: Codable, Identifiable, Hashable {
     var messageDateOpened: Date?
     var receiverFavorite: Bool
     var receiverDeleted: Bool
+    
+    var lastUpdated: Date
 
     var id: String { messageId }
 
@@ -58,7 +60,8 @@ struct Message: Codable, Identifiable, Hashable {
         messageStatus: String,
         messageDateOpened: Date?,
         receiverFavorite: Bool,
-        receiverDeleted: Bool
+        receiverDeleted: Bool,
+        lastUpdated: Date
 
     ) {
         self.messageId = messageId
@@ -77,6 +80,7 @@ struct Message: Codable, Identifiable, Hashable {
         self.messageDateOpened = nil
         self.receiverFavorite = false
         self.receiverDeleted = false
+        self.lastUpdated = Date()
 
     }
     
@@ -114,6 +118,8 @@ struct Message: Codable, Identifiable, Hashable {
         self.messageDateOpened = nil
         self.receiverFavorite = false
         self.receiverDeleted = false
+        
+        self.lastUpdated = Date()
 
     }
 
@@ -135,7 +141,8 @@ struct Message: Codable, Identifiable, Hashable {
             messageStatus: messageStatus,
             messageDateOpened: messageDateOpened,
             receiverFavorite: receiverFavorite,
-            receiverDeleted: receiverDeleted
+            receiverDeleted: receiverDeleted,
+            lastUpdated: Date()
         )
     }
 
@@ -158,7 +165,8 @@ struct Message: Codable, Identifiable, Hashable {
             messageStatus: messageStatus,
             messageDateOpened: messageDateOpened,
             receiverFavorite: receiverFavorite,
-            receiverDeleted: receiverDeleted
+            receiverDeleted: receiverDeleted,
+            lastUpdated: Date()
         )
     }
 
@@ -181,7 +189,8 @@ struct Message: Codable, Identifiable, Hashable {
             messageStatus: messageStatus,
             messageDateOpened: messageDateOpened,
             receiverFavorite: !currentValue,
-            receiverDeleted: receiverDeleted
+            receiverDeleted: receiverDeleted,
+            lastUpdated: Date()
         )
     }
 
@@ -203,7 +212,8 @@ struct Message: Codable, Identifiable, Hashable {
             messageStatus: "Read",
             messageDateOpened: Date(),
             receiverFavorite: receiverFavorite,
-            receiverDeleted: receiverDeleted
+            receiverDeleted: receiverDeleted,
+            lastUpdated: Date()
         )
     }
 
@@ -224,7 +234,8 @@ struct Message: Codable, Identifiable, Hashable {
             messageStatus: messageStatus,
             messageDateOpened: messageDateOpened,
             receiverFavorite: receiverFavorite,
-            receiverDeleted: true
+            receiverDeleted: true,
+            lastUpdated: Date()
         )
     }
 
@@ -246,7 +257,8 @@ struct Message: Codable, Identifiable, Hashable {
             messageStatus: messageStatus,
             messageDateOpened: messageDateOpened,
             receiverFavorite: receiverFavorite,
-            receiverDeleted: receiverDeleted
+            receiverDeleted: receiverDeleted,
+            lastUpdated:     Date()
         )
     }
 
