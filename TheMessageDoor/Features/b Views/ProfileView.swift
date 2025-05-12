@@ -234,16 +234,6 @@ struct ProfileView: View {
                             .foregroundColor(.blue)
                     }
 
-                    Text("\n myFont: \(vm.currentUser.myFont)")
-                        .font(.caption)
-                    Text("mySignature: \(vm.currentUser.mySignature)")
-                        .font(.caption)
-                    Text("URL: \(vm.currentUser.photoUrl)")
-                        .font(.caption)
-
-                    Text("rKey: \(vm.currentUser.receiverKey)")
-                        .font(.caption)
-
                 }
                 .padding(.horizontal)
                 Spacer()

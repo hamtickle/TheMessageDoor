@@ -34,9 +34,9 @@ class MessageListVM: ObservableObject {
         
    
     }
-    func fetchReceiverMessages(receiverId: String) async  {
-        print("\n getting received messages for \(receiverId) \n")
-        let displayMessges = try? await MessageManager.shared.getReceiverMessages(receiverId: receiverId)
+    func fetchReceiverMessages(to: String) async  {
+        print("\n getting received messages for \(to) \n")
+        let displayMessges = try? await MessageManager.shared.getReceiverMessages(to: to)
    
         self.displayMessages = displayMessges ?? []
         sortMessagesByDate()

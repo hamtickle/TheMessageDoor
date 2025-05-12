@@ -37,9 +37,9 @@ final class MessageManager {
             from: message, merge: true, encoder: encoder)
     }
     
-    func getReceiverMessages(receiverId: String) async throws -> [Message] {
+    func getReceiverMessages(to: String) async throws -> [Message] {
         var messageList: [Message] = []
-        let query = messageCollection.whereField("receiver_id", isEqualTo: receiverId)
+        let query = messageCollection.whereField("to", isEqualTo: to)
         
         do {
             let querySnapshot = try await query.getDocuments()

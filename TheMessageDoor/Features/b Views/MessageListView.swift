@@ -72,7 +72,7 @@ struct MessageListView: View {
                     do {
                         Task {
                             await vm.fetchReceiverMessages(
-                                receiverId: user.currentUser.receiverKey)
+                                to: user.currentUser.email)
                         }
                         isSender = false
                     }
