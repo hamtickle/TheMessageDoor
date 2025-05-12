@@ -13,6 +13,7 @@ struct ProfileView: View {
     @StateObject var vm: ProfileVM
 
     @StateObject private var fonts = Fonts()
+    
 
     @Binding var showSignInView: Bool
     @State var updateSuccessful: Bool = false
@@ -21,6 +22,7 @@ struct ProfileView: View {
     @FocusState private var isFocused: Bool
 
     @State var fontList: [String] = []
+    @State var fontSize: CGFloat = 25
     @State private var isPressed = false
 
     init(showSignInView: Binding<Bool>) {
@@ -149,9 +151,8 @@ struct ProfileView: View {
                             .font(
                                 .custom(
                                     vm.currentUser.myFont,
-                                    size: (vm.currentUser.myFont == "Zapfino")
-                                        ? 15 : 25)
-                            )
+                                    size: fontSize
+                            ))
                             .multilineTextAlignment(.center)
                             .frame(height: 100)
                             .padding(.horizontal)
@@ -164,12 +165,13 @@ struct ProfileView: View {
 
                     // Button to update User data here
                     Button {
+                        updateSuccessful.toggle()
                         vm.updateUser(
                             email: vm.currentUser.email,
                             firstName: vm.currentUser.firstName,
                             lastName: vm.currentUser.lastName,
                             myFont: vm.currentUser.myFont, mySignature: "")
-                        updateSuccessful.toggle()
+                        print("\n Profile updated successfully. \(updateSuccessful)")
                     } label: {
                         Text("Update Profile")
                     }
@@ -247,10 +249,13 @@ struct ProfileView: View {
                 Spacer()
 
             }
+            
         }
-
-        .navigationTitle("Your Profile")
-
+        .onChange(of: vm.currentUser.myFont) {
+            let font = vm.currentUser.myFont
+            fontSize = fonts.getFontSize(font: font)
+        }
+//        .navigationTitle("Your Profile")
         .alert(
             isPresented: $updateSuccessful,
             content: {
@@ -260,6 +265,7 @@ struct ProfileView: View {
                     dismissButton: .cancel(Text("OK")))
             }
         )
+        
         .alert(
             isPresented: $incompleteProfile,
             content: {
@@ -274,9 +280,13 @@ struct ProfileView: View {
         )
         .task {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.isFocused = true
+                if vm.currentUser.lastName == "" {
+                    self.isFocused = true
+                }
                 fontList.removeAll()
                 fontList.append(contentsOf: fonts.fonts)
+//                fontSizes.removeAll()
+//                fontSizes.append(contentsOf: fonts.fontSizes)
             }
             // Current User Data from User Defaults
             vm.fetchUserDefaults()

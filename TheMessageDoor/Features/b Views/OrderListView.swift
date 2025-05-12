@@ -9,12 +9,12 @@ import SwiftUI
 
 struct OrderListView: View {
 
-    
     @StateObject var user: GetCurrentUser
-    @StateObject var vm : OrderListVM
+    @StateObject var vm: OrderListVM
 
     @Environment(\.colorScheme) var colorScheme
-    
+    @State private var loading: Bool = false
+
     init() {
         _user = StateObject(wrappedValue: GetCurrentUser(initialLoad: false))
         _vm = StateObject(wrappedValue: OrderListVM())
@@ -29,22 +29,24 @@ struct OrderListView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal)
 
-                NavigationLink{
+                NavigationLink {
                     OrderCreate(currentUser: user.currentUser)
                 } label: {
                     Image(systemName: "cart")
                         .font(.system(size: 20))
-                        .foregroundColor(colorScheme == .dark ? Color.blue : Color.blue)
+                        .foregroundColor(
+                            colorScheme == .dark ? Color.blue : Color.blue
+                        )
                         .padding(.trailing, 10)
                 }
-                
-                
+
             }
             .padding(.top, 30)
-            
-            
+
             List(vm.orderList, id: \.orderId) { order in
-                NavigationLink(destination: OrderView(user: user.currentUser, order: order)) {
+                NavigationLink(
+                    destination: OrderView(user: user.currentUser, order: order)
+                ) {
 
                     HStack(alignment: .top) {
                         OrderCell(order: order)
@@ -57,8 +59,15 @@ struct OrderListView: View {
         }
         .listStyle(.grouped)
         .navigationTitle(Text("Your Orders"))
+        .overlay {
+            if loading {
+                ProgressView()
+            }
+        }
         .task {
+            loading = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+
                 let appUser = user.currentUser
                 print("appUser: \(appUser)")
                 do {
@@ -67,15 +76,17 @@ struct OrderListView: View {
                             senderId: appUser.userId)
                     }
                 }
-            }}
-//        .alert(isPresented: $vm.noOrders,
-//               content: {
-//            Alert(
-//                title: Text("No Active Orders"),
-//                message: Text("You do not have any ACTIVE orders.  \n Please create an order so you can send messages."),
-//                dismissButton: .cancel(Text("OK"))
-//            )
-//        })
+                loading = false
+            }
+        }
+        //        .alert(isPresented: $vm.noOrders,
+        //               content: {
+        //            Alert(
+        //                title: Text("No Active Orders"),
+        //                message: Text("You do not have any ACTIVE orders.  \n Please create an order so you can send messages."),
+        //                dismissButton: .cancel(Text("OK"))
+        //            )
+        //        })
     }
 }
 
@@ -83,5 +94,5 @@ struct OrderListView: View {
     NavigationStack {
         OrderListView()
     }
-   
+
 }

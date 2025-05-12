@@ -90,11 +90,14 @@ class ProfileVM: ObservableObject {
             try await UserManager.shared.updateUser(user: updatedUser)
             self.user = try await UserManager.shared.getUser(
                 userId: currentUser.userId)
-            updateSuccessful.toggle()
+//            updateSuccessful.toggle()
         }
         
-//        updateUserDefaults(person: currentUser)
-//        print("Updated CurrentUserDefaults: \(currentUser)")
+        updateUserDefaults(person: currentUser)
+//        updateSuccessful = true
+//        print("\n Updated CurrentUserDefaults: \(currentUser)")
+//        print("\n updateSuccessful: \(updateSuccessful)")
+        print("\n Profile Updated")
     }
 
     

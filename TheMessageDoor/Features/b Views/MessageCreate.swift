@@ -13,6 +13,7 @@ struct CreateMessageView: View {
     @StateObject var vm: MessageCreateVM
     var k: Constants = Constants()
     var fonts = Fonts()
+    @State var fontSize: CGFloat = 25
 
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.presentationMode) var presentationMode:
@@ -20,6 +21,7 @@ struct CreateMessageView: View {
     
    
     @State var fontList: [String] = []
+ 
     @State var receiverList: [String] = []
     @State var isPressed: Bool = false
     @State var myFavorite: Bool = false
@@ -111,6 +113,7 @@ struct CreateMessageView: View {
                         senderFavorite: myFavorite,
                         isSent: false,
                         messageFont: vm.messageFont,
+                        messageFontSize: vm.fontSize,
                         messageStatus: k.statusSaved,
                         messageDateOpened: Date(),
                         receiverDeleted: false,
@@ -157,6 +160,7 @@ struct CreateMessageView: View {
                         senderFavorite: myFavorite,
                         isSent: true,
                         messageFont: vm.messageFont,
+                        messageFontSize: vm.fontSize,
                         messageStatus: k.statusSent,
                         messageDateOpened: Date(),
                         receiverDeleted: false,
@@ -204,6 +208,11 @@ struct CreateMessageView: View {
 
             vm.getReceiverInfo(email: vm.selectedReceiverEmail)
             
+        }
+        .onChange(of: vm.messageFont) {
+            let font = vm.messageFont
+            vm.fontSize = fonts.getFontSize(font: font)
+            print(vm.fontSize)
         }
         .alert(
             isPresented: $vm.updateMessageSuccessful,

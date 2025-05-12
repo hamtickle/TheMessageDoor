@@ -117,7 +117,7 @@ struct MessageDetail: View {
                         //                    Text("message")
                         if message.isSent {
                             Text(message.message)
-                                .font(.custom(message.messageFont, size: 25))
+                                .font(.custom(message.messageFont, size: message.messageFontSize))
                                 .foregroundColor(.black)
                                 .padding(.horizontal, 10)
                                 .multilineTextAlignment(.center)
@@ -126,7 +126,7 @@ struct MessageDetail: View {
                                 .background(Color(.yellow))
                         } else {
                             TextEditor(text: $message.message)
-                                .font(.custom(message.messageFont, size: 25))
+                                .font(.custom(message.messageFont, size: message.messageFontSize))
                                 .foregroundColor(.black)
                                 .padding(.horizontal, 10)
                                 .multilineTextAlignment(.center)
@@ -281,6 +281,12 @@ struct MessageDetail: View {
                 fontList.append(contentsOf: fonts.fonts)
             }
             isFavorite = message.senderFavorite
+        }
+        
+        .onChange(of: message.messageFont) {
+            let font = message.messageFont
+            message.messageFontSize = fonts.getFontSize(font: font)
+            print(message.messageFontSize)
         }
 
         .alert(

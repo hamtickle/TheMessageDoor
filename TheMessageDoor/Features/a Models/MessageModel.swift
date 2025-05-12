@@ -31,6 +31,7 @@ struct Message: Codable, Identifiable, Hashable {
     var receiverId: String
     var message: String
     var messageFont: String
+    var messageFontSize: CGFloat
     var senderFavorite: Bool
     var dateCreated: Date
     var isSent: Bool
@@ -53,6 +54,7 @@ struct Message: Codable, Identifiable, Hashable {
         receiverId: String,
         message: String,
         messageFont: String,
+        messageFontSize: CGFloat,
         senderFavorite: Bool,
         dateCreated: Date,
         isSent: Bool,
@@ -71,6 +73,7 @@ struct Message: Codable, Identifiable, Hashable {
         self.receiverId = receiverId
         self.message = message
         self.messageFont = messageFont
+        self.messageFontSize = messageFontSize
         self.senderFavorite = senderFavorite
         self.dateCreated = dateCreated
         self.isSent = isSent
@@ -109,6 +112,7 @@ struct Message: Codable, Identifiable, Hashable {
         self.receiverId = ""
         self.message = ""
         self.messageFont = ""
+        self.messageFontSize = 25
         self.senderFavorite = false
         self.dateCreated = Date()
         self.isSent = false
@@ -134,6 +138,7 @@ struct Message: Codable, Identifiable, Hashable {
             receiverId: receiverId,
             message: message,
             messageFont: messageFont,
+            messageFontSize : messageFontSize,
             senderFavorite: senderFavorite,
             dateCreated: dateCreated,
             isSent: true,
@@ -158,6 +163,7 @@ struct Message: Codable, Identifiable, Hashable {
             receiverId: receiverId,
             message: message,
             messageFont: messageFont,
+            messageFontSize : messageFontSize,
             senderFavorite: !currentValue,
             dateCreated: dateCreated,
             isSent: isSent,
@@ -182,6 +188,7 @@ struct Message: Codable, Identifiable, Hashable {
             receiverId: receiverId,
             message: message,
             messageFont: messageFont,
+            messageFontSize: messageFontSize,
             senderFavorite: senderFavorite,
             dateCreated: dateCreated,
             isSent: isSent,
@@ -205,6 +212,7 @@ struct Message: Codable, Identifiable, Hashable {
             receiverId: receiverId,
             message: message,
             messageFont: messageFont,
+            messageFontSize: messageFontSize,
             senderFavorite: senderFavorite,
             dateCreated: dateCreated,
             isSent: isSent,
@@ -227,6 +235,7 @@ struct Message: Codable, Identifiable, Hashable {
             receiverId: receiverId,
             message: message,
             messageFont: messageFont,
+            messageFontSize: messageFontSize,
             senderFavorite: senderFavorite,
             dateCreated: dateCreated,
             isSent: isSent,
@@ -250,6 +259,7 @@ struct Message: Codable, Identifiable, Hashable {
             receiverId: receiverId,
             message: message,
             messageFont: messageFont,
+            messageFontSize: messageFontSize,
             senderFavorite: senderFavorite,
             dateCreated: dateCreated,
             isSent: isSent,

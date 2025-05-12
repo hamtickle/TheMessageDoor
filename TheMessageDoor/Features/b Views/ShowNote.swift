@@ -9,7 +9,9 @@ import SwiftUI
 struct ShowNote: View {
 
     @StateObject var vm: MessageCreateVM
+    @StateObject private var fonts = Fonts()
     @Environment(\.colorScheme) var colorScheme
+//    @State var fontSize: CGFloat
 
     var body: some View {
         ZStack {
@@ -27,7 +29,7 @@ struct ShowNote: View {
                     .frame(width: 350, height: 20)
                 //                    Text("message")
                 TextEditor(text: $vm.currentMessage)
-                    .font(.custom(vm.messageFont, size: 25))
+                    .font(.custom(vm.messageFont, size: vm.fontSize))
                     .foregroundColor(.black)
                     .autocapitalization(.none)
                     .padding(.horizontal, 10)
@@ -44,5 +46,14 @@ struct ShowNote: View {
 
         }
         .padding(.bottom, 20)
+//        .onChange (of: vm.messageFont) {
+//            let font = vm.messageFont
+//            fontSize = fonts.getFontSize(font: font)
+//        }
+//        .onAppear {
+//            let font = vm.messageFont
+//            fontSize = fonts.getFontSize(font: font)
+//        }
     }
+                  
 }

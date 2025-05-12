@@ -33,7 +33,7 @@ struct MessageListView: View {
                 .padding(.top, 30)
             Text("ID: \(user.currentUser.userId)")
                 .font(.caption)
-            Text("Total Messages: \(user.currentUser.totalMessagesCreated)")
+            Text("Total Messages: \(vm.displayMessages.count)")
 
             Picker("Filter", selection: $messageFilter) {
                 Text("My Messages").tag(0)
@@ -88,7 +88,7 @@ struct MessageListView: View {
             .onAppear {
                 // looks like this is triggered when returning from navlink- so why isn't the list being rebuilt and shown on the view.  Investigate observalbe/state object pairs.
                 loading = true
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 
                     let appUser = user.currentUser
                     print("onAppear - now")
@@ -106,10 +106,11 @@ struct MessageListView: View {
 
                             await vm.fetchSenderMessages(
                                 senderId: appUser.userId)
-                            loading = false
+                            
                         }
                     }
-//                }
+                    loading = false
+                }
 
             }
             .overlay {

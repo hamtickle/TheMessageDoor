@@ -24,6 +24,8 @@ struct Profile: Codable {
     var totalMyFavorites: Int
     var totalReceiverFavorites: Int
     
+    var lastUpdated: Date
+    
     
     // initialize a Profile from the Auth Model (of the current User)
     init(auth: AuthDataResultModel) {
@@ -41,6 +43,8 @@ struct Profile: Codable {
         self.totalMessagesCreated = 0
         self.totalMyFavorites = 0
         self.totalReceiverFavorites = 0
+        
+        self.lastUpdated = Date()
     }
     
     // initialize a Profile from individual values passed in
@@ -58,7 +62,9 @@ struct Profile: Codable {
         totalMessagesSent: Int = 0,
         totalMessagesCreated: Int = 0,
         totalMyFavorites: Int = 0,
-        totalReceiverFavorites: Int = 0
+        totalReceiverFavorites: Int = 0,
+        
+        lastUpdated: Date = Date()
     ) {
         self.userId = userId
         self.email = email
@@ -74,6 +80,8 @@ struct Profile: Codable {
         self.totalMessagesCreated = totalMessagesCreated
         self.totalMyFavorites = totalMyFavorites
         self.totalReceiverFavorites = totalReceiverFavorites
+        
+        self.lastUpdated = Date()
     }
     
     mutating func updateUserId (newUserId: String) {
