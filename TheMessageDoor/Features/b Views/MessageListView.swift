@@ -97,9 +97,9 @@ struct MessageListView: View {
                         user.getUserDefaults()
                     }
 
-                    if appUser.totalMessagesCreated == 0 {
-                        noMessages = true
-                    }
+//                    if appUser.totalMessagesCreated == 0 {
+//                        noMessages = true
+//                    }
                 
                     do {
                         Task {

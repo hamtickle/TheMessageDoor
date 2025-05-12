@@ -17,6 +17,7 @@ class ProfileVM: ObservableObject {
 
     @Published var updateSuccessful: Bool = false
     @Published var incompleteProfile: Bool = false
+    @Published var userStats: UserStats = UserStats(userId: "")
 
     init() {
     }
@@ -40,27 +41,13 @@ class ProfileVM: ObservableObject {
             incompleteProfile = true
         }
     }
-
-    func updateTotalMessageCount() {
-        // update userDefaults
-        currentUser.totalMessagesCreated += 1
-        updateUserDefaults(person: currentUser)
-    }
     
-    func updateSentMessageCount() {
-        // update userDefaults
-        currentUser.totalMessagesSent += 1
-        updateUserDefaults(person: currentUser)
-    }
-    
-    func updateMyFavoritesCount() {
-        currentUser.totalMyFavorites += 1
-        updateUserDefaults(person: currentUser)
-    }
-
-    func updateReceiverFavoritesCount() {
-        currentUser.totalReceiverFavorites += 1
-        updateUserDefaults(person: currentUser)
+    func fetchUserStats(userId: String) {
+        Task {
+            let result = try await StatManager.instance.getUserStats(senderId: userId)
+             self.userStats = result
+        }
+       
     }
     
     func updateUserDefaults(person: Person) {
@@ -85,7 +72,7 @@ class ProfileVM: ObservableObject {
         let updatedUser = Profile(
             userId: currentUser.userId, email: currentUser.email, photoUrl: currentUser.photoUrl,
             firstName: currentUser.firstName, lastName: currentUser.lastName, myFont: currentUser.myFont,
-            mySignature: k.appSignature, receiverKey: currentUser.receiverKey,totalMessagesSent: currentUser.totalMessagesSent, totalMessagesCreated: currentUser.totalMessagesCreated,  totalMyFavorites: currentUser.totalMyFavorites, totalReceiverFavorites: currentUser.totalReceiverFavorites)
+            mySignature: k.appSignature, receiverKey: currentUser.receiverKey )
         Task {
             try await UserManager.shared.updateUser(user: updatedUser)
             self.user = try await UserManager.shared.getUser(
