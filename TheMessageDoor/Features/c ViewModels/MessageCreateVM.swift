@@ -16,7 +16,7 @@ class MessageCreateVM: ObservableObject {
     private var rm: ReceiverManager = ReceiverManager()
     private var k: Constants = Constants()
     
-    @Published var currentReceiver: Profile? = nil
+//    @Published var currentReceiver: Profile? = nil
     @Published var receiverList: [String] = []
     @Published var selectedReceiverEmail: String = ""
     @Published var currentReceiverId: String = ""
@@ -29,6 +29,7 @@ class MessageCreateVM: ObservableObject {
     
     @Published var displayMessages: [Message] = []
     @Published var messageFont: String = ""
+    @Published var fontSize: CGFloat = 25
     
     @Published var updateMessageSuccessful: Bool = false
     @Published var messageDeleted: Bool = false
@@ -39,24 +40,19 @@ class MessageCreateVM: ObservableObject {
     }
     
     func createMessage(
-        messageId: String, from: String, senderId: String, to: String, receiverId: String, message: String, dateSent: Date, senderFavorite: Bool, isSent: Bool, messageFont: String, messageStatus: String, messageDateOpened: Date, receiverDeleted: Bool, receiverFavorite: Bool
+        messageId: String, from: String, senderId: String, to: String, receiverId: String, message: String, dateSent: Date, senderFavorite: Bool, isSent: Bool, messageFont: String, messageFontSize: CGFloat, messageStatus: String, messageDateOpened: Date, receiverDeleted: Bool, receiverFavorite: Bool
     )
     {  //     guard let message else { return }
         let updatedMessage = Message(
-            messageId: UUID().uuidString,from: from,senderId: senderId,to: to,receiverId: receiverId,message: message,messageFont: messageFont,senderFavorite: senderFavorite,dateCreated: Date(),isSent: isSent,dateSent: dateSent, messageStatus: messageStatus, messageDateOpened: Date(),receiverFavorite: false,receiverDeleted: false
+            messageId: UUID().uuidString,from: from,senderId: senderId,to: to, receiverId: receiverId, message: message,messageFont: messageFont,messageFontSize: messageFontSize, senderFavorite: senderFavorite,dateCreated: Date(),isSent: isSent,dateSent: dateSent, messageStatus: messageStatus, messageDateOpened: Date(),receiverFavorite: false,receiverDeleted: false, lastUpdated: Date()
             )
         Task {
             try await MessageManager.shared.updateMessage(message: updatedMessage)
             updateMessageSuccessful.toggle()
-        // update UserDefaults
-            pVM.updateSentMessageCount()
-            pVM.updateTotalMessageCount()
-            if senderFavorite {
-                pVM.updateMyFavoritesCount()
-            }
-            
             currentMessage = ""
         }
+        // update user statistics
+        
     }
     
     
@@ -148,7 +144,6 @@ class MessageCreateVM: ObservableObject {
         Task {
             do {
                     _ = try await MessageManager.shared.updateMessage(message: updatedMessage)
-   //             user.?.incrementTotalMessagesCreated()
                 
             } catch  {
                 print("Could not delete message \(error.localizedDescription)")
@@ -160,8 +155,11 @@ class MessageCreateVM: ObservableObject {
     
     func getReceivers(senderId: String) async throws {
         receiverList = try await rm.getReceivers(senderId: senderId)
+        
         if receiverList.isEmpty {
             noOrders = true
+        } else {
+            getReceiverInfo(email: receiverList[0])
         }
     }
     
@@ -172,10 +170,10 @@ class MessageCreateVM: ObservableObject {
         var Id: String = ""
         (First, Last, Id) = rm.getReceiverInfo(email: email)
         
-        currentReceiverId = Id
-        currentReceiverFirstName = First
-        currentReceiverLastName = Last
-        currentReceiverEmail = email
+        self.currentReceiverId = Id
+        self.currentReceiverFirstName = First
+        self.currentReceiverLastName = Last
+        self.currentReceiverEmail = email
     }
     
     

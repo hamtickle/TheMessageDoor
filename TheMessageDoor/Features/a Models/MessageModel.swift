@@ -31,6 +31,7 @@ struct Message: Codable, Identifiable, Hashable {
     var receiverId: String
     var message: String
     var messageFont: String
+    var messageFontSize: CGFloat
     var senderFavorite: Bool
     var dateCreated: Date
     var isSent: Bool
@@ -40,6 +41,8 @@ struct Message: Codable, Identifiable, Hashable {
     var messageDateOpened: Date?
     var receiverFavorite: Bool
     var receiverDeleted: Bool
+    
+    var lastUpdated: Date
 
     var id: String { messageId }
 
@@ -51,6 +54,7 @@ struct Message: Codable, Identifiable, Hashable {
         receiverId: String,
         message: String,
         messageFont: String,
+        messageFontSize: CGFloat,
         senderFavorite: Bool,
         dateCreated: Date,
         isSent: Bool,
@@ -58,7 +62,8 @@ struct Message: Codable, Identifiable, Hashable {
         messageStatus: String,
         messageDateOpened: Date?,
         receiverFavorite: Bool,
-        receiverDeleted: Bool
+        receiverDeleted: Bool,
+        lastUpdated: Date
 
     ) {
         self.messageId = messageId
@@ -68,15 +73,17 @@ struct Message: Codable, Identifiable, Hashable {
         self.receiverId = receiverId
         self.message = message
         self.messageFont = messageFont
+        self.messageFontSize = messageFontSize
         self.senderFavorite = senderFavorite
         self.dateCreated = dateCreated
         self.isSent = isSent
         self.dateSent = dateSent
 
-        self.messageStatus = ""
+        self.messageStatus = messageStatus
         self.messageDateOpened = nil
         self.receiverFavorite = false
         self.receiverDeleted = false
+        self.lastUpdated = Date()
 
     }
     
@@ -105,6 +112,7 @@ struct Message: Codable, Identifiable, Hashable {
         self.receiverId = ""
         self.message = ""
         self.messageFont = ""
+        self.messageFontSize = 25
         self.senderFavorite = false
         self.dateCreated = Date()
         self.isSent = false
@@ -114,6 +122,8 @@ struct Message: Codable, Identifiable, Hashable {
         self.messageDateOpened = nil
         self.receiverFavorite = false
         self.receiverDeleted = false
+        
+        self.lastUpdated = Date()
 
     }
 
@@ -128,6 +138,7 @@ struct Message: Codable, Identifiable, Hashable {
             receiverId: receiverId,
             message: message,
             messageFont: messageFont,
+            messageFontSize : messageFontSize,
             senderFavorite: senderFavorite,
             dateCreated: dateCreated,
             isSent: true,
@@ -135,7 +146,8 @@ struct Message: Codable, Identifiable, Hashable {
             messageStatus: messageStatus,
             messageDateOpened: messageDateOpened,
             receiverFavorite: receiverFavorite,
-            receiverDeleted: receiverDeleted
+            receiverDeleted: receiverDeleted,
+            lastUpdated: Date()
         )
     }
 
@@ -151,6 +163,7 @@ struct Message: Codable, Identifiable, Hashable {
             receiverId: receiverId,
             message: message,
             messageFont: messageFont,
+            messageFontSize : messageFontSize,
             senderFavorite: !currentValue,
             dateCreated: dateCreated,
             isSent: isSent,
@@ -158,7 +171,8 @@ struct Message: Codable, Identifiable, Hashable {
             messageStatus: messageStatus,
             messageDateOpened: messageDateOpened,
             receiverFavorite: receiverFavorite,
-            receiverDeleted: receiverDeleted
+            receiverDeleted: receiverDeleted,
+            lastUpdated: Date()
         )
     }
 
@@ -174,6 +188,7 @@ struct Message: Codable, Identifiable, Hashable {
             receiverId: receiverId,
             message: message,
             messageFont: messageFont,
+            messageFontSize: messageFontSize,
             senderFavorite: senderFavorite,
             dateCreated: dateCreated,
             isSent: isSent,
@@ -181,7 +196,8 @@ struct Message: Codable, Identifiable, Hashable {
             messageStatus: messageStatus,
             messageDateOpened: messageDateOpened,
             receiverFavorite: !currentValue,
-            receiverDeleted: receiverDeleted
+            receiverDeleted: receiverDeleted,
+            lastUpdated: Date()
         )
     }
 
@@ -196,6 +212,7 @@ struct Message: Codable, Identifiable, Hashable {
             receiverId: receiverId,
             message: message,
             messageFont: messageFont,
+            messageFontSize: messageFontSize,
             senderFavorite: senderFavorite,
             dateCreated: dateCreated,
             isSent: isSent,
@@ -203,7 +220,8 @@ struct Message: Codable, Identifiable, Hashable {
             messageStatus: "Read",
             messageDateOpened: Date(),
             receiverFavorite: receiverFavorite,
-            receiverDeleted: receiverDeleted
+            receiverDeleted: receiverDeleted,
+            lastUpdated: Date()
         )
     }
 
@@ -217,6 +235,7 @@ struct Message: Codable, Identifiable, Hashable {
             receiverId: receiverId,
             message: message,
             messageFont: messageFont,
+            messageFontSize: messageFontSize,
             senderFavorite: senderFavorite,
             dateCreated: dateCreated,
             isSent: isSent,
@@ -224,7 +243,8 @@ struct Message: Codable, Identifiable, Hashable {
             messageStatus: messageStatus,
             messageDateOpened: messageDateOpened,
             receiverFavorite: receiverFavorite,
-            receiverDeleted: true
+            receiverDeleted: true,
+            lastUpdated: Date()
         )
     }
 
@@ -239,6 +259,7 @@ struct Message: Codable, Identifiable, Hashable {
             receiverId: receiverId,
             message: message,
             messageFont: messageFont,
+            messageFontSize: messageFontSize,
             senderFavorite: senderFavorite,
             dateCreated: dateCreated,
             isSent: isSent,
@@ -246,7 +267,8 @@ struct Message: Codable, Identifiable, Hashable {
             messageStatus: messageStatus,
             messageDateOpened: messageDateOpened,
             receiverFavorite: receiverFavorite,
-            receiverDeleted: receiverDeleted
+            receiverDeleted: receiverDeleted,
+            lastUpdated:     Date()
         )
     }
 

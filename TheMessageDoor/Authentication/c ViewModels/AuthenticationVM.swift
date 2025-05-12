@@ -10,8 +10,10 @@ import Foundation
 @MainActor
 final class AuthenticationVM: ObservableObject {
 
+//    var appVM: AppVM = AppVM()
     var thisUser: Person = Person(userId: "")
-    let currentUser = GetCurrentUser()
+    
+    let currentUser = GetCurrentUser(initialLoad: true)
     let signInAppleHelper = SignInAppleHelper()
     
 
@@ -21,6 +23,7 @@ final class AuthenticationVM: ObservableObject {
         let authDataResult = try await AuthManager.shared.signInWithGoogle(tokens: tokens)
         
         let user = Profile(auth: authDataResult)
+        var initialLoad: Bool = true
         
         // Bug fix - date created getting updated each log in.  Probably true of Apple login and email log in as well.
         // code is updating/replacing the entire profile each time I log in - so the dateCreated is getting replaced each login.
@@ -37,8 +40,11 @@ final class AuthenticationVM: ObservableObject {
             // new user - create profile
             try await UserManager.shared.createNewUser(user: user)
             print("GetCurrentUser from AuthVM")
-            GetCurrentUser()
+            _ = GetCurrentUser(initialLoad: initialLoad)
+            
         }
+        
+//        try? appVM.getUserData()
 
     }
 

@@ -8,27 +8,35 @@
 import Foundation
 
 @MainActor
-final class GetCurrentUser {
+final class GetCurrentUser: ObservableObject {
     
-    static let shared = GetCurrentUser()
+//    static let shared = GetCurrentUser()
+    
     private var k: Constants = Constants()
     @Published var currentUser: Person = Person(userId: "")
     
     @Published var appUser : Profile? = nil
-    
-        var thisUserId: String = ""
-    
     @Published var user: Profile? = nil
+    var thisUserId: String = ""
+    var initialLoad: Bool
     
-    init() {
+    init(initialLoad: Bool) {
+        self.initialLoad = initialLoad
         Task {
-            self.appUser =  try await loadCurrentUser()
+            if initialLoad {
+                self.appUser =  try await loadCurrentUser()
 
-            thisUserId = appUser?.userId ?? ""
-            print("GetCurrentUser: \(thisUserId)")
+                thisUserId = appUser?.userId ?? ""
+                print("GetCurrentUser: \(thisUserId)")
+                
+                // Put UserData into User Defaults
+                postToUserDefaults(appUser: appUser)
+            } else {
+                self.currentUser = fetchUserDefaults()
+                self.initialLoad = false
+            }
             
-            // Put UserData into User Defaults
-            postToUserDefaults(appUser: appUser)
+            
         }
         
     }
@@ -62,6 +70,7 @@ final class GetCurrentUser {
             UserDefaults.standard.set(encodedData, forKey: k.user)
         }
         print("user defaults: \(thisUser)")
+        currentUser = thisUser
     }
     
     func fetchUserDefaults() -> Person {
@@ -74,5 +83,7 @@ final class GetCurrentUser {
         return self.currentUser
     }
     
-    
+    func getUserDefaults()  {
+        _ = fetchUserDefaults()
+    }
 }

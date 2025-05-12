@@ -9,26 +9,31 @@ import SwiftUI
 
 struct MessageListView: View {
 
-//    @StateObject var pVM : ProfileVM
-    @State var user: Person
-    @EnvironmentObject var pVM : ProfileVM
-    @StateObject var vm : MessageListVM = MessageListVM()
+    @StateObject var user: GetCurrentUser
+    @StateObject var vm: MessageListVM
 
     @State private var messageFilter = 0
-    @State var sender: Bool = true
+    @State var isSender: Bool = true
     @State var noMessages: Bool = false
+    @State var reload: Bool = false
+    @State var loading: Bool = false
+
+    init() {
+        _user = StateObject(wrappedValue: GetCurrentUser(initialLoad: false))
+        _vm = StateObject(wrappedValue: MessageListVM())
+    }
 
     var body: some View {
 
         VStack(alignment: .center) {
-            Text("\(pVM.currentUser.firstName)'s Message Door")
+            Text("\(user.currentUser.firstName)'s Message Door")
                 .font(.system(size: 34, weight: .bold))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal)
                 .padding(.top, 30)
-            Text("ID: \(pVM.currentUser.userId)")
+            Text("ID: \(user.currentUser.userId)")
                 .font(.caption)
-            Text("Total Messages: \(pVM.currentUser.totalMessagesCreated)")
+            Text("Total Messages: \(vm.displayMessages.count)")
 
             Picker("Filter", selection: $messageFilter) {
                 Text("My Messages").tag(0)
@@ -41,7 +46,9 @@ struct MessageListView: View {
 
             List(vm.displayMessages) { message in
                 NavigationLink(
-                    destination: MessageDetail(user: user, message: message, sender: sender)
+                    destination: MessageDetail(
+                        user: user.currentUser, message: message,
+                        isSender: isSender, mlVM: MessageListVM())
                 ) {
                     HStack {
                         MessageCell(message: message)
@@ -52,53 +59,73 @@ struct MessageListView: View {
                 }
             }
             .listStyle(.plain)
-            .onChange(of: messageFilter) {oldValue, newValue in
+            .onChange(of: messageFilter) { oldValue, newValue in
                 if newValue == 0 {
                     do {
                         Task {
                             await vm.fetchSenderMessages(
-                                senderId: pVM.currentUser.userId)
+                                senderId: user.currentUser.userId)
                         }
-                        sender = true
+                        isSender = true
                     }
                 } else {
                     do {
                         Task {
                             await vm.fetchReceiverMessages(
-                                receiverId: pVM.currentUser.receiverKey)
+                                receiverId: user.currentUser.receiverKey)
                         }
-                        sender = false
+                        isSender = false
                     }
                 }
             }
             .onChange(of: vm.reloadList) {
                 Task {
                     await vm.fetchSenderMessages(
-                        senderId: pVM.currentUser.userId)
+                        senderId: user.currentUser.userId)
                 }
-               
+
             }
             .onAppear {
-                if pVM.currentUser.totalMessagesCreated == 0 {
-                    noMessages = true
-                }
-                do {
-                    Task {
+                // looks like this is triggered when returning from navlink- so why isn't the list being rebuilt and shown on the view.  Investigate observalbe/state object pairs.
+                loading = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 
-                         await vm.fetchSenderMessages(
-                            senderId: pVM.currentUser.userId)
+                    let appUser = user.currentUser
+                    print("onAppear - now")
+
+                    if appUser.firstName == "" {
+                        user.getUserDefaults()
                     }
+
+                    if appUser.totalMessagesCreated == 0 {
+                        noMessages = true
+                    }
+                
+                    do {
+                        Task {
+
+                            await vm.fetchSenderMessages(
+                                senderId: appUser.userId)
+                            
+                        }
+                    }
+                    loading = false
                 }
 
             }
-//            .alert(isPresented: $noMessages,
-//                   content: {
-//                Alert(
-//                    title: Text("No Messages"),
-//                    message: Text("You have not created any messages yet."),
-//                    dismissButton: .cancel(Text("OK"))
-//                )
-//            })
+            .overlay {
+                if loading {
+                    ProgressView()
+                }
+            }
+            //            .alert(isPresented: $noMessages,
+            //                   content: {
+            //                Alert(
+            //                    title: Text("No Messages"),
+            //                    message: Text("You have not created any messages yet."),
+            //                    dismissButton: .cancel(Text("OK"))
+            //                )
+            //            })
         }
     }
 }
@@ -106,7 +133,7 @@ struct MessageListView: View {
 #Preview {
     NavigationStack {
 
-        MessageListView(user: Person(userId: ""))
+        MessageListView()
     }
-  
+
 }

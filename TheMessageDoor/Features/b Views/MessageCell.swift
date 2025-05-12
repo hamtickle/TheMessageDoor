@@ -19,14 +19,21 @@ struct MessageCell: View {
             // Image
             Spacer()
             Spacer()
-            Image("Logo_TMD_large")
-                .resizable()
-                .frame(width: 50, height: 90)
+            if message.isSent {
+                Image("Logo_TMD_large")
+                    .resizable()
+                    .frame(width: 50, height: 90)
+            } else {
+                Image("LogoDraftv2")
+                    .resizable()
+                    .frame(width: 50, height: 50)
+            }
+           
 
             // Rectangle
             ZStack {
                 Rectangle()
-                    .fill(!message.isSent ? Color(#colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1)) : Color.white)
+                    .fill(!message.isSent ? Color(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)) : Color.white)
                     .frame(width: 280, height: 100)
                     .shadow(color: message.isSent ? Color.white : Color.gray, radius: 5, x: 5, y: 5)
                     .border(Color.gray, width: 1)
@@ -34,36 +41,37 @@ struct MessageCell: View {
 
                     VStack(alignment: .leading) {
                         Text(message.message)
-                            .foregroundColor(!message.isSent ? Color.white :Color.blue)
+                            .foregroundColor(!message.isSent ? Color.black :Color.blue)
                             .font(.caption)
                             .lineLimit(1)
                             .bold()
 
                         Text(message.to)
                             .font(.body)
-                            .foregroundColor(Color.black)
+                            .foregroundColor(!message.isSent ? Color.black :Color.black)
 
                         HStack {
                             Text("Saved:")
                                 .font(.caption)
-                                .foregroundColor(Color.black)
+                                .foregroundColor(!message.isSent ? Color.black :Color.black)
                             
                             Text(
                                 message.dateCreated,
                                 format: Date.FormatStyle(date: .numeric)
                                 )
                                 .font(.caption)
-                                .foregroundColor(Color.black)
+                                .foregroundColor(!message.isSent ? Color.black :Color.black)
                         }
                         
                         
                         HStack {
                             Text("Status:")
                                 .font(.caption)
-                                .foregroundColor(Color.black)
-                            Text(message.isSent ? "Sent" : "Saved")
+                                .foregroundColor(!message.isSent ? Color.black :Color.black)
+                            Text(message.isSent ? "Sent" : "UNSENT")
                                 .font(.caption)
-                                .foregroundColor(Color.black)
+                                .fontWeight(message.isSent ? .regular: .bold)
+                                .foregroundColor(message.isSent ? Color.black :Color.red)
                             if message.isSent {
                                 Text(message.dateSent,
                                 format: Date.FormatStyle(date: .numeric))
@@ -93,7 +101,7 @@ struct MessageCell: View {
                         } else {
                             Image(systemName: "heart")
                             .font(.caption)
-                            .foregroundColor(message.isSent ? Color.gray : Color.white)
+                            .foregroundColor(message.isSent ? Color.gray : Color.gray)
                             .padding(.bottom, 5)
                         }
                           
@@ -106,7 +114,7 @@ struct MessageCell: View {
                         } else {
                             Image(systemName: "heart")
                             .font(.caption)
-                            .foregroundColor(message.isSent ? Color.gray : Color.white)
+                            .foregroundColor(message.isSent ? Color.gray : Color.gray)
                             .padding(.bottom, 5)
                         }
                         

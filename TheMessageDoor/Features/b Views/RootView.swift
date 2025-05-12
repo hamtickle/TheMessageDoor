@@ -9,11 +9,14 @@ import SwiftUI
 
 struct RootView: View {
 
+
     @StateObject var pVM = ProfileVM()
-   
     
     @State private var showSignInView: Bool = false
+    
+    init() {
 
+    }
 
     var body: some View {
         ZStack {
@@ -33,6 +36,7 @@ struct RootView: View {
             }
         }
         .environmentObject(pVM)
+
     }
 }
 

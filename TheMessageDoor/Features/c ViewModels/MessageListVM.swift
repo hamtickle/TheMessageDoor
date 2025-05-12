@@ -10,30 +10,18 @@ import Foundation
 @MainActor
 class MessageListVM: ObservableObject {
     
-
+//    @ObservableObject var currentUser: GetCurrentUser
     @Published private(set) var message: Message? = nil
     
     @Published var reloadList: Bool = false
 
-//    @Published var myTotalMessages: Int = 0
-//    @Published var mySentMessages: Int = 0
-//    @Published var myFavMessages: Int = 0
-//    @Published var receiverFavMessages: Int = 0
-
     @Published var displayMessages: [Message] = []
 
     init () {
+//        _currentUser = StateObject(wrappedValue: GetCurrentUser())
+//                }
     }
     
-    func fetchReceiverMessages(receiverId: String) async  {
-        print("\n getting received messages for \(receiverId) \n")
-        let displayMessges = try? await MessageManager.shared.getReceiverMessages(receiverId: receiverId)
-   
-        self.displayMessages = displayMessges ?? []
-        sortMessagesByDate()
-        
-//        buildSenderStats()
-    }
     
     func fetchSenderMessages(senderId: String) async {
         print("\n getting sender's messages for \(senderId) \n")
@@ -46,6 +34,17 @@ class MessageListVM: ObservableObject {
         
    
     }
+    func fetchReceiverMessages(receiverId: String) async  {
+        print("\n getting received messages for \(receiverId) \n")
+        let displayMessges = try? await MessageManager.shared.getReceiverMessages(receiverId: receiverId)
+   
+        self.displayMessages = displayMessges ?? []
+        sortMessagesByDate()
+        
+//        buildSenderStats()
+    }
+    
+    
     
     func sortMessagesByDate() {
         displayMessages.sort { (message1, message2) -> Bool in

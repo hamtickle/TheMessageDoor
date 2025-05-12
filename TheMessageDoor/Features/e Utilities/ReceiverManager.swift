@@ -29,6 +29,7 @@ class ReceiverManager: ObservableObject {
         return receiverList
     }
     
+        
     func getActiveOrders() {
         activeOrders = orderList.filter { $0.orderStatus == "Active" }
         activeOrderCount = activeOrders.count

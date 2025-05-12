@@ -12,10 +12,12 @@ final class OrderManager {
 
     static let shared = OrderManager()
     @Published var newUser: Bool = false
+    @Published var order: Order? = nil
     private init() {}
     private var receiverList: [String] = []
 
     private let orderCollection = Firestore.firestore().collection("orders")
+
     private func orderDocument(orderId: String) -> DocumentReference {
         return orderCollection.document(orderId)
     }
@@ -33,22 +35,42 @@ final class OrderManager {
     }()
 
     func createNewOrder(order: Order) async throws {
-        try orderCollection.document(order.orderId).setData(
-            from: order, merge: true, encoder: encoder)
+        do {
+            try orderCollection.document(order.orderId).setData(
+                from: order, merge: true, encoder: encoder)
+        } catch {
+            // Error creating or updating an order
+            print("Error creating or updating an order: \(error)")
+        }
+
     }
 
-    func getOrder(orderId: String) async throws -> Order {
-        try await orderDocument(orderId: orderId).getDocument(
-            as: Order.self, decoder: decoder)
-    }
+    //    func getOrder(orderId: String) async throws -> Order {
+    //        var order: Order
+    //        do {
+    //            var order = try await orderDocument(orderId: orderId).getDocument(
+    //                as: Order.self, decoder: decoder)
+    //
+    //        } catch {
+    //            // error retrieving a specific order
+    //            print("Error retrieving a specific order: \(error)")
+    //        }
+    //        return order
+    //    }
 
     func updateOrder(order: Order) async throws {
-        try orderDocument(orderId: order.orderId).setData(
-            from: order, merge: true, encoder: encoder)
+        do {
+            try orderDocument(orderId: order.orderId).setData(
+                from: order, merge: true, encoder: encoder)
+        } catch {
+            // Error updating order
+            print("Error updating order \(order.orderId) \n \(error)")
+        }
+
     }
 
     // find all the people Sender has already sent messages to from the orders.
-    func getReceivers(senderId: String) async throws ->  ([String],[Order])   {
+    func getReceivers(senderId: String) async throws -> ([String], [Order]) {
         var receiverOrders: [Order] = []
 
         let query = orderCollection.whereField("sender_id", isEqualTo: senderId)
@@ -56,18 +78,25 @@ final class OrderManager {
         do {
             let querySnapshot = try await query.getDocuments()
             for document in querySnapshot.documents {
-                let order = try document.data(as: Order.self, decoder: decoder)
-                receiverOrders.append(order)
+                print (document)
+                do {
+                    let order = try document.data(as: Order.self, decoder: decoder)
+                    receiverOrders.append(order)
+                } catch {
+                    print("Error decoding order \n \(error)")
+                }
+                
             }
-
             // create an array of recipient emails and an array of recipient details
 
             receiverList.removeAll()
             for order in receiverOrders {
                 receiverList.append(order.receiverEmail ?? "")
-
             }
 
+        } catch {
+            // Error retrieving orders for receivers
+            print("Error retrieving orders for receivers \n \(error)")
         }
         return (receiverList, receiverOrders)
     }
@@ -90,8 +119,15 @@ final class OrderManager {
         do {
             let querySnapshot = try await query.getDocuments()
             for document in querySnapshot.documents {
-                let order = try document.data(as: Order.self, decoder: decoder)
-                orderList.append(order)
+                print("document \(document)")
+                do {
+                    let order = try document.data(
+                        as: Order.self, decoder: decoder)
+                    orderList.append(order)
+                } catch {
+                    print("\n error on order decoding \(error)")
+                }
+
             }
         } catch {
             print("\n Error getting documents: \(error) \n")

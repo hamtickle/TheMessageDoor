@@ -9,20 +9,25 @@ import SwiftUI
 
 struct TabBarView: View {
 
-    @StateObject var pVM = ProfileVM()
-    @State var currentUser: Person = Person(userId: "")
    
-
+    @StateObject var user: GetCurrentUser
+   
     @State var refreshView = false
-    @Binding var showSignInView: Bool
     @State var tabSelection: Int = 0
-    @State var incompleteProfile: Bool = false
+        
+    @Binding var showSignInView: Bool
+
+    
+    init(showSignInView: Binding<Bool>) {
+        _user = StateObject(wrappedValue: GetCurrentUser(initialLoad: false))
+        _showSignInView = showSignInView
+    }
     
 
     var body: some View {
         TabView(selection: $tabSelection) {
             NavigationStack {
-                MessageListView(user: currentUser)
+                MessageListView()
             }
 
             .tabItem {
@@ -48,7 +53,7 @@ struct TabBarView: View {
             .tag(1)
 
             NavigationStack {
-                OrderListView(user: currentUser)
+                OrderListView()
 
             }
 
@@ -70,7 +75,7 @@ struct TabBarView: View {
             .tag(3)
 
             NavigationStack {
-                ProfileView(user: currentUser, showSignInView: $showSignInView)
+                ProfileView(showSignInView: $showSignInView)
 
             }
 
@@ -84,15 +89,15 @@ struct TabBarView: View {
         .onAppear {
 //            let currentUser = GetCurrentUser.shared.appUser
 //            print("TabBar onAppear: \(currentUser), First Name: \(currentUser.firstName)")
-            if incompleteProfile
-                {
-                tabSelection = 4
-                incompleteProfile = true
-                refreshView = true
+//            if incompleteProfile
+//                {
+//                tabSelection = 4
+//                incompleteProfile = true
+//                refreshView = true
             }
         }
-        .environmentObject(ProfileVM())
-    }
+     
+    
         
         
 }
