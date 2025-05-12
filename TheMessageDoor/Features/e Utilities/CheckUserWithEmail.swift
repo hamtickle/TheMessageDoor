@@ -28,10 +28,7 @@ class CheckUserWithEmail: ObservableObject {
                 thisUser.myFont = result.myFont ?? ""
                 thisUser.mySignature = result.mySignature ?? ""
                 
-                thisUser.totalMessagesSent = result.totalMessagesSent
-                thisUser.totalMessagesCreated = result.totalMessagesCreated
-                thisUser.totalMyFavorites = result.totalMyFavorites
-                thisUser.totalReceiverFavorites = result.totalReceiverFavorites
+               
                 
             }
         } catch {

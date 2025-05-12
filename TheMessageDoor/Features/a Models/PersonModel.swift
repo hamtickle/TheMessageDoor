@@ -18,11 +18,6 @@ struct Person: Identifiable, Codable {
     var mySignature : String
     var receiverKey : String
     
-    var totalMessagesCreated : Int
-    var totalMessagesSent : Int
-    var totalMyFavorites: Int
-    var totalReceiverFavorites: Int
-    
     var id: String {userId}
     
     // initialize a Profile from individual values passed in
@@ -35,12 +30,8 @@ struct Person: Identifiable, Codable {
         lastName: String = "",
         myFont: String = "",
         mySignature: String = "",
-        receiverKey: String = "",
+        receiverKey: String = ""
         
-        totalMessagesSent: Int = 0,
-        totalMessagesCreated: Int = 0,
-        totalMyFavorites: Int = 0,
-        totalReceiverFavorites: Int = 0
     ) {
         self.userId = userId
         self.email = email
@@ -52,31 +43,8 @@ struct Person: Identifiable, Codable {
         self.mySignature = mySignature
         self.receiverKey = receiverKey
         
-        self.totalMessagesSent = totalMessagesSent
-        self.totalMessagesCreated = totalMessagesCreated
-        self.totalMyFavorites = totalMyFavorites
-        self.totalReceiverFavorites = totalReceiverFavorites
     }
     
-//    mutating func updateUserId(newUserId: String) {
-//        userId = newUserId
-//    }
-    
-    mutating func incrementTotalMessagesSent() {
-        totalMessagesSent += 1
-    }
-    
-    mutating func incrementTotalMessagesCreated() {
-        self.totalMessagesCreated += 1
-    }
-    
-    mutating func incrementTotalMyFavorites() {
-        self.totalMyFavorites += 1
-    }
-    
-    mutating func incrementTotalReceiverFavorites() {
-        self.totalReceiverFavorites += 1
-    }
     
     mutating func updateNames(firstName: String, lastName: String) {
         self.firstName = firstName

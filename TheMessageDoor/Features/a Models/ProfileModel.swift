@@ -19,11 +19,6 @@ struct Profile: Codable {
     var mySignature : String?
     var receiverKey : String
     
-    var totalMessagesCreated : Int
-    var totalMessagesSent : Int
-    var totalMyFavorites: Int
-    var totalReceiverFavorites: Int
-    
     var lastUpdated: Date
     
     
@@ -38,11 +33,6 @@ struct Profile: Codable {
         self.myFont = nil
         self.mySignature = ""
         self.receiverKey = ""
-        
-        self.totalMessagesSent = 0
-        self.totalMessagesCreated = 0
-        self.totalMyFavorites = 0
-        self.totalReceiverFavorites = 0
         
         self.lastUpdated = Date()
     }
@@ -59,11 +49,6 @@ struct Profile: Codable {
         mySignature: String? = nil,
         receiverKey: String = "",
         
-        totalMessagesSent: Int = 0,
-        totalMessagesCreated: Int = 0,
-        totalMyFavorites: Int = 0,
-        totalReceiverFavorites: Int = 0,
-        
         lastUpdated: Date = Date()
     ) {
         self.userId = userId
@@ -76,11 +61,6 @@ struct Profile: Codable {
         self.mySignature = mySignature
         self.receiverKey = receiverKey
         
-        self.totalMessagesSent = totalMessagesSent
-        self.totalMessagesCreated = totalMessagesCreated
-        self.totalMyFavorites = totalMyFavorites
-        self.totalReceiverFavorites = totalReceiverFavorites
-        
         self.lastUpdated = Date()
     }
     
@@ -88,20 +68,5 @@ struct Profile: Codable {
         self.userId = newUserId
     }
     
-    mutating func incrementTotalMessagesSent() {
-        self.totalMessagesSent += 1
-    }
-    
-    mutating func incrementTotalMessagesCreated() {
-        self.totalMessagesCreated += 1
-    }
-    
-    mutating func incrementTotalMyFavorites() {
-        self.totalMyFavorites += 1
-    }
-    
-    mutating func incrementTotalReceiverFavorites() {
-        self.totalReceiverFavorites += 1
-    }
     
 }

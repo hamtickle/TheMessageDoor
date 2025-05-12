@@ -10,10 +10,9 @@ import Foundation
 @MainActor
 final class GetCurrentUser: ObservableObject {
     
-//    static let shared = GetCurrentUser()
-    
     private var k: Constants = Constants()
     @Published var currentUser: Person = Person(userId: "")
+    @Published var currentUserStats: UserStats
     
     @Published var appUser : Profile? = nil
     @Published var user: Profile? = nil
@@ -21,6 +20,7 @@ final class GetCurrentUser: ObservableObject {
     var initialLoad: Bool
     
     init(initialLoad: Bool) {
+        _currentUserStats = Published(wrappedValue: UserStats(userId: ""))
         self.initialLoad = initialLoad
         Task {
             if initialLoad {
@@ -31,6 +31,7 @@ final class GetCurrentUser: ObservableObject {
                 
                 // Put UserData into User Defaults
                 postToUserDefaults(appUser: appUser)
+                
             } else {
                 self.currentUser = fetchUserDefaults()
                 self.initialLoad = false
@@ -60,11 +61,6 @@ final class GetCurrentUser: ObservableObject {
         thisUser.mySignature = appUser?.mySignature ?? k.appSignature
         thisUser.dateCreated = appUser?.dateCreated ?? k.oldDate
         thisUser.receiverKey = appUser?.receiverKey ?? ""
-        thisUser.totalMessagesSent = appUser?.totalMessagesCreated ?? 0
-        thisUser.totalMessagesCreated = appUser?.totalMessagesSent ?? 0
-        thisUser.totalMyFavorites = appUser?.totalMessagesCreated ?? 0
-        thisUser.totalReceiverFavorites = appUser?.totalMessagesCreated ?? 0
-        
         
         if let encodedData = try? JSONEncoder().encode(thisUser) {
             UserDefaults.standard.set(encodedData, forKey: k.user)

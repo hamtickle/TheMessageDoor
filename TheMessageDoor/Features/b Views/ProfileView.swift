@@ -201,7 +201,7 @@ struct ProfileView: View {
                         .foregroundColor(.tmdText)
                     HStack {
                         Text(
-                            "Total Messages: \(vm.currentUser.totalMessagesCreated)"
+                            "Total Messages: \(vm.userStats.totalMessagesCreated)"
                         )
                         .font(.subheadline)
                         .foregroundColor(.tmdText)
@@ -209,7 +209,7 @@ struct ProfileView: View {
                     }
                     HStack {
                         Text(
-                            "Messages Sent: \(vm.currentUser.totalMessagesSent)"
+                            "Messages Sent: \(vm.userStats.totalMessagesSent)"
                         )
                         .font(.subheadline)
                         .foregroundColor(.tmdText)
@@ -217,7 +217,7 @@ struct ProfileView: View {
                     }
                     HStack {
                         Text(
-                            "My Favorite Messages: \(vm.currentUser.totalMyFavorites)"
+                            "My Favorite Messages: \(vm.userStats.totalMyFavorites)"
                         )
                         .font(.subheadline)
                         .foregroundColor(.tmdText)
@@ -226,7 +226,7 @@ struct ProfileView: View {
                     }
                     HStack {
                         Text(
-                            "Recipient's Favorite Messages: \(vm.currentUser.totalReceiverFavorites)"
+                            "Recipient's Favorite Messages: \(vm.userStats.totalReceiverFavorites)"
                         )
                         .font(.subheadline)
                         .foregroundColor(.tmdText)
@@ -251,11 +251,15 @@ struct ProfileView: View {
             }
             
         }
+        .onAppear() {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                vm.fetchUserStats(userId: vm.currentUser.userId)
+            }
+        }
         .onChange(of: vm.currentUser.myFont) {
             let font = vm.currentUser.myFont
             fontSize = fonts.getFontSize(font: font)
         }
-//        .navigationTitle("Your Profile")
         .alert(
             isPresented: $updateSuccessful,
             content: {

@@ -16,6 +16,8 @@ class MessageCreateVM: ObservableObject {
     private var rm: ReceiverManager = ReceiverManager()
     private var k: Constants = Constants()
     
+    @Published var userStats: UserStats = UserStats(userId: "")
+    
 //    @Published var currentReceiver: Profile? = nil
     @Published var receiverList: [String] = []
     @Published var selectedReceiverEmail: String = ""
@@ -52,6 +54,17 @@ class MessageCreateVM: ObservableObject {
             currentMessage = ""
         }
         // update user statistics
+        userStats.userId = senderId
+        userStats.updateTotalMessagesCreated()
+        if isSent {
+            userStats.updateTotalMessagesSent()
+        }
+        if senderFavorite {
+            userStats.updateTotalMyFavorites()
+        }
+        Task {
+            try await StatManager.instance.updateStats(stats: userStats)
+        }
         
     }
     
