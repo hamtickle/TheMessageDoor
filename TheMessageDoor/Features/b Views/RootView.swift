@@ -8,9 +8,6 @@
 import SwiftUI
 
 struct RootView: View {
-
-
-    @StateObject var pVM = ProfileVM()
     
     @State private var showSignInView: Bool = false
     
@@ -35,8 +32,6 @@ struct RootView: View {
                 AuthenticationView(showSignInView: $showSignInView)
             }
         }
-        .environmentObject(pVM)
-
     }
 }
 

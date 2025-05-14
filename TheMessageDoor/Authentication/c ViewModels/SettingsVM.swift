@@ -10,6 +10,7 @@ import Foundation
 @MainActor
 final class SettingsViewModel: ObservableObject {
 
+    private var k: Constants = Constants()
     @Published var authProviders: [AuthProviderOptions] = []
 
     func loadAuthProviders() {
@@ -44,5 +45,21 @@ final class SettingsViewModel: ObservableObject {
     func updatePassword() async throws {
         let password = "Nebraska"
         try await AuthManager.shared.updatePassword(password: password)
+    }
+
+    func getUserDefaults() {
+        guard
+            let result = UserDefaults.standard.data(forKey: k.user),
+            let currentUser = try? JSONDecoder().decode(
+                Person.self, from: result)
+
+        else { return print("No User Defaults Found") }
+
+        print("\n CurrentUserDefaults: \n \(currentUser) \n ")
+    }
+
+    func deleteUserDefaults() {
+        UserDefaults.standard.removeObject(forKey: k.user)
+        print("\n User Results Deleted")
     }
 }

@@ -16,7 +16,8 @@ struct Person: Identifiable, Codable {
     var lastName : String
     var myFont : String
     var mySignature : String
-    var receiverKey : String
+    var newUser: Bool
+ 
     
     var id: String {userId}
     
@@ -30,7 +31,8 @@ struct Person: Identifiable, Codable {
         lastName: String = "",
         myFont: String = "",
         mySignature: String = "",
-        receiverKey: String = ""
+        newUser: Bool = true
+      
         
     ) {
         self.userId = userId
@@ -41,10 +43,10 @@ struct Person: Identifiable, Codable {
         self.lastName = lastName
         self.myFont = myFont
         self.mySignature = mySignature
-        self.receiverKey = receiverKey
+        self.newUser = newUser
+
         
     }
-    
     
     mutating func updateNames(firstName: String, lastName: String) {
         self.firstName = firstName

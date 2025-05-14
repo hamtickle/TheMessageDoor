@@ -42,6 +42,10 @@ class ReceiverManager: ObservableObject {
     }
     
     func getReceiverInfo(email: String) -> (String, String, String) {
+        if orderList.isEmpty {
+            orderList.append(Order(orderId: "", receiverFirstName: "No", receiverLastName: "Orders", receiverEmail: email))
+        }
+        
         let order : Order = orderList.filter {
             order in
             if order.receiverEmail == email {

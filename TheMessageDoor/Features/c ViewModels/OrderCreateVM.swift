@@ -55,25 +55,7 @@ class OrderCreateVM: ObservableObject {
 //    }
     
     func createOrderButtonTapped(user: Person, first: String, last: String, email: String, key: String) {
-        
-        // New Recipient - Add Recipient to Firestore
-        if selectedReceiverEmail == "New Recipient" {
-            // New Recipient
-            
-            let receiverId = UUID().uuidString
-            currentReceiverId = receiverId
-
-           do {
-                Task {
-             try await createReceiver(
-                userId: receiverId, email: email, firstName: first, lastName: last, myFont: k.appFont, mySignature: k.appSignature,
-                        receiverKey: receiverId
-                    )
-               }
-           }
-
-        }   //end if new receiver record created
-
+ 
         //check for duplicate orders
         checkIfActiveOrderExists(email: email)
         
@@ -94,8 +76,6 @@ class OrderCreateVM: ObservableObject {
             )
             
             selectedReceiverEmail = "New Recipient"
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-//                self.presentationMode.wrappedValue.dismiss()
             }
         }
     
@@ -133,39 +113,6 @@ class OrderCreateVM: ObservableObject {
         _ = try await checkEmail.fetchUserWithEmail(email: email)
     }
     
-    
-    func createReceiver(
-        userId: String, email: String, firstName: String, lastName: String,
-        myFont: String, mySignature: String, receiverKey: String
-    ) async throws {
-
-        // check receiver is not already registered
-        do {
-            try await getReceiver(email: email)
-        } catch  {
-            print("creating new receiver: \(email)")
-        }
-       
-
-        if UserManager.shared.newUser {
-            let receiverUser = Profile(
-                userId: userId, email: email, photoUrl: k.appProfileURL,
-                dateCreated: Date(), firstName: firstName, lastName: lastName,
-                myFont: myFont, mySignature: mySignature, receiverKey: receiverKey)
-
-            Task {
-                do {
-                    try await UserManager.shared.updateUser(user: receiverUser)
-    //                updateSuccessful.toggle()
-                } catch {
-                    print("error creating receiver: \(error)")
-                    throw error
-                }
-
-            }
-        }
-
-    }
     
     func getReceiverInfo(email: String) {
         var First: String = ""

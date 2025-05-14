@@ -60,6 +60,9 @@ struct RecipientPicker: View {
 
                     receiverList.removeAll()
                     receiverList.append(contentsOf: vm.receiverList)
+                    if receiverList.isEmpty {
+                        receiverList.append(contentsOf: ["No Recipients Found"])
+                    }
                     print(receiverList.count)
                     vm.selectedReceiverEmail = receiverList.first ?? ""
                     

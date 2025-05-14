@@ -17,7 +17,8 @@ struct Profile: Codable {
     var lastName : String?
     var myFont : String?
     var mySignature : String?
-    var receiverKey : String
+    
+    var newUser: Bool
     
     var lastUpdated: Date
     
@@ -32,7 +33,8 @@ struct Profile: Codable {
         self.lastName = nil
         self.myFont = nil
         self.mySignature = ""
-        self.receiverKey = ""
+     
+        self.newUser = true
         
         self.lastUpdated = Date()
     }
@@ -47,7 +49,8 @@ struct Profile: Codable {
         lastName: String? = nil,
         myFont: String? = nil,
         mySignature: String? = nil,
-        receiverKey: String = "",
+    
+        newUser: Bool = false,
         
         lastUpdated: Date = Date()
     ) {
@@ -59,13 +62,19 @@ struct Profile: Codable {
         self.lastName = lastName
         self.myFont = myFont
         self.mySignature = mySignature
-        self.receiverKey = receiverKey
+
+        self.newUser = newUser
         
         self.lastUpdated = Date()
     }
     
     mutating func updateUserId (newUserId: String) {
         self.userId = newUserId
+    }
+    
+    mutating func updateNewUser (userId: String) {
+        self.newUser = false
+        self.lastUpdated = Date()
     }
     
     

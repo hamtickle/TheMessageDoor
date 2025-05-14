@@ -44,9 +44,14 @@ final class UserManager {
     }
 
     func getUser(userId: String) async throws -> Profile {
-
-        try await userDocument(userId: userId).getDocument(
-            as: Profile.self, decoder: decoder)
+        var user = Profile(userId: "")
+        do {
+            user = try await userDocument(userId: userId).getDocument(
+                as: Profile.self, decoder: decoder)
+        } catch {
+            print("\n Error getting user: \(error) \n")
+        }
+        return user
     }
 
     func updateUser(user: Profile) async throws {

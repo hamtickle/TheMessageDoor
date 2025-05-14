@@ -13,13 +13,13 @@ struct SettingsView: View {
     @Binding var showSignInView: Bool
 
     var body: some View {
-        
+
         Text("Settings")
             .font(.system(size: 34, weight: .bold))
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal)
             .padding(.top, 10)
-        
+
         List {
             Button("Sign Out") {
                 Task {
@@ -43,6 +43,20 @@ struct SettingsView: View {
                 }
             } label: {
                 Text("Delete Account")
+            }
+
+            Button() {
+                viewModel.getUserDefaults()
+
+            } label: {
+                Text("Print UserDefaults")
+            }
+            
+            Button(role: .destructive) {
+                viewModel.deleteUserDefaults()
+
+            } label: {
+                Text("Delete UserDefaults")
             }
 
             if viewModel.authProviders.contains(.email) {

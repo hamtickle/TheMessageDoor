@@ -60,7 +60,7 @@ final class GetCurrentUser: ObservableObject {
         thisUser.myFont = appUser?.myFont ?? k.appFont
         thisUser.mySignature = appUser?.mySignature ?? k.appSignature
         thisUser.dateCreated = appUser?.dateCreated ?? k.oldDate
-        thisUser.receiverKey = appUser?.receiverKey ?? ""
+        thisUser.newUser = appUser?.newUser ?? true
         
         if let encodedData = try? JSONEncoder().encode(thisUser) {
             UserDefaults.standard.set(encodedData, forKey: k.user)
@@ -80,6 +80,6 @@ final class GetCurrentUser: ObservableObject {
     }
     
     func getUserDefaults()  {
-        _ = fetchUserDefaults()
+        currentUser = fetchUserDefaults()
     }
 }

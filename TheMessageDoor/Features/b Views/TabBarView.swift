@@ -29,76 +29,73 @@ struct TabBarView: View {
             NavigationStack {
                 MessageListView()
             }
-
+            
             .tabItem {
                 Image(systemName: "door.right.hand.closed")
                 Text("Your Door")
-          
+                
             }
             .tag(0)
             .onAppear {
-
+                
             }
-
+            
             NavigationStack {
                 CreateMessageView(tabSelection: $tabSelection)
-
+                
             }
-
+            
             .tabItem {
                 Image(systemName: "paperplane")
                 Text("Message")
                 
             }
             .tag(1)
-
+            
             NavigationStack {
                 OrderListView()
-
+                
             }
-
+            
             .tabItem {
                 Image(systemName: "cart")
                 Text("Order")
-                   
+                
             }
             .tag(2)
-
+            
             NavigationStack {
                 AchievementsView()
             }
-
+            
             .tabItem {
                 Image(systemName: "trophy")
                 Text("Achievments")
             }
             .tag(3)
-
+            
             NavigationStack {
                 ProfileView(showSignInView: $showSignInView)
-
+                
             }
-
+            
             .tabItem {
                 Image(systemName: "person")
                 Text("Profile")
             }
             .tag(4)
-
+            
         }
         .onAppear {
-//            let currentUser = GetCurrentUser.shared.appUser
-//            print("TabBar onAppear: \(currentUser), First Name: \(currentUser.firstName)")
-//            if incompleteProfile
-//                {
-//                tabSelection = 4
-//                incompleteProfile = true
-//                refreshView = true
+            
+            if user.currentUser.newUser
+            {
+                tabSelection = 4
             }
         }
-     
-    
         
+        
+    }
         
 }
 

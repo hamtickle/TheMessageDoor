@@ -164,49 +164,8 @@ struct OrderCreate: View {
                 
                 vm.createOrderButtonTapped(user: currentUser, first: vm.currentReceiverFirstName, last: vm.currentReceiverLastName, email: vm.currentReceiverEmail, key: vm.currentReceiverId)
                 
-//                // Add Recipient
-//                if vm.selectedReceiverEmail == "New Recipient" {
-//                    let receiverId = UUID().uuidString
-//                    vm.currentReceiverId = receiverId
-//
-//                   do {
-//                        Task {
-//                     try await vm.createReceiver(
-//                                userId: receiverId,
-//                                email: vm.currentReceiverEmail,
-//                                firstName: vm.currentReceiverFirstName,
-//                                lastName: vm.currentReceiverLastName,
-//                                myFont: "Arial",
-//                                mySignature: "no signature on file"
-//
-//                            )
-//                       }
-//                   }  
-//
-//                }   //end if new receiver
-//
-//                //check for duplicate orders
-//                vm.checkIfActiveOrderExists(email: vm.currentReceiverEmail)
-                
-//                if vm.duplicateOrders
-//                    {
-//                    print("order already exists")
-//                } else {
-//                    vm.createOrder(
-//                        senderId: pVM.currentUserId,
-//                        senderFirstName: pVM.currentUserFirstName,
-//                        senderLastName: pVM.currentUserLastName,
-//
-//                        receiverId: vm.currentReceiverId,
-//                        receiverEmail: vm.currentReceiverEmail,
-//                        receiverFirstName: vm.currentReceiverFirstName,
-//                        receiverLastName: vm.currentReceiverLastName
-//                    )
-                    
-//                    vm.selectedReceiverEmail = "New Recipient"
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                         self.presentationMode.wrappedValue.dismiss()
-//                    }
                 }
                 
 

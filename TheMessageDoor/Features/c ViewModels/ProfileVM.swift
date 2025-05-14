@@ -62,28 +62,20 @@ class ProfileVM: ObservableObject {
         email: String, firstName: String, lastName: String, myFont: String,
         mySignature: String
     ) {
-//        guard let user else { return }
-        
-        // check if ReceiverKey has been created
-        if currentUser.receiverKey == "" {
-            currentUser.receiverKey = UUID().uuidString
-        }
+
 
         let updatedUser = Profile(
             userId: currentUser.userId, email: currentUser.email, photoUrl: currentUser.photoUrl,
             firstName: currentUser.firstName, lastName: currentUser.lastName, myFont: currentUser.myFont,
-            mySignature: k.appSignature, receiverKey: currentUser.receiverKey )
+            mySignature: k.appSignature, newUser: currentUser.newUser )
         Task {
             try await UserManager.shared.updateUser(user: updatedUser)
             self.user = try await UserManager.shared.getUser(
                 userId: currentUser.userId)
-//            updateSuccessful.toggle()
+
         }
         
         updateUserDefaults(person: currentUser)
-//        updateSuccessful = true
-//        print("\n Updated CurrentUserDefaults: \(currentUser)")
-//        print("\n updateSuccessful: \(updateSuccessful)")
         print("\n Profile Updated")
     }
 
