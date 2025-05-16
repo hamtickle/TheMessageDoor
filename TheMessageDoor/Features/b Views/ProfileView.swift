@@ -68,6 +68,7 @@ struct ProfileView: View {
                             .focused($isFocused)
                             .padding(.horizontal)
                             .multilineTextAlignment(.center)
+                            .disableAutocorrection(true)
                             .frame(
                                 width: 170, height: 50, alignment: .center
                             )
@@ -81,6 +82,7 @@ struct ProfileView: View {
                             )
                             .padding(.horizontal)
                             .multilineTextAlignment(.center)
+                            .disableAutocorrection(true)
                             .frame(
                                 width: 170, height: 50, alignment: .center
                             )
@@ -110,6 +112,7 @@ struct ProfileView: View {
                         TextField("email", text: $vm.currentUser.email)
                             .textInputAutocapitalization(.never)
                             .multilineTextAlignment(.center)
+                            .disableAutocorrection(true)
                             .padding(.horizontal)
                             .frame(
                                 width: 350, height: 50, alignment: .center
@@ -165,7 +168,7 @@ struct ProfileView: View {
 
                     // Button to update User data here
                     Button {
-                        updateSuccessful.toggle()
+                        updateSuccessful = true
                         vm.updateUser(
                             email: vm.currentUser.email,
                             firstName: vm.currentUser.firstName,

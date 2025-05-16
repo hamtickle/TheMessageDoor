@@ -12,7 +12,7 @@ struct MessageListView: View {
     @StateObject var user: GetCurrentUser
     @StateObject var vm: MessageListVM
 
-    @State private var messageFilter = 0
+    @State var messageFilter = 0
     @State var isSender: Bool = true
     @State var noMessages: Bool = false
     @State var reload: Bool = false
@@ -51,7 +51,7 @@ struct MessageListView: View {
                         isSender: isSender, mlVM: MessageListVM())
                 ) {
                     HStack {
-                        MessageCell(message: message)
+                        MessageCell(message: message, isSender: isSender)
                             .frame(width: 300)
                             //                            .padding(.vertical, 0)
                             .padding(.horizontal, 20)

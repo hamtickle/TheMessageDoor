@@ -41,7 +41,7 @@ class ReceiverManager: ObservableObject {
         }
     }
     
-    func getReceiverInfo(email: String) -> (String, String, String) {
+    func getReceiverInfo(email: String) -> (String, String) {
         if orderList.isEmpty {
             orderList.append(Order(orderId: "", receiverFirstName: "No", receiverLastName: "Orders", receiverEmail: email))
         }
@@ -54,7 +54,7 @@ class ReceiverManager: ObservableObject {
             return false
         }.first!
         
-        return (order.receiverFirstName ?? "", order.receiverLastName ?? "", order.receiverId ?? "")
+        return (order.receiverFirstName ?? "", order.receiverLastName ?? "")
     }
     
 }

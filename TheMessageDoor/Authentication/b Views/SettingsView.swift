@@ -45,19 +45,22 @@ struct SettingsView: View {
                 Text("Delete Account")
             }
 
-            Button() {
-                viewModel.getUserDefaults()
+            Section {
+                Button() {
+                    viewModel.getUserDefaults()
 
-            } label: {
-                Text("Print UserDefaults")
-            }
-            
-            Button(role: .destructive) {
-                viewModel.deleteUserDefaults()
+                } label: {
+                    Text("Print UserDefaults")
+                }
+                
+                Button(role: .destructive) {
+                    viewModel.deleteUserDefaults()
 
-            } label: {
-                Text("Delete UserDefaults")
+                } label: {
+                    Text("Delete UserDefaults")
+                }
             }
+        
 
             if viewModel.authProviders.contains(.email) {
                 emailSection

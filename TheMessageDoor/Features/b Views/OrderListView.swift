@@ -18,6 +18,7 @@ struct OrderListView: View {
     init() {
         _user = StateObject(wrappedValue: GetCurrentUser(initialLoad: false))
         _vm = StateObject(wrappedValue: OrderListVM())
+//    _ovm = StateObject(wrappedValue: OrderCreateVM())
     }
 
     var body: some View {
@@ -30,7 +31,7 @@ struct OrderListView: View {
                     .padding(.horizontal)
 
                 NavigationLink {
-                    OrderCreate(currentUser: user.currentUser)
+                    OrderCreate(currentUser: user.currentUser, noOrders: $vm.noOrders)
                 } label: {
                     Image(systemName: "cart")
                         .font(.system(size: 20))
@@ -79,15 +80,25 @@ struct OrderListView: View {
                 loading = false
             }
         }
-        //        .alert(isPresented: $vm.noOrders,
-        //               content: {
-        //            Alert(
-        //                title: Text("No Active Orders"),
-        //                message: Text("You do not have any ACTIVE orders.  \n Please create an order so you can send messages."),
-        //                dismissButton: .cancel(Text("OK"))
-        //            )
-        //        })
+//        .alert(
+//            isPresented: $vm.noOrders,
+//            content: {
+//                Alert(
+//                    title: Text("No Active Orders"),
+//                    message: Text(
+//                        "You do not have any ACTIVE orders.  \n Please create an order so you can send messages."
+//                    ),
+//                    dismissButton: .cancel(Text("OK"))
+//                )
+//            })
+        .fullScreenCover(isPresented: $vm.noOrders) {
+            NavigationStack {
+                OrderCreate(currentUser: user.currentUser, noOrders: $vm.noOrders)
+            }
+        }
+//        .environmentObject(ovm)
     }
+      
 }
 
 #Preview {

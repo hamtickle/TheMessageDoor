@@ -119,7 +119,7 @@ struct OrderView: View {
                         }
                         .padding(.horizontal, 10)
 
-                        Text("Recipient's ID: \(String(describing: order.receiverId))")
+                        Text("Order ID: \(order.orderId)")
                             .frame(maxWidth: .infinity, alignment: .center)
                             .font(.caption)
                             .foregroundColor(.black)
@@ -141,8 +141,8 @@ struct OrderView: View {
                         .padding(.top, 30)
                 }
                 
-                Text("Order ID: \(order.orderId)")
-                    .font(.caption)
+//                Text("Order ID: \(order.orderId)")
+//                    .font(.caption)
                   
                 Spacer()
             }

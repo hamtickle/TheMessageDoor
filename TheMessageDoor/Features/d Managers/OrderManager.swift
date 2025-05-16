@@ -22,6 +22,9 @@ final class OrderManager {
         return orderCollection.document(orderId)
     }
 
+    private let orderTypeCollection = Firestore.firestore().collection(
+        "order_type")
+
     private let encoder: Firestore.Encoder = {
         let encoder = Firestore.Encoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
@@ -45,19 +48,6 @@ final class OrderManager {
 
     }
 
-    //    func getOrder(orderId: String) async throws -> Order {
-    //        var order: Order
-    //        do {
-    //            var order = try await orderDocument(orderId: orderId).getDocument(
-    //                as: Order.self, decoder: decoder)
-    //
-    //        } catch {
-    //            // error retrieving a specific order
-    //            print("Error retrieving a specific order: \(error)")
-    //        }
-    //        return order
-    //    }
-
     func updateOrder(order: Order) async throws {
         do {
             try orderDocument(orderId: order.orderId).setData(
@@ -71,6 +61,7 @@ final class OrderManager {
 
     // find all the people Sender has already sent messages to from the orders.
     func getReceivers(senderId: String) async throws -> ([String], [Order]) {
+        print("\n getReceivers")
         var receiverOrders: [Order] = []
 
         let query = orderCollection.whereField("sender_id", isEqualTo: senderId)
@@ -78,14 +69,15 @@ final class OrderManager {
         do {
             let querySnapshot = try await query.getDocuments()
             for document in querySnapshot.documents {
-                print (document)
+                //                print (document)
                 do {
-                    let order = try document.data(as: Order.self, decoder: decoder)
+                    let order = try document.data(
+                        as: Order.self, decoder: decoder)
                     receiverOrders.append(order)
                 } catch {
                     print("Error decoding order \n \(error)")
                 }
-                
+
             }
             // create an array of recipient emails and an array of recipient details
 
@@ -119,7 +111,7 @@ final class OrderManager {
         do {
             let querySnapshot = try await query.getDocuments()
             for document in querySnapshot.documents {
-                print("document \(document)")
+ 
                 do {
                     let order = try document.data(
                         as: Order.self, decoder: decoder)
@@ -133,6 +125,34 @@ final class OrderManager {
             print("\n Error getting documents: \(error) \n")
         }
         return orderList
+    }
+
+    func getOrderTypes() async throws -> [OrderType] {
+        print("\n OrderManager getting ordertypes list \n")
+
+        var orderTypeList: [OrderType] = []
+        let query = orderTypeCollection
+
+        do {
+            let querySnapshot = try await query.getDocuments()
+            for document in querySnapshot.documents {
+
+                do {
+                    let result = try document.data(
+                        as: OrderType.self, decoder: decoder)
+
+                    orderTypeList.append(result)
+
+                } catch {
+                    print("\n error on order type decoding \(error)")
+                }
+
+            }
+        } catch {
+            print("\n Error getting documents: \(error) \n")
+        }
+
+        return orderTypeList
     }
 
 }

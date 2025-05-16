@@ -28,7 +28,7 @@ struct Message: Codable, Identifiable, Hashable {
     var from: String
     var senderId: String
     var to: String
-    var receiverId: String
+ 
     var message: String
     var messageFont: String
     var messageFontSize: CGFloat
@@ -51,7 +51,7 @@ struct Message: Codable, Identifiable, Hashable {
         from: String,
         senderId: String,
         to: String,
-        receiverId: String,
+ 
         message: String,
         messageFont: String,
         messageFontSize: CGFloat,
@@ -70,7 +70,7 @@ struct Message: Codable, Identifiable, Hashable {
         self.from = from
         self.senderId = senderId
         self.to = to
-        self.receiverId = receiverId
+    
         self.message = message
         self.messageFont = messageFont
         self.messageFontSize = messageFontSize
@@ -109,7 +109,6 @@ struct Message: Codable, Identifiable, Hashable {
         self.from = ""
         self.senderId = ""
         self.to = ""
-        self.receiverId = ""
         self.message = ""
         self.messageFont = ""
         self.messageFontSize = 25
@@ -135,7 +134,6 @@ struct Message: Codable, Identifiable, Hashable {
             from: from,
             senderId: senderId,
             to: to,
-            receiverId: receiverId,
             message: message,
             messageFont: messageFont,
             messageFontSize : messageFontSize,
@@ -160,7 +158,6 @@ struct Message: Codable, Identifiable, Hashable {
             from: from,
             senderId: senderId,
             to: to,
-            receiverId: receiverId,
             message: message,
             messageFont: messageFont,
             messageFontSize : messageFontSize,
@@ -185,7 +182,6 @@ struct Message: Codable, Identifiable, Hashable {
             from: from,
             senderId: senderId,
             to: to,
-            receiverId: receiverId,
             message: message,
             messageFont: messageFont,
             messageFontSize: messageFontSize,
@@ -209,7 +205,6 @@ struct Message: Codable, Identifiable, Hashable {
             from: from,
             senderId: senderId,
             to: to,
-            receiverId: receiverId,
             message: message,
             messageFont: messageFont,
             messageFontSize: messageFontSize,
@@ -232,7 +227,6 @@ struct Message: Codable, Identifiable, Hashable {
             from: from,
             senderId: senderId,
             to: to,
-            receiverId: receiverId,
             message: message,
             messageFont: messageFont,
             messageFontSize: messageFontSize,
@@ -256,7 +250,6 @@ struct Message: Codable, Identifiable, Hashable {
             from: from,
             senderId: senderId,
             to: to,
-            receiverId: receiverId,
             message: message,
             messageFont: messageFont,
             messageFontSize: messageFontSize,

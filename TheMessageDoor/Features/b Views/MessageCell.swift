@@ -11,6 +11,8 @@ struct MessageCell: View {
     
     @State var message: Message
     @Environment(\.colorScheme) var colorScheme
+//    var user = GetCurrentUser(initialLoad: false)
+    @State var isSender: Bool
 
     var body: some View {
 
@@ -46,7 +48,7 @@ struct MessageCell: View {
                             .lineLimit(1)
                             .bold()
 
-                        Text(message.to)
+                        Text(isSender ? message.to : message.from)
                             .font(.body)
                             .foregroundColor(!message.isSent ? Color.black :Color.black)
 
@@ -124,12 +126,10 @@ struct MessageCell: View {
                         
                         Spacer()
                     }
-
                 }
                 .padding(.horizontal)
                 .padding(.vertical, -10)
                 .frame(width: 280, height: 100)
-
             }
         }
         .padding(.horizontal, 30)

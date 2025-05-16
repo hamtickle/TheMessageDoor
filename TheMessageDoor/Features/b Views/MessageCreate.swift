@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CreateMessageView: View {
-     
+
     @StateObject var user: GetCurrentUser
     @StateObject var vm: MessageCreateVM
     var k: Constants = Constants()
@@ -18,16 +18,15 @@ struct CreateMessageView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.presentationMode) var presentationMode:
         Binding<PresentationMode>
-    
-   
+
     @State var fontList: [String] = []
- 
+
     @State var receiverList: [String] = []
     @State var isPressed: Bool = false
     @State var myFavorite: Bool = false
-    
+
     @Binding var tabSelection: Int
-    
+
     init(tabSelection: Binding<Int>) {
         _user = StateObject(wrappedValue: GetCurrentUser(initialLoad: false))
         _vm = StateObject(wrappedValue: MessageCreateVM())
@@ -55,25 +54,24 @@ struct CreateMessageView: View {
 
                 RecipientPicker(vm: vm)
 
-
-                HStack  {
+                HStack {
                     Text("Favorite?")
                         .foregroundColor(.blue)
                         .padding(.bottom, 10)
-                    
-                    myFavorite ?
-                    Image(systemName: "heart.fill")
+
+                    myFavorite
+                        ? Image(systemName: "heart.fill")
                             .foregroundColor(.red)
-                            .padding(.bottom, 10):
-                    Image(systemName: "heart")
+                            .padding(.bottom, 10)
+                        : Image(systemName: "heart")
                             .foregroundColor(.gray)
                             .padding(.bottom, 10)
                 }
-                .onTapGesture {myFavorite.toggle()}
+                .onTapGesture { myFavorite.toggle() }
                 .padding(.bottom, 10)
                 .padding(.top, 10)
                 .font(.title)
-               
+
                 //     ShowNote()
                 ShowNote(vm: vm)
 
@@ -96,39 +94,31 @@ struct CreateMessageView: View {
                 .frame(width: 350, height: 75)
                 .background(Color.white)
                 .border(Color.blue, width: 2)
-                
 
                 // Save/Update Message
 
-                
                 Button(action: {
                     vm.createMessage(
-                        messageId: UUID().uuidString,
                         from: user.currentUser.firstName,
                         senderId: user.currentUser.userId,
                         to: vm.currentReceiverEmail,
-                        receiverId: vm.currentReceiverId,
                         message: vm.currentMessage,
-                        dateSent: Date(),
                         senderFavorite: myFavorite,
                         isSent: false,
                         messageFont: vm.messageFont,
                         messageFontSize: vm.fontSize,
-                        messageStatus: k.statusSaved,
-                        messageDateOpened: Date(),
-                        receiverDeleted: false,
-                        receiverFavorite: false
-
+                        messageStatus: k.statusSaved
                     )
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                        tabSelection = 0}
+                        tabSelection = 0
+                    }
 
                 }) {
                     Text("Save Message")
                         .frame(width: 200, height: 40)
                         .background(Color.white)
                         .foregroundColor(.black)
-                      //  .border(Color.blue, width: 2)
+                        //  .border(Color.blue, width: 2)
                         .padding(.horizontal)
                         .cornerRadius(10)
                         .padding(.vertical, 5)
@@ -145,29 +135,24 @@ struct CreateMessageView: View {
                         isPressed = false
                     }
                 }
-                
+
                 // Send Message
 
                 Button(action: {
                     vm.createMessage(
-                        messageId: UUID().uuidString,
                         from: user.currentUser.firstName,
                         senderId: user.currentUser.userId,
                         to: vm.selectedReceiverEmail,
-                        receiverId: vm.currentReceiverId,
                         message: vm.currentMessage,
-                        dateSent: Date(),
                         senderFavorite: myFavorite,
                         isSent: true,
                         messageFont: vm.messageFont,
                         messageFontSize: vm.fontSize,
-                        messageStatus: k.statusSent,
-                        messageDateOpened: Date(),
-                        receiverDeleted: false,
-                        receiverFavorite: false
+                        messageStatus: k.statusSent
                     )
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                        tabSelection = 0}
+                        tabSelection = 0
+                    }
                 }) {
                     Text("Send Message")
                         .frame(width: 200, height: 40)
@@ -189,7 +174,6 @@ struct CreateMessageView: View {
                     }
                 }
 
-
                 Spacer()
 
             }
@@ -207,7 +191,7 @@ struct CreateMessageView: View {
         .onChange(of: vm.selectedReceiverEmail) {
 
             vm.getReceiverInfo(email: vm.selectedReceiverEmail)
-            
+
         }
         .onChange(of: vm.messageFont) {
             let font = vm.messageFont
@@ -223,14 +207,18 @@ struct CreateMessageView: View {
                     dismissButton: .cancel(Text("OK")))
             }
         )
-        .alert(isPresented: $vm.noOrders,
-               content: {
-            Alert(
-                title: Text("No Active Orders"),
-                message: Text("You do not have any ACTIVE orders.  \n Please create an order so you can send messages."),
-                dismissButton: .cancel(Text("OK"))
-            )
-        })
+        .alert(
+            isPresented: $vm.noOrders,
+            content: {
+                Alert(
+                    title: Text("No Active Orders"),
+                    message: Text(
+                        "You do not have any ACTIVE orders.  \n Please create an order so you can send messages."
+                    ),
+                    dismissButton: .cancel(Text("OK"))
+                )
+            }
+        )
         .onTapGesture {
             self.endTextEditing()
         }
@@ -254,5 +242,3 @@ extension View {
     }
 
 }
-
-

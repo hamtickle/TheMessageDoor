@@ -18,28 +18,11 @@ import Foundation
 @MainActor
 class OrderListVM: ObservableObject {
     
-    var pVM = ProfileVM()
+
     private var k: Constants = Constants()
     @Published var noOrders: Bool = false
     
-    @Published var selectedReceiverEmail: String = ""
-    
-    @Published var receiverList: [String] = []
-    
-    @Published var thisReceiverId: String = ""
-    @Published var thisReceiverFirst: String = ""
-    @Published var thisReceiverLast: String = ""
-    
     @Published private(set) var order: Order? = nil
-    
-    @Published var currentReceiverId: String = ""
-    @Published var currentReceiverEmail: String = ""
-    @Published var currentReceiverFirstName: String = ""
-    @Published var currentReceiverLastName: String = ""
-
-    @Published var currentOrderDateCreated: Date = Date()
-    @Published var currentOrderStatus: String = ""
-    @Published var currentOrderType: String = ""
     
     @Published var orderList: [Order] = []
     @Published var activeOrders: [Order] = []
@@ -49,6 +32,8 @@ class OrderListVM: ObservableObject {
     init () {}
     
     func fetchSenderOrders(senderId: String) async throws {
+        print("\n fetchSenderOrders")
+        
         do {
             let result = try await OrderManager.shared.getOrders(senderId: senderId)
             self.orderList = result.map(\.self)
@@ -57,9 +42,6 @@ class OrderListVM: ObservableObject {
         } catch {
             print("issue with retrieving orders for \(senderId): \(error)")
         }
-//        let result = try await OrderManager.shared.getOrders(senderId: senderId)
-//        self.orderList = result.map(\.self)
-//        sortOrdersByRecipient()
         
         let activeOrders = orderList.filter({ $0.orderStatus == k.statusActive }).count
         if activeOrders == 0 {
