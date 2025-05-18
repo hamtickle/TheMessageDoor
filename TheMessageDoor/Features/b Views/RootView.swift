@@ -9,6 +9,7 @@ import SwiftUI
 
 struct RootView: View {
     
+    private var k: Constants = Constants()
     @State private var showSignInView: Bool = false
     
     init() {

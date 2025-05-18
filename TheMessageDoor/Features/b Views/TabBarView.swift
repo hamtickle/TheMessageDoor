@@ -9,18 +9,20 @@ import SwiftUI
 
 struct TabBarView: View {
 
+    private var k: Constants = Constants()
+    @StateObject var appUser: GetCurrentUser
+    @State var user: Person = Person(userId: "")
    
-    @StateObject var user: GetCurrentUser
-   
-    @State var refreshView = false
+//    @State var refreshView = false
     @State var tabSelection: Int = 0
         
     @Binding var showSignInView: Bool
 
     
     init(showSignInView: Binding<Bool>) {
-        _user = StateObject(wrappedValue: GetCurrentUser(initialLoad: false))
+        _appUser = StateObject(wrappedValue: GetCurrentUser(initialLoad: false))
         _showSignInView = showSignInView
+        
     }
     
 
@@ -88,10 +90,13 @@ struct TabBarView: View {
             
         }
         .onAppear {
-            
-            if user.currentUser.newUser
+            user = appUser.fetchUserDefaults()
+            print("TV: onAppear \(user)")
+            if user.newUser
             {
                 tabSelection = 4
+            } else {
+                tabSelection = 0
             }
         }
         

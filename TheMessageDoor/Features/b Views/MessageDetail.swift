@@ -10,9 +10,9 @@ import SwiftUI
 struct MessageDetail: View {
 
     @State var user: Person
-
+    private var k: Constants = Constants()
     @StateObject var vm: MessageDetailVM
-    @StateObject var mlVM: MessageListVM
+//    @StateObject var mlVM: MessageListVM
 
     @StateObject private var fonts = Fonts()
     @Environment(\.colorScheme) var colorScheme
@@ -22,21 +22,23 @@ struct MessageDetail: View {
     @State var message: Message
     @State var fontList: [String] = []
     @State var isSender: Bool
-    //    @Binding var reload: Bool
     @State var isFavorite: Bool = false
 
     @State private var isPressedSave = false
     @State private var isPressedSend = false
     @State private var isPressedDelete = false
+    @Binding var reload: Bool
 
-    init(user: Person, message: Message, isSender: Bool, mlVM: MessageListVM) {
+    init(user: Person, message: Message, isSender: Bool,  reload: Binding<Bool>) {
 
         _vm = StateObject(wrappedValue: MessageDetailVM())
-        
+        print("MD: Init MessageDetailVM \n")
         _user = State(wrappedValue: user)
         _message = State(wrappedValue: message)
         _isSender = State(wrappedValue: isSender)
-        _mlVM = StateObject(wrappedValue: mlVM)
+//        _mlVM = StateObject(wrappedValue: mlVM)
+        _reload = reload
+        
     }
 
     var body: some View {
@@ -80,11 +82,11 @@ struct MessageDetail: View {
                 }
                 .onTapGesture {
                     isFavorite.toggle()
-                    //                    message.senderFavorite = self.isFavorite
-                    // Bug - database is not getting updated with correct Favorite on repeated tap gestures
-                    //                    DB is being updated, but the value for the Favorite is not changing other than the first time.
                     vm.toggleSenderFavorite(message: message)
-                    mlVM.reloadList = true
+                    
+                        reload = true
+                    
+                    
                 }
                 .padding(.bottom, 10)
                 .padding(.top, 10)
@@ -179,8 +181,10 @@ struct MessageDetail: View {
                 if !message.isSent {
                     // Save/Update Message
                     Button(action: {
+                        message.senderFavorite = isFavorite
                         vm.saveMessage(message: message)
-                        mlVM.reloadList = true
+                    
+                        reload = true
 
                     }) {
                         Text("Save Message")
@@ -210,7 +214,7 @@ struct MessageDetail: View {
                     Button(action: {
                         Task {
                             vm.sendSavedMessage(message: message)
-                            mlVM.reloadList = true
+                            reload = true
                             DispatchQueue.main.asyncAfter(
                                 deadline: .now() + 1.0
                             ) {
@@ -243,7 +247,7 @@ struct MessageDetail: View {
                 // Delete Message
                 Button(action: {
                     vm.senderDeleteMessage(message: message)
-                    mlVM.reloadList = true
+                    
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                         self.presentationMode.wrappedValue.dismiss()
                     }
@@ -274,8 +278,11 @@ struct MessageDetail: View {
             }
             .padding(.horizontal, 40)
         }
-
+        .onDisappear {
+            print( "Message Detail View disappeared \n")
+        }
         .onAppear {
+            print("Message Detail View appeared \n")
             Task {
                 fontList.removeAll()
                 fontList.append(contentsOf: fonts.fonts)
@@ -332,7 +339,7 @@ struct MessageDetail: View {
 
         MessageDetail(
             user: Person(userId: ""), message: message, isSender: true,
-            mlVM: MessageListVM())
+            reload: .constant(true))
     }
 
 }

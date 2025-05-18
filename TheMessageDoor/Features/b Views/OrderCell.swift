@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct OrderCell: View {
-
+    
+    var k: Constants = Constants()
     @State var order: Order
     @Environment(\.colorScheme) var colorScheme
 

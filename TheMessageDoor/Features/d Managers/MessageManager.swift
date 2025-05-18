@@ -35,6 +35,8 @@ final class MessageManager {
     func updateMessage(message: Message) async throws {
         try messageDocument(messageId: message.messageId).setData(
             from: message, merge: true, encoder: encoder)
+        print("MM: Message Updated \n")
+        print("MM: \(message) \n")
     }
     
     func getReceiverMessages(to: String) async throws -> [Message] {
@@ -58,8 +60,13 @@ final class MessageManager {
         do {
             let querySnapshot = try await query.getDocuments()
             for document in querySnapshot.documents  {
-                let message = try document.data(as: Message.self, decoder: decoder)
-                messageList.append(message)
+                do {
+                    let message = try document.data(as: Message.self, decoder: decoder)
+                    messageList.append(message)
+                } catch  {
+                    print("error decoding message" )
+                }
+                
             }
         }
         return messageList

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MessageCell: View {
     
+    var k: Constants = Constants()
     @State var message: Message
     @Environment(\.colorScheme) var colorScheme
 //    var user = GetCurrentUser(initialLoad: false)

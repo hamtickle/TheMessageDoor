@@ -9,6 +9,7 @@ import SwiftUI
 
 struct OrderListView: View {
 
+    var k: Constants = Constants()
     @StateObject var user: GetCurrentUser
     @StateObject var vm: OrderListVM
 

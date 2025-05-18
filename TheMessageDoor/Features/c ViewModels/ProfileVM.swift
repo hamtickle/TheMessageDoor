@@ -62,21 +62,34 @@ class ProfileVM: ObservableObject {
         email: String, firstName: String, lastName: String, myFont: String,
         mySignature: String
     ) {
-
+        if checkUserNames() {
+            currentUser.newUser = false
+        } else {
+            currentUser.newUser = true
+        }
 
         let updatedUser = Profile(
             userId: currentUser.userId, email: currentUser.email, photoUrl: currentUser.photoUrl,
             firstName: currentUser.firstName, lastName: currentUser.lastName, myFont: currentUser.myFont,
             mySignature: k.appSignature, newUser: currentUser.newUser )
+        
         Task {
             try await UserManager.shared.updateUser(user: updatedUser)
             self.user = try await UserManager.shared.getUser(
                 userId: currentUser.userId)
 
         }
-        
+        updateSuccessful = true
         updateUserDefaults(person: currentUser)
         print("\n Profile Updated")
+    }
+    
+    func checkUserNames() -> Bool {
+        if currentUser.firstName == "" || currentUser.lastName == "" {
+            return false
+        } else {
+            return true
+        }
     }
 
     

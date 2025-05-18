@@ -10,12 +10,16 @@ import Foundation
 @MainActor
 class MessageDetailVM: ObservableObject {
 
+    private var k: Constants = Constants()
     @Published private(set) var message: Message? = nil
     private var mVM: MessageListVM = MessageListVM()
     @Published var currentReceiver: Profile? = nil
     @Published var selectedReceiverEmail: String = ""
     @Published var currentSenderFavorite: Bool = false
     @Published var currentReceiverFavorite: Bool = false
+    
+    @Published var userStats: UserStats = UserStats(userId: "")
+
 
     @Published var isNewMessage: Bool = false
 
@@ -25,36 +29,60 @@ class MessageDetailVM: ObservableObject {
     @Published var messageDeleted: Bool = false
     @Published var savedSent: Bool = false
 
-    init() {
-    }
+    init(){}
 
     func sendSavedMessage(message: Message) {
-        var updatedMessage = message.sendSavedMessage()
-
+        
+        let updatedMessage = message.sendSavedMessage()
+    
         Task {
             do {
                 _ = try await MessageManager.shared.updateMessage(
                     message: updatedMessage)
                 savedSent = true
-                try? await mVM.fetchSenderMessages(senderId: updatedMessage.senderId)
+                 await mVM.fetchSenderMessages(senderId: updatedMessage.senderId)
                 
             } catch {
                 print("Could not send message \(error.localizedDescription)")
             }
         }
+        // update user statistics
+
+        Task {
+            userStats = try await StatManager.instance.getUserStats(
+                senderId: updatedMessage.senderId)
+
+                userStats.updateTotalMessagesSent()
+ 
+            if updatedMessage.senderFavorite {
+                userStats.updateTotalMyFavorites()
+            }
+            try await StatManager.instance.updateStats(stats: userStats)
+        }
     }
 
     func toggleSenderFavorite(message: Message) {
-        var updatedMessage = message.toggleSenderFavorite()
+        let updatedMessage = message.toggleSenderFavorite()
 
         Task {
             do {
                 _ = try await MessageManager.shared.updateMessage(
                     message: updatedMessage)
-                try? await mVM.fetchSenderMessages(senderId: updatedMessage.senderId)
+//                await mVM.fetchSenderMessages(senderId: updatedMessage.senderId)
             } catch {
                 print("Could not toggle favorite \(error.localizedDescription)")
             }
+        }
+        // update user statistics
+
+        Task {
+            userStats = try await StatManager.instance.getUserStats(
+                senderId: updatedMessage.senderId)
+ 
+            if updatedMessage.senderFavorite {
+                userStats.updateTotalMyFavorites()
+            }
+            try await StatManager.instance.updateStats(stats: userStats)
         }
 
     }
@@ -66,10 +94,21 @@ class MessageDetailVM: ObservableObject {
             do {
                 _ = try await MessageManager.shared.updateMessage(
                     message: updatedMessage)
-                mVM.reloadList = true
+              
             } catch {
                 print("Could not toggle favorite \(error.localizedDescription)")
             }
+        }
+        // update user statistics
+
+        Task {
+            userStats = try await StatManager.instance.getUserStats(
+                senderId: updatedMessage.senderId)
+ 
+            if updatedMessage.receiverFavorite {
+                userStats.updateTotalMyFavorites()
+            }
+            try await StatManager.instance.updateStats(stats: userStats)
         }
 
     }
@@ -96,7 +135,7 @@ class MessageDetailVM: ObservableObject {
                 try await MessageManager.shared.deleteMessage(
                     messageId: message.messageId)
                 messageDeleted = true
-                print("message deleted: \(messageDeleted)")
+                print("message deleted: \(messageDeleted) \n")
                 //                await fetchSenderMessages(senderId: thisSender)
             } catch {
                 print("Could not delete message \(error.localizedDescription)")
@@ -118,7 +157,9 @@ class MessageDetailVM: ObservableObject {
                 print("Could not save message \(error.localizedDescription)")
             }
         }
-
+        // update array of messages
+        
+        
     }
 
 }

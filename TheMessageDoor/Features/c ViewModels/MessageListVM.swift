@@ -9,67 +9,73 @@ import Foundation
 
 @MainActor
 class MessageListVM: ObservableObject {
-    
-//    @ObservableObject var currentUser: GetCurrentUser
+
+    private var k: Constants = Constants()
+    //    @ObservableObject var currentUser: GetCurrentUser
     @Published private(set) var message: Message? = nil
-    
+
     @Published var reloadList: Bool = false
 
     @Published var displayMessages: [Message] = []
 
-    init () {
-//        _currentUser = StateObject(wrappedValue: GetCurrentUser())
-//                }
+    init() {
+
     }
-    
-    
+
     func fetchSenderMessages(senderId: String) async {
-        print("\n getting sender's messages for \(senderId) \n")
-        let displayMessages = try? await MessageManager.shared.getMessages(senderId: senderId)
-   
-        self.displayMessages = displayMessages ?? []
-        sortMessagesByDate()
-        
-//        buildSenderStats()
-        
-   
+        print("mlVM getting sender's messages for \(senderId) \n")
+
+        do {
+            let displayMessages = try await MessageManager.shared.getMessages(
+                senderId: senderId)
+
+            self.displayMessages = displayMessages
+            print("mlVM: fetched messages: \n \(displayMessages) \n")
+            sortMessagesByDate()
+        } catch {
+            print("Error retrieving messages: \(error)")
+        }
+
     }
-    func fetchReceiverMessages(to: String) async  {
-        print("\n getting received messages for \(to) \n")
-        let displayMessges = try? await MessageManager.shared.getReceiverMessages(to: to)
-   
+
+    func fetchReceiverMessages(to: String) async {
+        print("mVM getting received messages for \(to) \n")
+        let displayMessges = try? await MessageManager.shared
+            .getReceiverMessages(to: to)
+
         self.displayMessages = displayMessges ?? []
         sortMessagesByDate()
-        
-//        buildSenderStats()
+
+        //        buildSenderStats()
     }
-    
-    
-    
+
     func sortMessagesByDate() {
         displayMessages.sort { (message1, message2) -> Bool in
             return message1.dateCreated > message2.dateCreated
         }
     }
-    
-//    func buildSenderStats() {
-//        currentUser.totalMessagesCreated = displayMessages.count
-//        mySentMessages = displayMessages.filter({ $0.isSent == true }).count
-//        myFavMessages = displayMessages.filter({ $0.senderFavorite == true }).count
-//        receiverFavMessages = displayMessages.filter({ $0.receiverFavorite == true }).count
-//        
-//        self.myTotalMessages = myTotalMessages
-//        self.myFavMessages = myFavMessages
-//        self.mySentMessages = mySentMessages
-//        self.receiverFavMessages = receiverFavMessages
-//        
-//    }
-    
+
     func getUserID() -> String {
         guard
             let data = UserDefaults.standard.data(forKey: "userId"),
             case let userId = try? JSONDecoder().decode(String.self, from: data)
-        else { return ""}
+        else { return "" }
         return userId!
     }
+
+    func updateMessageArray(message: Message) {
+        // find index of message in displayMessage array
+        print(
+            "\n Start looking for message in message Array \(message.messageId)"
+        )
+        print(displayMessages)
+        if let messageIndex = displayMessages.firstIndex(where: {
+            $0.messageId == message.messageId
+        }) {
+            displayMessages[messageIndex] = message
+            print("displayMessages updated")
+        }
+
+    }
+
 }

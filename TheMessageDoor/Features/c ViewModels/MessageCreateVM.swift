@@ -48,7 +48,8 @@ class MessageCreateVM: ObservableObject {
     ) {  //     guard let message else { return }
         let updatedMessage = Message(
             messageId: UUID().uuidString, from: from, senderId: senderId,
-            to: to, message: message, messageFont: messageFont, messageFontSize: messageFontSize,
+            to: to, message: message, messageFont: messageFont,
+            messageFontSize: messageFontSize,
             senderFavorite: senderFavorite, dateCreated: Date(), isSent: isSent,
             dateSent: Date(), messageStatus: messageStatus,
             messageDateOpened: Date(), receiverFavorite: false,
@@ -60,16 +61,20 @@ class MessageCreateVM: ObservableObject {
             updateMessageSuccessful.toggle()
             currentMessage = ""
         }
+        
         // update user statistics
-        userStats.userId = senderId
-        userStats.updateTotalMessagesCreated()
-        if isSent {
-            userStats.updateTotalMessagesSent()
-        }
-        if senderFavorite {
-            userStats.updateTotalMyFavorites()
-        }
+
         Task {
+            userStats = try await StatManager.instance.getUserStats(
+                senderId: senderId)
+
+            userStats.updateTotalMessagesCreated()
+            if isSent {
+                userStats.updateTotalMessagesSent()
+            }
+            if senderFavorite {
+                userStats.updateTotalMyFavorites()
+            }
             try await StatManager.instance.updateStats(stats: userStats)
         }
 
@@ -98,6 +103,10 @@ class MessageCreateVM: ObservableObject {
                 print("Could not send message \(error.localizedDescription)")
             }
         }
+        userStats.updateTotalMessagesSent()
+        Task {
+            try await StatManager.instance.updateStats(stats: userStats)
+        }
 
     }
 
@@ -111,6 +120,13 @@ class MessageCreateVM: ObservableObject {
             } catch {
                 print("Could not toggle favorite \(error.localizedDescription)")
             }
+        }
+
+        // update statistics
+        userStats.updateTotalMyFavorites()
+
+        Task {
+            try await StatManager.instance.updateStats(stats: userStats)
         }
 
     }

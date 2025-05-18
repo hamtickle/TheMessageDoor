@@ -8,10 +8,11 @@ import SwiftUI
 
 struct ShowNote: View {
 
+    var k: Constants = Constants()
     @StateObject var vm: MessageCreateVM
     @StateObject private var fonts = Fonts()
     @Environment(\.colorScheme) var colorScheme
-//    @State var fontSize: CGFloat
+
 
     var body: some View {
         ZStack {

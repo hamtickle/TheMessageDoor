@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct MessageListView: View {
-
+    
+    private var k: Constants = Constants()
     @StateObject var user: GetCurrentUser
     @StateObject var vm: MessageListVM
 
@@ -21,6 +22,11 @@ struct MessageListView: View {
     init() {
         _user = StateObject(wrappedValue: GetCurrentUser(initialLoad: false))
         _vm = StateObject(wrappedValue: MessageListVM())
+        print("mLV: Init MessageListVM \n")
+        if reload {
+            loading = true
+        }
+
     }
 
     var body: some View {
@@ -48,7 +54,7 @@ struct MessageListView: View {
                 NavigationLink(
                     destination: MessageDetail(
                         user: user.currentUser, message: message,
-                        isSender: isSender, mlVM: MessageListVM())
+                        isSender: isSender, reload: $reload)
                 ) {
                     HStack {
                         MessageCell(message: message, isSender: isSender)
@@ -78,46 +84,17 @@ struct MessageListView: View {
                     }
                 }
             }
-            .onChange(of: vm.reloadList) {
-                Task {
-                    await vm.fetchSenderMessages(
-                        senderId: user.currentUser.userId)
-                }
+            //            .onChange(of: loading) {
+            //                Task {
+            //                    await vm.fetchSenderMessages(
+            //                        senderId: user.currentUser.userId)
+            //                }
 
+            //            }
+            .onDisappear {
+                print("List View Disappeared \n")
             }
-            .onAppear {
-                // looks like this is triggered when returning from navlink- so why isn't the list being rebuilt and shown on the view.  Investigate observalbe/state object pairs.
-                loading = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 
-                    let appUser = user.currentUser
-                    print("onAppear - now")
-
-                    if appUser.firstName == "" {
-                        user.getUserDefaults()
-                    }
-
-//                    if appUser.totalMessagesCreated == 0 {
-//                        noMessages = true
-//                    }
-                
-                    do {
-                        Task {
-
-                            await vm.fetchSenderMessages(
-                                senderId: appUser.userId)
-                            
-                        }
-                    }
-                    loading = false
-                }
-
-            }
-            .overlay {
-                if loading {
-                    ProgressView()
-                }
-            }
             //            .alert(isPresented: $noMessages,
             //                   content: {
             //                Alert(
@@ -126,6 +103,36 @@ struct MessageListView: View {
             //                    dismissButton: .cancel(Text("OK"))
             //                )
             //            })
+        }
+        .overlay {
+            if loading {
+                ProgressView()
+            }
+        }
+        .onAppear {
+            print("List View Appeared \n")
+            // looks like this is triggered when returning from navlink- so why isn't the list being rebuilt and shown on the view.  Investigate observable/state object pairs.
+            loading = true
+            vm.displayMessages = []
+            do {
+                Task {
+
+                    await vm.fetchSenderMessages(
+                        senderId: user.currentUser.userId)
+
+                }
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+
+                //                let appUser = user.currentUser
+
+                //                    if appUser.firstName == "" {
+                //                        user.getUserDefaults()
+                //                    }
+
+                loading = false
+            }
+
         }
     }
 }

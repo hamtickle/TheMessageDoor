@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ProfileView: View {
 
+    private var k: Constants = Constants()
     @StateObject var user: GetCurrentUser
     @StateObject var vm: ProfileVM
 
@@ -17,7 +18,7 @@ struct ProfileView: View {
 
     @Binding var showSignInView: Bool
     @State var updateSuccessful: Bool = false
-    @State var incompleteProfile: Bool = false
+//    @State var incompleteProfile: Bool = false
 
     @FocusState private var isFocused: Bool
 
@@ -174,7 +175,7 @@ struct ProfileView: View {
                             firstName: vm.currentUser.firstName,
                             lastName: vm.currentUser.lastName,
                             myFont: vm.currentUser.myFont, mySignature: "")
-                        print("\n Profile updated successfully. \(updateSuccessful)")
+                        print("\n Profile updated successfully. \(vm.updateSuccessful)")
                     } label: {
                         Text("Update Profile")
                     }
@@ -196,6 +197,15 @@ struct ProfileView: View {
                             isPressed = false
                         }
                     }
+                    .alert(
+                        isPresented: $updateSuccessful,
+                        content: {
+                            Alert(
+                                title: Text("Profile Updated"),
+                                message: Text("Your profile was updated successfully!"),
+                                dismissButton: .cancel(Text("OK")))
+                        }
+                    )
 
                     // Profile Stats
 
@@ -253,18 +263,10 @@ struct ProfileView: View {
             let font = vm.currentUser.myFont
             fontSize = fonts.getFontSize(font: font)
         }
-        .alert(
-            isPresented: $updateSuccessful,
-            content: {
-                Alert(
-                    title: Text("Profile Updated"),
-                    message: Text("Your profile was updated successfully!"),
-                    dismissButton: .cancel(Text("OK")))
-            }
-        )
+        
         
         .alert(
-            isPresented: $incompleteProfile,
+            isPresented: $vm.incompleteProfile,
             content: {
                 Alert(
                     title: Text("Incomplete Profile"),

@@ -8,12 +8,9 @@ import SwiftUI
 
 struct RecipientPicker: View {
     
+    private var k: Constants = Constants()
     @StateObject var user: GetCurrentUser
     @StateObject var vm: MessageCreateVM
-    
-//    @Binding var currentReceiverId: String
-//    @State var currentReceiverEmail: String
-//    @State var to: String
 
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.presentationMode) var presentationMode:

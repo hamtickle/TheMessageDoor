@@ -10,9 +10,10 @@ import Foundation
 @MainActor
 class OrderCreateVM: ObservableObject {
     
+    private var k: Constants = Constants()
     private var rm: ReceiverManager = ReceiverManager()
     private var checkEmail: CheckUserWithEmail = CheckUserWithEmail()
-    private var k: Constants = Constants()
+ 
   
     @Published var receiverList: [String] = []
     @Published var selectedReceiverEmail: String = ""

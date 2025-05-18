@@ -33,6 +33,7 @@ final class StatManager {
     }()
 
     func updateStats(stats: UserStats) async throws {
+        print("Updating User Stats for \(stats.userId) \n")
         do {
             try statDocument(userId: stats.userId).setData(
                 from: stats, merge: true, encoder: encoder)

@@ -141,7 +141,7 @@ struct Message: Codable, Identifiable, Hashable {
             dateCreated: dateCreated,
             isSent: true,
             dateSent: Date(),
-            messageStatus: messageStatus,
+            messageStatus: "Sent",
             messageDateOpened: messageDateOpened,
             receiverFavorite: receiverFavorite,
             receiverDeleted: receiverDeleted,

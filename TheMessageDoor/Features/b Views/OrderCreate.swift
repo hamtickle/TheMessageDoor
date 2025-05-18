@@ -9,6 +9,7 @@ import SwiftUI
 
 struct OrderCreate: View {
 
+    var k: Constants = Constants()
     @State var currentUser: Person
     @StateObject var ovm = OrderCreateVM()
 
@@ -252,7 +253,7 @@ struct OrderCreate: View {
                         try? await ovm.getOrderTypes()
                         loading = false
                     }
-                    
+
                 }
                 .onChange(of: ovm.selectedReceiverEmail) {
 
@@ -327,7 +328,7 @@ struct OrderCreate: View {
             .border(Color.blue)
             .padding(.vertical, 20)
 
-            HStack (alignment: .top){
+            HStack(alignment: .top) {
                 Text("Description:")
                     .font(.caption)
                 Text(ovm.orderTypes[typeIndex].description)
@@ -360,12 +361,12 @@ struct OrderCreate: View {
                 Task {
                     try await ovm.getOrderTypes()
                 }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                     selectedOrderType = ovm.orderTypeList[0]
                 }
 
             }
-           
+
         }
 
     }

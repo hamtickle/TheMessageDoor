@@ -7,6 +7,8 @@
 import SwiftUI
 
 struct MessageStats: View {
+    
+    var k: Constants = Constants()
     var message: Message
     @Environment(\.colorScheme) var colorScheme
     

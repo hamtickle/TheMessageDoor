@@ -9,6 +9,7 @@ import SwiftUI
 
 struct OrderView: View {
     
+    var k: Constants = Constants()
     @State var user: Person
     @EnvironmentObject var pVM : ProfileVM
 
