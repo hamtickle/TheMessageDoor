@@ -30,7 +30,7 @@ class MessageListVM: ObservableObject {
                 senderId: senderId)
 
             self.displayMessages = displayMessages
-            print("mlVM: fetched messages: \n \(displayMessages) \n")
+//            print("mlVM: fetched messages: \n \(displayMessages) \n")
             sortMessagesByDate()
         } catch {
             print("Error retrieving messages: \(error)")

@@ -35,8 +35,8 @@ final class MessageManager {
     func updateMessage(message: Message) async throws {
         try messageDocument(messageId: message.messageId).setData(
             from: message, merge: true, encoder: encoder)
-        print("MM: Message Updated \n")
-        print("MM: \(message) \n")
+//        print("MM: Message Updated \n")
+//        print("MM: \(message) \n")
     }
     
     func getReceiverMessages(to: String) async throws -> [Message] {

@@ -33,4 +33,10 @@ public struct Constants {
     // UserDefaults Key
     let user = "user"
     
+    //emails
+    let emailSubject = "You have a new message on your MessageDoor"
+    let emailText = "Hello, this is a new message from TheMessageDoor"
+    let emailHTML = "no html for you"
+    let emailTester = "7ickell@gmail.com"
+    
 }

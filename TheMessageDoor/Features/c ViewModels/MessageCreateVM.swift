@@ -15,6 +15,7 @@ class MessageCreateVM: ObservableObject {
     private var mVM: MessageListVM = MessageListVM()
     private var rm: ReceiverManager = ReceiverManager()
     private var k: Constants = Constants()
+    var emailMessage: Email = Email()
 
     @Published var userStats: UserStats = UserStats(userId: "")
 
@@ -60,6 +61,12 @@ class MessageCreateVM: ObservableObject {
                 message: updatedMessage)
             updateMessageSuccessful.toggle()
             currentMessage = ""
+        }
+        
+        if isSent {
+            emailMessage.createEmail(to: k.emailTester, k: k)
+            emailManager.instance.sendEmail(
+                email: emailMessage)
         }
         
         // update user statistics
