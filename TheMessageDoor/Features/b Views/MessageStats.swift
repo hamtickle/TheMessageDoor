@@ -11,7 +11,7 @@ struct MessageStats: View {
     var k: Constants = Constants()
     var message: Message
     @Environment(\.colorScheme) var colorScheme
-    
+  
     var body: some View {
         VStack(alignment: .center) {
             Text("Message Stats")
@@ -54,6 +54,17 @@ struct MessageStats: View {
                         colorScheme == .dark ? .white : .black
                     )
                     .font(.caption)
+                if message.messageStatus == k.statusRead {
+                    Text(
+                        message.messageDateOpened ?? Date(),
+                        format: Date.FormatStyle(date: .numeric)
+                    )
+                    .foregroundColor(
+                        colorScheme == .dark ? .white : .black
+                    )
+                    .font(.caption)
+                }
+                
             }
             HStack {
                 Text("Recipient Favorite?:")

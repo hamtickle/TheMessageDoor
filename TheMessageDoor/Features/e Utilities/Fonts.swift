@@ -38,3 +38,40 @@ final class Fonts: ObservableObject {
         return fontSize
     }
 }
+
+//enum Fonts: Hashable {
+//    case arial
+//    case copperplate
+//    case chalkduster
+//    case noteworthy
+//    case signpainter
+//    case snellRoundhand
+//    case timesNewRoman
+//    case zapfino
+//    
+//    var title: String {
+//        switch self {
+//        case .arial: return "Arial"
+//        case .copperplate: return "Copperplate"
+//        case .chalkduster: return "Chalkduster"
+//        case .noteworthy: return "Noteworthy"
+//        case .signpainter: return "SignPainter"
+//        case .snellRoundhand: return "Snell Roundhand"
+//        case .timesNewRoman: return "Times New Roman"
+//        case .zapfino: return "Zapfino"
+//        }
+//    }
+//    
+//    var fontSize: CGFloat {
+//        switch self {
+//        case .arial: return 25
+//        case .copperplate: return 25
+//        case .chalkduster: return 25
+//        case .noteworthy: return 25
+//        case .signpainter: return 35
+//        case .snellRoundhand: return 35
+//        case .timesNewRoman: return 25
+//        case .zapfino: return 15
+//        }
+//    }
+//}

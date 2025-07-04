@@ -9,26 +9,27 @@ import Foundation
 
 struct Message: Codable, Identifiable, Hashable {
     static func == (lhs: Message, rhs: Message) -> Bool {
-        lhs.messageId == rhs.messageId && lhs.from == rhs.from
-            && lhs.to == rhs.to && lhs.message == rhs.message
-            && lhs.dateSent == rhs.dateSent
+        lhs.messageId == rhs.messageId
+//            && lhs.from == rhs.from
+//            && lhs.to == rhs.to && lhs.message == rhs.message
+//            && lhs.dateSent == rhs.dateSent
     }
-    
-//    private var k: Constants = Constants()
+
+    //    private var k: Constants = Constants()
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(messageId)
-        hasher.combine(from)
-        hasher.combine(to)
-        hasher.combine(message)
-        hasher.combine(dateSent)
+        //        hasher.combine(from)
+        //        hasher.combine(to)
+        //        hasher.combine(message)
+        //        hasher.combine(dateSent)
 
     }
     var messageId: String
     var from: String
     var senderId: String
     var to: String
- 
+
     var message: String
     var messageFont: String
     var messageFontSize: CGFloat
@@ -41,7 +42,7 @@ struct Message: Codable, Identifiable, Hashable {
     var messageDateOpened: Date?
     var receiverFavorite: Bool
     var receiverDeleted: Bool
-    
+
     var lastUpdated: Date
 
     var id: String { messageId }
@@ -51,7 +52,7 @@ struct Message: Codable, Identifiable, Hashable {
         from: String,
         senderId: String,
         to: String,
- 
+
         message: String,
         messageFont: String,
         messageFontSize: CGFloat,
@@ -70,7 +71,7 @@ struct Message: Codable, Identifiable, Hashable {
         self.from = from
         self.senderId = senderId
         self.to = to
-    
+
         self.message = message
         self.messageFont = messageFont
         self.messageFontSize = messageFontSize
@@ -80,29 +81,29 @@ struct Message: Codable, Identifiable, Hashable {
         self.dateSent = dateSent
 
         self.messageStatus = messageStatus
-        self.messageDateOpened = nil
+        self.messageDateOpened = messageDateOpened
         self.receiverFavorite = false
         self.receiverDeleted = false
         self.lastUpdated = Date()
 
     }
-    
+
     init(
         messageId: String
-//        from: String,
-//        senderId: String,
-//        to: String,
-//        receiverId: String,
-//        message: String,
-//        messageFont: String,
-//        senderFavorite: Bool,
-//        dateCreated: Date,
-//        isSent: Bool,
-//        dateSent: Date,
-//        messageOpenedStatus: String,
-//        messageDateOpened: Date?,
-//        receiverFavorite: Bool,
-//        receiverDeleted: Bool
+            //        from: String,
+            //        senderId: String,
+            //        to: String,
+            //        receiverId: String,
+            //        message: String,
+            //        messageFont: String,
+            //        senderFavorite: Bool,
+            //        dateCreated: Date,
+            //        isSent: Bool,
+            //        dateSent: Date,
+            //        messageOpenedStatus: String,
+            //        messageDateOpened: Date?,
+            //        receiverFavorite: Bool,
+            //        receiverDeleted: Bool
 
     ) {
         self.messageId = messageId
@@ -121,7 +122,7 @@ struct Message: Codable, Identifiable, Hashable {
         self.messageDateOpened = nil
         self.receiverFavorite = false
         self.receiverDeleted = false
-        
+
         self.lastUpdated = Date()
 
     }
@@ -136,7 +137,7 @@ struct Message: Codable, Identifiable, Hashable {
             to: to,
             message: message,
             messageFont: messageFont,
-            messageFontSize : messageFontSize,
+            messageFontSize: messageFontSize,
             senderFavorite: senderFavorite,
             dateCreated: dateCreated,
             isSent: true,
@@ -160,7 +161,7 @@ struct Message: Codable, Identifiable, Hashable {
             to: to,
             message: message,
             messageFont: messageFont,
-            messageFontSize : messageFontSize,
+            messageFontSize: messageFontSize,
             senderFavorite: !currentValue,
             dateCreated: dateCreated,
             isSent: isSent,
@@ -261,7 +262,7 @@ struct Message: Codable, Identifiable, Hashable {
             messageDateOpened: messageDateOpened,
             receiverFavorite: receiverFavorite,
             receiverDeleted: receiverDeleted,
-            lastUpdated:     Date()
+            lastUpdated: Date()
         )
     }
 

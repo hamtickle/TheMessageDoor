@@ -11,15 +11,17 @@ struct OrderListView: View {
 
     var k: Constants = Constants()
     @StateObject var user: GetCurrentUser
-    @StateObject var vm: OrderListVM
+    @StateObject var vm: OrderVM
+    @Binding var tabSelection: Int
 
     @Environment(\.colorScheme) var colorScheme
     @State private var loading: Bool = false
+    @State var orderFilter = 0
 
-    init() {
+    init(tabSelection: Binding<Int>) {
         _user = StateObject(wrappedValue: GetCurrentUser(initialLoad: false))
-        _vm = StateObject(wrappedValue: OrderListVM())
-//    _ovm = StateObject(wrappedValue: OrderCreateVM())
+        _vm = StateObject(wrappedValue: OrderVM())
+        _tabSelection = tabSelection
     }
 
     var body: some View {
@@ -32,7 +34,8 @@ struct OrderListView: View {
                     .padding(.horizontal)
 
                 NavigationLink {
-                    OrderCreate(currentUser: user.currentUser, noOrders: $vm.noOrders)
+                    OrderCreate(
+                        currentUser: user.currentUser, ovm: vm, tabSelection: $tabSelection, noOrders: $vm.noOrders)
                 } label: {
                     Image(systemName: "cart")
                         .font(.system(size: 20))
@@ -44,14 +47,20 @@ struct OrderListView: View {
 
             }
             .padding(.top, 30)
+            
+            Picker("Filter", selection: $orderFilter) {
+                Text("Active Orders").tag(0)
+                Text("All Orders").tag(1)
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal)
 
             List(vm.orderList, id: \.orderId) { order in
                 NavigationLink(
-                    destination: OrderView(user: user.currentUser, order: order)
+                    destination: OrderView(user: user.currentUser, order: order, tabSelection: $tabSelection, vm: vm)
                 ) {
-
                     HStack(alignment: .top) {
-                        OrderCell(order: order)
+                        OrderCell(order: order, vm: vm)
                             .frame(width: 300)
                         //                            .padding(.vertical, 0)
                         //                        .padding(.horizontal, 20)
@@ -66,45 +75,59 @@ struct OrderListView: View {
                 ProgressView()
             }
         }
+        .onAppear{
+            tabSelection = 2
+        }
+        
+        .onChange(of: orderFilter) { oldValue, newValue in
+            if newValue == 0 {
+                do {
+                    vm.orderList.removeAll()
+                    vm.orderList = vm.activeOrders
+                }
+            } else {
+                do {
+                    vm.orderList.removeAll()
+                    vm.orderList = vm.allOrders
+                }
+            }
+        }
+     
+        
         .task {
             loading = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 
-                let appUser = user.currentUser
-                print("appUser: \(appUser)")
-                do {
-                    Task {
-                        try await vm.fetchSenderOrders(
-                            senderId: appUser.userId)
-                    }
-                }
+                _ = user.currentUser
+//                print("OLV appUser: \(appUser) \n")
+
                 loading = false
             }
         }
-//        .alert(
-//            isPresented: $vm.noOrders,
-//            content: {
-//                Alert(
-//                    title: Text("No Active Orders"),
-//                    message: Text(
-//                        "You do not have any ACTIVE orders.  \n Please create an order so you can send messages."
-//                    ),
-//                    dismissButton: .cancel(Text("OK"))
-//                )
-//            })
+        //        .alert(
+        //            isPresented: $vm.noOrders,
+        //            content: {
+        //                Alert(
+        //                    title: Text("No Active Orders"),
+        //                    message: Text(
+        //                        "You do not have any ACTIVE orders.  \n Please create an order so you can send messages."
+        //                    ),
+        //                    dismissButton: .cancel(Text("OK"))
+        //                )
+        //            })
         .fullScreenCover(isPresented: $vm.noOrders) {
             NavigationStack {
-                OrderCreate(currentUser: user.currentUser, noOrders: $vm.noOrders)
+                OrderCreate(
+                    currentUser: user.currentUser, ovm: vm, tabSelection: $tabSelection, noOrders: $vm.noOrders)
             }
         }
-//        .environmentObject(ovm)
     }
-      
+
 }
 
 #Preview {
     NavigationStack {
-        OrderListView()
+        OrderListView(tabSelection: .constant(2))
     }
 
 }

@@ -9,7 +9,7 @@ import SwiftUI
 struct ShowNote: View {
 
     var k: Constants = Constants()
-    @StateObject var vm: MessageCreateVM
+    @StateObject var vm: MessageVM
     @StateObject private var fonts = Fonts()
     @Environment(\.colorScheme) var colorScheme
 
@@ -38,11 +38,15 @@ struct ShowNote: View {
                     .scrollContentBackground(.hidden)
                     .frame(width: 350, height: 190)
                     .background(Color(.yellow))
-                Image(_: "signature no background")
-                    .resizable()
-                    .frame(width: 100, height: 80)
-                    .scaledToFit()
-                    .frame(alignment: .bottomTrailing)
+                
+                if k.allowSignatures {
+                    Image(_: "signature no background")
+                        .resizable()
+                        .frame(width: 100, height: 80)
+                        .scaledToFit()
+                        .frame(alignment: .bottomTrailing)
+                }
+                
             }
 
         }

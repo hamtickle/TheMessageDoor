@@ -18,13 +18,13 @@ struct Order: Identifiable, Codable {
   
     let receiverFirstName : String?
     let receiverLastName : String?
-    let receiverEmail: String?
+    let receiverEmail: String
     
     let orderType : String?
-    let orderStatus : String?
-    let orderDateCreated : Date?
+    var orderStatus : String
+    let orderDateCreated : Date
     let orderPrice : CGFloat?
-    let orderExpirationDate : Date?
+    let orderExpirationDate : Date
     
     var id: String {orderId}
       
@@ -38,12 +38,13 @@ struct Order: Identifiable, Codable {
        
         receiverFirstName: String? = nil,
         receiverLastName: String? = nil,
-        receiverEmail: String? = nil,
+        receiverEmail: String = "",
         
         orderType: String? = nil,
-        orderStatus: String? = nil,
-        orderDateCreated: Date? = nil,
-        orderPrice: CGFloat? = nil
+        orderStatus: String = "",
+        orderDateCreated: Date = Date(),
+        orderPrice: CGFloat? = nil,
+        orderExpirationDate: Date = Date()
     ) {
         self.orderId = UUID().uuidString
         self.senderId = senderId
@@ -59,7 +60,7 @@ struct Order: Identifiable, Codable {
         self.orderStatus = orderStatus
         self.orderDateCreated = orderDateCreated
         self.orderPrice = orderPrice
-        self.orderExpirationDate = nil
+        self.orderExpirationDate = orderExpirationDate
     }
     
 }

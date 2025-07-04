@@ -9,8 +9,15 @@ import SwiftUI
 
 struct SettingsView: View {
 
-    @StateObject private var viewModel = SettingsViewModel()
+    @StateObject private var viewModel: SettingsViewModel
     @Binding var showSignInView: Bool
+    
+    init(showSignInView: Binding<Bool>) {
+        print("init Settings View \n")
+        _viewModel = StateObject(wrappedValue: SettingsViewModel())
+        _showSignInView = showSignInView
+        
+    }
 
     var body: some View {
 

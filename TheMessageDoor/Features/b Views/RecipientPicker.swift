@@ -9,8 +9,8 @@ import SwiftUI
 struct RecipientPicker: View {
     
     private var k: Constants = Constants()
-    @StateObject var user: GetCurrentUser
-    @StateObject var vm: MessageCreateVM
+    @ObservedObject var user: GetCurrentUser
+    @ObservedObject var vm: MessageVM
 
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.presentationMode) var presentationMode:
@@ -18,10 +18,10 @@ struct RecipientPicker: View {
  
     @State var receiverList: [String] = []
     
-    init(vm: MessageCreateVM) {
-        _user = StateObject(wrappedValue: GetCurrentUser(initialLoad: false))
-//        _vm = StateObject(wrappedValue: MessageCreateVM())
-        _vm = StateObject(wrappedValue: vm)
+    init(vm: MessageVM) {
+        _user = ObservedObject(wrappedValue: GetCurrentUser(initialLoad: false))
+
+        _vm = ObservedObject(wrappedValue: vm)
     }
 
    

@@ -8,10 +8,12 @@
 import SwiftUI
 
 struct OrderCell: View {
-    
+
     var k: Constants = Constants()
     @State var order: Order
+    @ObservedObject var vm: OrderVM
     @Environment(\.colorScheme) var colorScheme
+    @State var orderExpired: Bool = false
 
     var body: some View {
 
@@ -20,74 +22,89 @@ struct OrderCell: View {
             HStack(alignment: .top) {
                 Text(order.receiverFirstName ?? "")
                     .foregroundColor(
-                        order.orderStatus!.contains("Active")
-                            ? Color.blue : Color.gray
+                        orderExpired
+                            ? Color.gray : Color.blue
                     )
                     .font(.body)
                     .fontWeight(.bold)
-
 
                 Text(order.receiverLastName ?? "")
                     .font(.body)
                     .fontWeight(.bold)
                     .foregroundColor(
-                        order.orderStatus!.contains("Active")
-                            ? Color.blue : Color.gray
+                      orderExpired
+                            ? Color.gray : Color.blue
                     )
             }
-        
 
             HStack(alignment: .top) {
                 Text(order.receiverEmail ?? "")
                     .foregroundColor(
-                        order.orderStatus!.contains("Active")
-                            ? Color.gray : Color.gray
+                        orderExpired
+                            ? Color.gray : Color.blue
                     )
                     .font(.body)
 
-Spacer()
+                Spacer()
 
-                Text(order.orderStatus ?? "")
+                
+                Text(orderExpired ? k.statusExpired : k.statusActive)
                     .font(.body)
                     .foregroundColor(
-                        order.orderStatus!.contains("Active")
-                            ? Color.green : Color.gray
+                        orderExpired
+                            ? Color.gray : Color.green
                     )
             }
             .padding(.horizontal, 10)
-         
 
             HStack(alignment: .top) {
-                Text("Date Created: ")
+                Text("Expiration Date: ")
                     .font(.caption)
                     .foregroundColor(Color.gray)
 
                 Text(
-                    order.orderDateCreated ?? Date(),
+                    order.orderExpirationDate,
                     format: Date.FormatStyle(date: .numeric)
                 )
                 .font(.caption)
                 .foregroundColor(Color.gray)
             }
             .padding(.horizontal, 10)
-     
+
+            HStack(alignment: .top) {
+                Text("Order Type: ")
+                    .font(.caption)
+                    .foregroundColor(Color.gray)
+
+                Text(
+                    order.orderType ?? ""
+                )
+                .font(.caption)
+                .foregroundColor(Color.gray)
+            }
+            .padding(.horizontal, 10)
 
         }
 
-  
-        .padding(.vertical, 0)
-        .frame(width: 300, height: 50, alignment: .leading)
+        .padding(.vertical, 10)
+        .frame(width: 300, height: 70, alignment: .leading)
 
-
+        .task {
+            if order.orderExpirationDate < Date() {
+                orderExpired = true
+            } else {
+                orderExpired = false
+            }
+        }
 
     }
 }
 
-//#Preview {
-//    var order: Order!
-//    NavigationStack    {
-//
-//        OrderCell(order: .init())
-//    }
-//    .environmentObject(ProfileVM())
-//}
+#Preview {
+    
+    NavigationStack    {
+
+        OrderCell(order: Order(orderId: "123"), vm: OrderVM())
+    }
+
+}

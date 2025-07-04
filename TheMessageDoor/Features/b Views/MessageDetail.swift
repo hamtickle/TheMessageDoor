@@ -11,8 +11,7 @@ struct MessageDetail: View {
 
     @State var user: Person
     private var k: Constants = Constants()
-    @StateObject var vm: MessageDetailVM
-//    @StateObject var mlVM: MessageListVM
+    @ObservedObject var vm: MessageVM
 
     @StateObject private var fonts = Fonts()
     @Environment(\.colorScheme) var colorScheme
@@ -29,19 +28,20 @@ struct MessageDetail: View {
     @State private var isPressedDelete = false
     @Binding var reload: Bool
 
-    init(user: Person, message: Message, isSender: Bool,  reload: Binding<Bool>) {
+    init(vm: MessageVM, user: Person, message: Message, isSender: Bool,  reload: Binding<Bool>) {
 
-        _vm = StateObject(wrappedValue: MessageDetailVM())
-        print("MD: Init MessageDetailVM \n")
+        _vm = ObservedObject(wrappedValue: vm)
         _user = State(wrappedValue: user)
         _message = State(wrappedValue: message)
         _isSender = State(wrappedValue: isSender)
-//        _mlVM = StateObject(wrappedValue: mlVM)
         _reload = reload
         
     }
 
     var body: some View {
+
+// MARK: Message Header
+        
         Text("View Message")
             .font(.system(size: 34, weight: .bold))
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -74,7 +74,7 @@ struct MessageDetail: View {
 
                     isFavorite
                         ? Image(systemName: "heart.fill")
-                            .foregroundColor(.red)
+                        .foregroundColor(isSender ? .red : .blue)
                             .padding(.bottom, 10)
                         : Image(systemName: "heart")
                             .foregroundColor(.gray)
@@ -82,7 +82,9 @@ struct MessageDetail: View {
                 }
                 .onTapGesture {
                     isFavorite.toggle()
-                    vm.toggleSenderFavorite(message: message)
+                    isSender ? (message.senderFavorite = isFavorite) : (message.receiverFavorite = isFavorite)
+                   
+                    vm.toggleFavorite(message: message)
                     
                         reload = true
                     
@@ -95,14 +97,16 @@ struct MessageDetail: View {
                 if message.isSent {
                     Text(
                         isSender
-                            ? "THIS MESSAGE HAS BEEN SENT"
-                            : "THIS MESSAGE WAS SENT TO YOU"
+                        ? k.messageSent
+                        : k.messageSentToYou
                     )
                     .font(.headline)
                     .foregroundColor(.red)
                     .padding(.bottom, 20)
                 }
 
+// MARK: Note Page
+                
                 //     ShowNote()
                 ZStack {
                     Rectangle()
@@ -137,11 +141,14 @@ struct MessageDetail: View {
                                 .background(Color(.yellow))
                         }
 
-                        Image(_: "signature no background")
-                            .resizable()
-                            .frame(width: 100, height: 80)
-                            .scaledToFit()
-                            .frame(alignment: .bottomTrailing)
+                        if k.allowSignatures {
+                            Image(_: "signature no background")
+                                .resizable()
+                                .frame(width: 100, height: 80)
+                                .scaledToFit()
+                                .frame(alignment: .bottomTrailing)
+                        }
+                       
                     }
 
                 }
@@ -178,6 +185,8 @@ struct MessageDetail: View {
                     .border(Color.blue, width: 2)
                 }
 
+ // MARK: Buttons
+                
                 if !message.isSent {
                     // Save/Update Message
                     Button(action: {
@@ -278,6 +287,9 @@ struct MessageDetail: View {
             }
             .padding(.horizontal, 40)
         }
+        
+// MARK: OnAppear
+        
         .onDisappear {
             print( "Message Detail View disappeared \n")
         }
@@ -287,7 +299,17 @@ struct MessageDetail: View {
                 fontList.removeAll()
                 fontList.append(contentsOf: fonts.fonts)
             }
-            isFavorite = message.senderFavorite
+            
+            isFavorite = isSender ? message.senderFavorite : message.receiverFavorite
+            
+        
+        }
+        .task {
+            if message.messageStatus == k.statusSent {
+                message.messageStatus = k.statusRead
+                message.messageDateOpened = Date()
+                vm.saveMessage(message: message)
+            }
         }
         
         .onChange(of: message.messageFont) {
@@ -301,7 +323,7 @@ struct MessageDetail: View {
             content: {
                 Alert(
                     title: Text("Message Updated"),
-                    message: Text("Your message has been saved. Thank You."),
+                    message: Text(k.messageSaved),
                     dismissButton: .cancel(Text("OK")))
             }
         )
@@ -310,7 +332,7 @@ struct MessageDetail: View {
             content: {
                 Alert(
                     title: Text("Message Deleted"),
-                    message: Text("Your messaged has been deleted."),
+                    message: Text(k.messageDeleted),
                     dismissButton: .cancel(Text("OK"))
                 )
             }
@@ -320,7 +342,7 @@ struct MessageDetail: View {
             content: {
                 Alert(
                     title: Text("Message Sent"),
-                    message: Text("Your messaged has been sent."),
+                    message: Text(k.messageSent2),
                     dismissButton: .cancel(Text("OK"))
                 )
             }
@@ -333,13 +355,18 @@ struct MessageDetail: View {
 }
 
 #Preview {
+    
     NavigationStack {
 
         var message: Message = .init(messageId: "")
 
         MessageDetail(
-            user: Person(userId: ""), message: message, isSender: true,
+            vm: MessageVM(),
+            user: Person(userId: ""),
+            message: message,
+            isSender: true,
             reload: .constant(true))
     }
+    
 
 }

@@ -16,6 +16,10 @@ final class AuthenticationVM: ObservableObject {
     let currentUser = GetCurrentUser(initialLoad: true)
     let signInAppleHelper = SignInAppleHelper()
     var thisUser = Profile(userId: "")
+    
+    init() {
+        print("init AuthenticationVM \n")
+    }
 
     func signInGoogle() async throws {
 
@@ -30,7 +34,7 @@ final class AuthenticationVM: ObservableObject {
 
         // retrieve UserProfile from Firebase User Collection (if it exists)
         do {
-            var result = try await UserManager.shared.getUser(
+            let result = try await UserManager.shared.getUser(
                 userId: user.userId)
             self.thisUser = result
         } catch {
@@ -47,7 +51,7 @@ final class AuthenticationVM: ObservableObject {
             // save to UserDefaults
             currentUser.postToUserDefaults(appUser: user)
 
-            // new user - create profile
+            // new user - create profile in Firebase
             try await UserManager.shared.createNewUser(user: user)
             print("AuthVM - New User Created in Firebase \(user.userId)")
 

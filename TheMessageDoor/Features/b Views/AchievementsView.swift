@@ -12,6 +12,10 @@ struct AchievementsView: View {
     private var k: Constants = Constants()
 //    @StateObject var vm: AchievementsVM = AchievementsVM()
     
+    init() {
+        print("init Achievements View \n")
+    }
+    
     var body: some View {
         ZStack (alignment: .top) {
             LinearGradient(gradient: Gradient(colors: [.blue, .black]), startPoint: .top, endPoint: .bottom)

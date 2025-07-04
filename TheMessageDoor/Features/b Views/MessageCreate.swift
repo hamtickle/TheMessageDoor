@@ -10,7 +10,7 @@ import SwiftUI
 struct CreateMessageView: View {
 
     @StateObject var user: GetCurrentUser
-    @StateObject var vm: MessageCreateVM
+    @ObservedObject var vm: MessageVM
     var k: Constants = Constants()
     var fonts = Fonts()
     @State var fontSize: CGFloat = 25
@@ -28,12 +28,15 @@ struct CreateMessageView: View {
     @Binding var tabSelection: Int
 
     init(tabSelection: Binding<Int>) {
+        print("init CreateMessage View \n")
         _user = StateObject(wrappedValue: GetCurrentUser(initialLoad: false))
-        _vm = StateObject(wrappedValue: MessageCreateVM())
+        _vm = ObservedObject(wrappedValue: MessageVM())
         _tabSelection = tabSelection
     }
 
     var body: some View {
+        
+// MARK: Message Header
 
         Text("Create Message")
             .font(.system(size: 34, weight: .bold))
@@ -72,9 +75,13 @@ struct CreateMessageView: View {
                 .padding(.top, 10)
                 .font(.title)
 
+// MARK: Show Note
+                
                 //     ShowNote()
                 ShowNote(vm: vm)
 
+// MARK: Select Font
+                
                 HStack {
                     Text("Font:")
                         .foregroundColor(.black)
@@ -96,6 +103,8 @@ struct CreateMessageView: View {
                 .border(Color.blue, width: 2)
 
                 // Save/Update Message
+                
+// MARK: BUTTONS
 
                 Button(action: {
                     vm.createMessage(
@@ -180,7 +189,10 @@ struct CreateMessageView: View {
             .padding(.horizontal, 40)
         }
 
+// MARK: OnAppear
+        
         .onAppear {
+            tabSelection = 0
             Task {
                 fontList.removeAll()
                 fontList.append(contentsOf: fonts.fonts)
@@ -203,7 +215,7 @@ struct CreateMessageView: View {
             content: {
                 Alert(
                     title: Text("Message Created"),
-                    message: Text("Your message has been saved. Thank You."),
+                    message: Text(k.messageSaved),
                     dismissButton: .cancel(Text("OK")))
             }
         )
@@ -213,7 +225,7 @@ struct CreateMessageView: View {
                 Alert(
                     title: Text("No Active Orders"),
                     message: Text(
-                        "You do not have any ACTIVE orders.  \n Please create an order so you can send messages."
+                        k.noOrders
                     ),
                     dismissButton: .cancel(Text("OK"))
                 )
@@ -225,6 +237,9 @@ struct CreateMessageView: View {
 
     }
 }
+
+
+// MARK: Extention text editing
 
 extension View {
     func endTextEditing() {

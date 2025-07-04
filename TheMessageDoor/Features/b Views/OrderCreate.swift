@@ -11,7 +11,8 @@ struct OrderCreate: View {
 
     var k: Constants = Constants()
     @State var currentUser: Person
-    @StateObject var ovm = OrderCreateVM()
+    @ObservedObject var ovm: OrderVM
+    @Binding var tabSelection: Int
 
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.presentationMode) var presentationMode:
@@ -27,7 +28,8 @@ struct OrderCreate: View {
 
     var body: some View {
 
-        //        List {
+// MARK: Order Header
+
         Spacer()
 
         Text("Create Order")
@@ -37,44 +39,48 @@ struct OrderCreate: View {
             .padding(.top, 10)
 
         VStack(alignment: .center) {
+            if k.showIds {
+                ZStack(alignment: .top) {
 
-            ZStack(alignment: .top) {
-
-                VStack(alignment: .leading) {
-                    Text("Your information")
-                        .font(.body)
-                        .foregroundColor(.tmdText)
-                        .padding(.horizontal, 20)
-
-                    HStack {
-
-                        Text(currentUser.firstName)
-                            .padding(.horizontal)
-                            .frame(width: 170, height: 50)
-                            .background(Color.gray.opacity(0.2))
+                    VStack(alignment: .leading) {
+                        Text("Your information")
+                            .font(.body)
                             .foregroundColor(.tmdText)
-                            .cornerRadius(10)
-                            .padding(.vertical, 2)
+                            .padding(.horizontal, 20)
 
-                        Text(currentUser.lastName)
-                            .padding(.horizontal)
-                            .frame(width: 170, height: 50)
-                            .background(Color.gray.opacity(0.2))
-                            .foregroundColor(.tmdText)
-                            .cornerRadius(10)
-                            .padding(.vertical, 2)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .center)
+                        HStack {
 
-                    Text("Sender's ID: \(currentUser.userId)")
+                            Text(currentUser.firstName)
+                                .padding(.horizontal)
+                                .frame(width: 170, height: 50)
+                                .background(Color.gray.opacity(0.2))
+                                .foregroundColor(.tmdText)
+                                .cornerRadius(10)
+                                .padding(.vertical, 2)
+
+                            Text(currentUser.lastName)
+                                .padding(.horizontal)
+                                .frame(width: 170, height: 50)
+                                .background(Color.gray.opacity(0.2))
+                                .foregroundColor(.tmdText)
+                                .cornerRadius(10)
+                                .padding(.vertical, 2)
+                        }
                         .frame(maxWidth: .infinity, alignment: .center)
-                        .font(.caption)
-                        .foregroundColor(.primary)
-                        .padding(.vertical, 2)
+
+                        Text("Sender's ID: \(currentUser.userId)")
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .font(.caption)
+                            .foregroundColor(.primary)
+                            .padding(.vertical, 2)
+
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.bottom, 20)
                 }
-                .padding(.horizontal, 10)
-                .padding(.bottom, 20)
             }
+
+// MARK: Recipient Details
 
             ZStack {
                 Rectangle()
@@ -168,14 +174,22 @@ struct OrderCreate: View {
                 }
             }
 
-            SelectOrderType(selectedOrderType: selectedOrderType)
+// MARK: Order Type Selector
+
+            SelectOrderType(ovm: ovm, selectedOrderType: $selectedOrderType)
+
+// MARK: Buttons
 
             Button(action: {
 
+                tabSelection = 2
+
                 ovm.createOrderButtonTapped(
-                    user: currentUser, first: ovm.currentReceiverFirstName,
+                    user: currentUser,
+                    first: ovm.currentReceiverFirstName,
                     last: ovm.currentReceiverLastName,
-                    email: ovm.currentReceiverEmail)
+                    email: ovm.currentReceiverEmail,
+                    orderType: selectedOrderType)
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     self.presentationMode.wrappedValue.dismiss()
@@ -206,6 +220,7 @@ struct OrderCreate: View {
             Button(action: {
 
                 noOrders = false
+                tabSelection = 2
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     self.presentationMode.wrappedValue.dismiss()
@@ -233,31 +248,23 @@ struct OrderCreate: View {
             }
             Spacer()
 
+// MARK: OnAppear
+
                 .onAppear {
                     loading = true
+                    tabSelection = 2
                     Task {
-                        try? await ovm.getReceivers(
-                            senderId: currentUser.userId)
                         receiverList.removeAll()
-                        receiverList.append("New Recipient")
+                        receiverList.append(k.newRecipient)
                         receiverList.append(contentsOf: ovm.receiverList)
                         ovm.selectedReceiverEmail = receiverList[0]
-                        // get order types
-                        let blankOrderType = OrderType(
-                            orderTypeId: "", type: "Select Order Type",
-                            price: 0.0,
-                            description:
-                                "Please select an order type from the options available.",
-                            minDuration: 0)
-                        ovm.orderTypes.append(blankOrderType)
-                        try? await ovm.getOrderTypes()
                         loading = false
                     }
 
                 }
                 .onChange(of: ovm.selectedReceiverEmail) {
 
-                    if ovm.selectedReceiverEmail == "New Recipient" {
+                    if ovm.selectedReceiverEmail == k.newRecipient {
                         ovm.currentReceiverFirstName = ""
                         ovm.currentReceiverLastName = ""
                         ovm.currentReceiverEmail = ""
@@ -273,7 +280,7 @@ struct OrderCreate: View {
                         Alert(
                             title: Text("Order Created"),
                             message: Text(
-                                "Your order has been created. \n Thank You."),
+                                k.orderCreated),
                             dismissButton: .cancel(Text("OK")))
                     }
                 )
@@ -283,7 +290,7 @@ struct OrderCreate: View {
                         Alert(
                             title: Text("Active Order Exists"),
                             message: Text(
-                                "You have an active order for \n \(ovm.selectedReceiverEmail). \n Please complete existing order first."
+                                k.orderDuplicate
                             ),
                             dismissButton: .cancel(Text("OK")))
                     }
@@ -293,90 +300,16 @@ struct OrderCreate: View {
                         ProgressView()
                     }
                 }
-            //                .environmentObject(OrderCreateVM())
-            //        .navigationTitle(Text("Create Order"))
-
         }
-
     }
-
-    struct SelectOrderType: View {
-        @StateObject var ovm = OrderCreateVM()
-        @State var selectedOrderType: String = ""
-        @State var typeIndex: Int = 0
-
-        //        init(selectedOrderType: Binding<String>) {
-        //            _ovm = StateObject(wrappedValue: OrderCreateVM())
-        //        }
-
-        var body: some View {
-            HStack {
-                Text("Order Type:")
-                Picker(
-                    "",
-                    selection: $selectedOrderType
-                ) {
-                    ForEach(ovm.orderTypeList, id: \.self) {
-                        Text($0)
-                    }
-                }.pickerStyle(.menu)
-                    .frame(width: 225, height: 60)
-                    .padding(.vertical, -15)
-                    .padding(.horizontal, -10)
-            }
-            .frame(width: 350, height: 75)
-            .border(Color.blue)
-            .padding(.vertical, 20)
-
-            HStack(alignment: .top) {
-                Text("Description:")
-                    .font(.caption)
-                Text(ovm.orderTypes[typeIndex].description)
-                    .font(.caption)
-                    .frame(width: 250)
-                    .lineLimit(nil)
-            }
-            .padding(.bottom, 10)
-
-            HStack {
-                Text("Price: $")
-                Text(
-                    ovm.orderTypes[typeIndex].price,
-                    format: .currency(code: "USD"))
-            }
-
-            .onChange(of: selectedOrderType) {
-                // lookup index of OrderType
-                let index = ovm.orderTypeList.firstIndex {
-                    $0 == selectedOrderType
-                }
-
-                if let index = index {
-                    typeIndex = index
-                }
-
-            }
-            .onAppear {
-
-                Task {
-                    try await ovm.getOrderTypes()
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                    selectedOrderType = ovm.orderTypeList[0]
-                }
-
-            }
-
-        }
-
-    }
-
 }
 
 #Preview {
 
     NavigationStack {
-        OrderCreate(currentUser: Person(userId: ""), noOrders: .constant(true))
+        OrderCreate(
+            currentUser: Person(userId: ""), ovm: OrderVM(),
+            tabSelection: .constant(2), noOrders: .constant(true))
     }
 
 }

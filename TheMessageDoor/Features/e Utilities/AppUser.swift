@@ -1,30 +1,32 @@
 //
-//  GetCurrentUser.swift
+//  AppUser.swift
 //  TheMessageDoor
 //
-//  Created by Graham Tickell on 4/22/25.
+//  Created by Graham Tickell on 6/19/25.
 //
 
 import Foundation
 
 @MainActor
-final class GetCurrentUser: ObservableObject {
+final class AppUser: ObservableObject {
 
-    static let shared = GetCurrentUser(initialLoad: false)
     private var k: Constants = Constants()
     @Published var currentUser: Person = Person(userId: "")
     @Published var currentUserStats: UserStats
 
-    @Published var appUser: Profile? = nil
-    @Published var user: Profile? = nil
-    //    var thisUserId: String = ""
+    private var appUser: Profile? = nil
+    private var user: Profile? = nil
+
     var initialLoad: Bool
 
     init(initialLoad: Bool) {
         _currentUserStats = Published(wrappedValue: UserStats(userId: ""))
         self.initialLoad = initialLoad
+        
+        
         Task {
             if initialLoad {
+//    Load App Profile based on the authenticated ID of the User
                 self.appUser = try await loadCurrentUser()
 
                 let thisUserId = appUser?.userId ?? ""
@@ -44,7 +46,9 @@ final class GetCurrentUser: ObservableObject {
     }
 
     func loadCurrentUser() async throws -> Profile? {
+//  Get auth result from authentication manager
         let authDataResult = try AuthManager.shared.getAuthenticatedUser()
+//  Use UserId from authentication manager to retrieve app profile from Firebase
         self.user = try await UserManager.shared.getUser(
             userId: authDataResult!.uid)
         return user

@@ -12,6 +12,10 @@ final class SettingsViewModel: ObservableObject {
 
     private var k: Constants = Constants()
     @Published var authProviders: [AuthProviderOptions] = []
+    
+    init() {
+        print("init SettingsVM \n")        
+    }
 
     func loadAuthProviders() {
         if let providers = try? AuthManager.shared.getProviders() {

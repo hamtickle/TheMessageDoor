@@ -13,6 +13,11 @@ struct AuthenticationView: View {
 
     @StateObject private var viewModel = AuthenticationVM()
     @Binding var showSignInView: Bool
+    
+    init(showSignInView: Binding<Bool>) {
+        print("init Authentication View \n")
+        _showSignInView = showSignInView
+    }
 
     var body: some View {
         VStack(alignment: .center) {

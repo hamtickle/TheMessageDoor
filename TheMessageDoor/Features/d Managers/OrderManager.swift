@@ -8,11 +8,13 @@
 import FirebaseFirestore
 import Foundation
 
+@MainActor
 final class OrderManager {
 
     static let shared = OrderManager()
     @Published var newUser: Bool = false
     @Published var order: Order? = nil
+  
     private init() {}
     private var receiverList: [String] = []
 
@@ -142,6 +144,7 @@ final class OrderManager {
                         as: OrderType.self, decoder: decoder)
 
                     orderTypeList.append(result)
+//                    print("\n \(orderTypeList)")
 
                 } catch {
                     print("\n error on order type decoding \(error)")

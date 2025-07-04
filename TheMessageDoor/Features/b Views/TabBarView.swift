@@ -14,22 +14,24 @@ struct TabBarView: View {
     @State var user: Person = Person(userId: "")
    
 //    @State var refreshView = false
-    @State var tabSelection: Int = 0
+    @State var tabSelection: Int
         
     @Binding var showSignInView: Bool
+    @State var initialLoad: Bool = true
+  
 
     
     init(showSignInView: Binding<Bool>) {
         _appUser = StateObject(wrappedValue: GetCurrentUser(initialLoad: false))
         _showSignInView = showSignInView
-        
+        _tabSelection = .init(initialValue: 0)
     }
     
 
     var body: some View {
         TabView(selection: $tabSelection) {
             NavigationStack {
-                MessageListView()
+                MessageListView(initialLoad: $initialLoad)
             }
             
             .tabItem {
@@ -55,11 +57,10 @@ struct TabBarView: View {
             .tag(1)
             
             NavigationStack {
-                OrderListView()
+                
+                OrderListView(tabSelection: $tabSelection)
 
             }
-         
-            
             .tabItem {
                 Image(systemName: "cart")
                 Text("Order")
@@ -95,8 +96,6 @@ struct TabBarView: View {
             if user.newUser
             {
                 tabSelection = 4
-            } else {
-                tabSelection = 0
             }
         }
         

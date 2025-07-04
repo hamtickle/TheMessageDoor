@@ -11,7 +11,8 @@ struct ProfileView: View {
 
     private var k: Constants = Constants()
     @StateObject var user: GetCurrentUser
-    @StateObject var vm: ProfileVM
+    @ObservedObject var vm: ProfileVM
+    @Environment(\.colorScheme) var colorScheme
 
     @StateObject private var fonts = Fonts()
     
@@ -27,16 +28,19 @@ struct ProfileView: View {
     @State private var isPressed = false
 
     init(showSignInView: Binding<Bool>) {
+        print("init Profile View \n")
         _user = StateObject(wrappedValue: GetCurrentUser(initialLoad: false))
-        _vm = StateObject(wrappedValue: ProfileVM())
+        _vm = ObservedObject(wrappedValue: ProfileVM())
         _showSignInView = showSignInView
+        
     }
 
     var body: some View {
         ScrollView {
 
+// MARK: Profile header
+            
             Spacer()
-
             HStack {
                 Text("Your Profile")
                     .font(.system(size: 34, weight: .bold))
@@ -92,10 +96,13 @@ struct ProfileView: View {
                             .foregroundColor(.black)
                             .padding(.vertical, 2)
                         }
-                        Text("UserID: \(vm.currentUser.userId)")
-                            .font(.caption)
-                            .foregroundColor(.tmdText)
-                            .padding(.vertical, 2)
+                        if k.showIds {
+                            Text("UserID: \(vm.currentUser.userId)")
+                                .font(.caption)
+                                .foregroundColor(.tmdText)
+                                .padding(.vertical, 2)
+                        }
+                      
 
                         HStack {
                             Text("First Door Opened: ")
@@ -124,7 +131,9 @@ struct ProfileView: View {
                             .padding(.vertical, 2)
 
                     }
-
+                    
+// MARK: Font Selection
+                    
                     HStack {
                         Text("My Font:")
 
@@ -139,18 +148,20 @@ struct ProfileView: View {
                             .frame(width: 200, height: 60)
                             .padding(.vertical, -15)
                     }
-                    .frame(width: 350, height: 75)
+                    .frame(width: 370, height: 75)
                     .border(Color.blue)
 
                     ZStack {
                         Rectangle()
                             .fill(Color.yellow)
-                            .frame(height: 100)
+                            .frame(width: 370, height: 100)
                             .padding(5)
                             .shadow(
-                                color: Color.black, radius: 10, x: 10, y: 10
+                                color: colorScheme == .dark
+                                    ? Color.gray : Color.black,
+                                radius: 10, x: 10, y: 10
                             )
-                        Text("Choose the font you want for your messages.")
+                        Text(k.chooseFont)
                             .foregroundColor(.black)
                             .font(
                                 .custom(
@@ -158,12 +169,14 @@ struct ProfileView: View {
                                     size: fontSize
                             ))
                             .multilineTextAlignment(.center)
-                            .frame(height: 100)
+                            .frame(width: 350, height: 100)
                             .padding(.horizontal)
 
                     }
                 }
                 //                }
+                
+// MARK: Buttons
 
                 VStack(alignment: .center) {
 
@@ -175,7 +188,7 @@ struct ProfileView: View {
                             firstName: vm.currentUser.firstName,
                             lastName: vm.currentUser.lastName,
                             myFont: vm.currentUser.myFont, mySignature: "")
-                        print("\n Profile updated successfully. \(vm.updateSuccessful)")
+                        print(k.profileUpdated, vm.updateSuccessful)
                     } label: {
                         Text("Update Profile")
                     }
@@ -197,17 +210,9 @@ struct ProfileView: View {
                             isPressed = false
                         }
                     }
-                    .alert(
-                        isPresented: $updateSuccessful,
-                        content: {
-                            Alert(
-                                title: Text("Profile Updated"),
-                                message: Text("Your profile was updated successfully!"),
-                                dismissButton: .cancel(Text("OK")))
-                        }
-                    )
 
-                    // Profile Stats
+
+// MARK: Profile Stats
 
                     Text("Message Door Stats")
                         .font(.headline)
@@ -254,6 +259,9 @@ struct ProfileView: View {
             }
             
         }
+        
+//  MARK: OnAppear stuff
+        
         .onAppear() {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 vm.fetchUserStats(userId: vm.currentUser.userId)
@@ -271,7 +279,19 @@ struct ProfileView: View {
                 Alert(
                     title: Text("Incomplete Profile"),
                     message: Text(
-                        "Your profile is incomplete. \n Please complete it before continuing."
+                        k.profileIncomplete
+                    ),
+                    dismissButton: .cancel(Text("OK"))
+                )
+            }
+        )
+        .alert(
+            isPresented: $vm.updateSuccessful,
+            content: {
+                Alert(
+                    title: Text("Profile Updated"),
+                    message: Text(
+                        k.profileUpdated
                     ),
                     dismissButton: .cancel(Text("OK"))
                 )
@@ -284,8 +304,7 @@ struct ProfileView: View {
                 }
                 fontList.removeAll()
                 fontList.append(contentsOf: fonts.fonts)
-//                fontSizes.removeAll()
-//                fontSizes.append(contentsOf: fonts.fontSizes)
+
             }
             // Current User Data from User Defaults
             vm.fetchUserDefaults()

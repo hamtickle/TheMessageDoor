@@ -8,9 +8,11 @@
 import FirebaseFirestore
 import Foundation
 
+@MainActor
 final class MessageManager {
     
     static let shared = MessageManager()
+    private var k: Constants = Constants()
     
     private init() {}
     
@@ -47,7 +49,11 @@ final class MessageManager {
             let querySnapshot = try await query.getDocuments()
             for document in querySnapshot.documents  {
                 let message = try document.data(as: Message.self, decoder: decoder)
-                messageList.append(message)
+                if message.messageStatus  == k.statusSaved {
+                    // ignore the message
+                } else {
+                    messageList.append(message)
+                }
             }
         }
         return messageList
